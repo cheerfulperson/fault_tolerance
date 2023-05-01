@@ -1,10 +1,9 @@
-import 'package:borovic/routes.dart';
 import 'package:flutter/material.dart';
+
+import '../routes.dart';
 
 class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-
-  /// you can add more fields that meet your needs
 
   const BaseAppBar({
     required this.title,
@@ -15,13 +14,28 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(title),
       centerTitle: true,
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () => Navigator.pushNamed(context, homeRoute),
-      ),
+      leading: HeaderBackButton(),
     );
   }
 
   @override
   Size get preferredSize => new Size.fromHeight(50.0);
+}
+
+class HeaderBackButton extends StatelessWidget {
+  const HeaderBackButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    String? pathName = (ModalRoute.of(context)?.settings.name);
+    return pathName != '/' && pathName != homeRoute
+        ? IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.pushNamed(context, homeRoute),
+            tooltip: 'На главную',
+          )
+        : const SizedBox.shrink();
+  }
 }
