@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> {
                 description:
                     "МЕТОДИКА ИНДИВИДУАЛЬНОГО ПРОГНОЗИРОВАНИЯ НАДЁЖНОСТИ БИПОЛЯРНЫХ ТРАНЗИСТОРОВ ПО ПОСТЕПЕННЫМ ОТКАЗАМ",
                 imagePath: "assets/images/second-app.png",
-                toPath: secondAppRoute,
+                toPath: firstAppRoute,
                 buttonColor: Colors.deepPurple.shade300,
               )
             ],
