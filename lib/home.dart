@@ -17,9 +17,6 @@ class _HomePageState extends State<HomePage> {
     final ButtonStyle style =
         ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
     return Scaffold(
-      appBar: const BaseAppBar(
-        title: 'Главный экран',
-      ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
@@ -27,20 +24,21 @@ class _HomePageState extends State<HomePage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              ElevatedCardExample(
+              ElevatedCard(
                   description:
                       "ПРОГНОЗИРОВАНИЯ НАДЁЖНОСТИ ПОЛУПРОВОДНИКОВЫХ ПРИБОРОВ ПО ЗНАЧЕНИЯМ ИХ ИНФОРМАТИВНЫХ ПАРАМЕТРОВ В НАЧАЛЬНЫЙ МОМЕНТ ВРЕМЕНИ",
                   imagePath: "assets/images/first-app.png",
+                  buttonColor: Color.fromARGB(255, 0, 0, 0),
                   toPath: firstAppRoute),
               const SizedBox(
-                width: 20,
+                width: 12,
               ),
-              ElevatedCardExample(
+              ElevatedCard(
                 description:
                     "МЕТОДИКА ИНДИВИДУАЛЬНОГО ПРОГНОЗИРОВАНИЯ НАДЁЖНОСТИ БИПОЛЯРНЫХ ТРАНЗИСТОРОВ ПО ПОСТЕПЕННЫМ ОТКАЗАМ",
                 imagePath: "assets/images/second-app.png",
                 toPath: firstAppRoute,
-                buttonColor: Colors.deepPurple.shade300,
+                buttonColor: Color.fromARGB(255, 0, 0, 0),
               )
             ],
           ),
@@ -50,10 +48,10 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class ElevatedCardExample extends StatefulWidget {
-  static const Color defaultColor = Color(0xFF42A5F5);
+class ElevatedCard extends StatefulWidget {
+  static const Color defaultColor = Color(0xEBEBEB);
 
-  ElevatedCardExample({
+  ElevatedCard({
     super.key,
     required this.description,
     required this.imagePath,
@@ -67,10 +65,10 @@ class ElevatedCardExample extends StatefulWidget {
   Color buttonColor;
 
   @override
-  State<ElevatedCardExample> createState() => _ElevatedCardExampleState();
+  State<ElevatedCard> createState() => _ElevatedCardState();
 }
 
-class _ElevatedCardExampleState extends State<ElevatedCardExample> {
+class _ElevatedCardState extends State<ElevatedCard> {
   void handlePress() {
     Navigator.pushNamed(context, widget.toPath);
   }
@@ -80,26 +78,23 @@ class _ElevatedCardExampleState extends State<ElevatedCardExample> {
     return Center(
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(20.0),
           child: SizedBox(
-            width: 400,
-            height: 320,
+            width: 540,
+            height: 480,
             child: Center(
                 child: Column(
               children: [
                 Image(
                   image: AssetImage(widget.imagePath),
-                  width: 180,
-                  height: 160,
+                  width: 520,
+                  height: 320,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text(
-                    widget.description,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w600, fontSize: 16),
-                  ),
+                Text(
+                  widget.description,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w600, fontSize: 20),
                 ),
                 Spacer(),
                 ElevatedButton(

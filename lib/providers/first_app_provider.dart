@@ -7,10 +7,16 @@ const Uuid uuid = Uuid();
 
 class DeviceParams {
   DeviceParams(
-      {required this.name, required this.shortName, required this.value});
+      {required this.name,
+      required this.shortName,
+      this.prefix = '',
+      this.number = 0,
+      required this.value});
   String id = uuid.v4();
+  int number;
   String name;
   String shortName;
+  String prefix;
   String value;
 }
 
