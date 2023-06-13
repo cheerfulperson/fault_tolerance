@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../components/app_header.dart';
-import 'components/footer_buttons.dart';
+import 'components/header.dart';
 
 class FirstApp extends StatefulWidget {
   const FirstApp({super.key, required this.title});
@@ -28,7 +28,7 @@ class _FirstAppState extends State<FirstApp> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: const BaseAppBar(title: 'Исходные данные'),
+      appBar: AppHeaderBar(nextPage: ''),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
@@ -135,10 +135,6 @@ class _FirstAppState extends State<FirstApp> {
                       ]),
                 )),
             const Spacer(),
-            FooterButtons(
-              nextPage: secondAppRoute,
-              onClickNext: submitForm,
-            ),
           ],
         ),
       ),
