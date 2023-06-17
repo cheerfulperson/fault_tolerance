@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
       routes: {
         homeRoute: (context) => const HomePage(title: 'Главный экран'),
         firstAppRoute: (context) => const FirstApp(title: 'Исходные данные'),
-        firstAppDataRoute: (context) => const DataInputTable(
+        firstAppSecondRoute: (context) => const DataInputTable(
             title: 'Фрагмент результатов ОЭ представлен в таблице'),
       },
     );

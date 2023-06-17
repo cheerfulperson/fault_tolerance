@@ -1,11 +1,10 @@
 import 'package:Method/providers/first_app_provider.dart';
-import 'package:Method/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import '../components/app_header.dart';
 import 'components/header.dart';
+import 'components/nav_bar.dart';
 
 class FirstApp extends StatefulWidget {
   const FirstApp({super.key, required this.title});
@@ -35,6 +34,7 @@ class _FirstAppState extends State<FirstApp> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            FirstAppNavBar(),
             Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: SizedBox(

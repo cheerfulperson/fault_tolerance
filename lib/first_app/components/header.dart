@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class AppHeaderBar extends AppBar {
   AppHeaderBar({super.key, required this.nextPage, this.onClickNext});
@@ -12,40 +13,115 @@ class AppHeaderBar extends AppBar {
 class _AppHeaderBarState extends State<AppHeaderBar> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.all(20.0),
-        child: SizedBox(
-          width: 1020,
+    return Container(
+        decoration: const BoxDecoration(
+            border: Border(
+                bottom: BorderSide(
+                    width: 1.0, color: Color.fromRGBO(195, 195, 195, 1)))),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
           child: Row(
             children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple.shade500,
-                    minimumSize: Size(180.0, 40.0)),
-                onPressed: () {
+              AppHeaderButton(
+                text: 'Главный экран',
+                assetName: 'assets/icons/house-fill.svg',
+                onClick: () {
                   bool canPop = Navigator.canPop(context);
                   if (canPop) {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text('Назад'),
               ),
-              Spacer(),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(minimumSize: Size(180.0, 40.0)),
-                onPressed: () {
-                  if (widget.onClickNext != null) {
-                    widget.onClickNext!(
-                      () => {Navigator.pushNamed(context, widget.nextPage)},
-                    );
-                    return;
+              const SizedBox(
+                width: 12,
+              ),
+              AppHeaderButton(
+                text: 'Сохранить',
+                assetName: 'assets/icons/file-earmark.svg',
+                onClick: () {
+                  bool canPop = Navigator.canPop(context);
+                  if (canPop) {
+                    Navigator.pop(context);
                   }
-                  Navigator.pushNamed(context, widget.nextPage);
                 },
-                child: const Text('Далее'),
-              )
+              ),
+              const SizedBox(
+                width: 12,
+              ),
+              AppHeaderButton(
+                text: 'Сохранить как',
+                assetName: 'assets/icons/download.svg',
+                onClick: () {
+                  bool canPop = Navigator.canPop(context);
+                  if (canPop) {
+                    Navigator.pop(context);
+                  }
+                },
+              ),
+              const SizedBox(
+                width: 12,
+              ),
+              AppHeaderButton(
+                text: 'Открыть сохранение',
+                assetName: 'assets/icons/folder2-open.svg',
+                onClick: () {
+                  bool canPop = Navigator.canPop(context);
+                  if (canPop) {
+                    Navigator.pop(context);
+                  }
+                },
+              ),
+              const SizedBox(
+                width: 12,
+              ),
+              AppHeaderButton(
+                text: 'Отменить последнее действие',
+                assetName: 'assets/icons/arrow-90deg-left.svg',
+                onClick: () {
+                  bool canPop = Navigator.canPop(context);
+                  if (canPop) {
+                    Navigator.pop(context);
+                  }
+                },
+              ),
             ],
           ),
         ));
+  }
+}
+
+class AppHeaderButton extends StatelessWidget {
+  AppHeaderButton(
+      {super.key, required this.text, this.onClick, required this.assetName});
+  final String text;
+  final String assetName;
+  void Function()? onClick;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      style: TextButton.styleFrom(
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+          minimumSize: const Size(120.0, 36.0),
+          side: BorderSide(width: 1.0, color: Color.fromARGB(255, 0, 0, 0))),
+      onPressed: onClick,
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SvgPicture.asset(assetName,
+                colorFilter: ColorFilter.mode(
+                    Color.fromARGB(255, 0, 0, 0), BlendMode.srcIn),
+                semanticsLabel: 'A red up arrow'),
+            const SizedBox(
+              width: 12,
+            ),
+            Text(
+              text,
+              style: const TextStyle(
+                  color: Color.fromARGB(255, 36, 36, 36), fontSize: 16),
+            )
+          ]),
+    );
   }
 }
