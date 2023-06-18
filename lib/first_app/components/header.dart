@@ -1,3 +1,4 @@
+import 'package:Method/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -28,7 +29,7 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
                 onClick: () {
                   bool canPop = Navigator.canPop(context);
                   if (canPop) {
-                    Navigator.pop(context);
+                    Navigator.pushNamed(context, homeRoute);
                   }
                 },
               ),

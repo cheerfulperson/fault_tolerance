@@ -7,6 +7,7 @@ class FirstAppNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         height: 64,
+        constraints: BoxConstraints(maxHeight: 64),
         decoration: const BoxDecoration(
             border: Border(
                 bottom: BorderSide(
@@ -22,7 +23,9 @@ class FirstAppNavBar extends StatelessWidget {
                     NavBarButton(
                       text: 'Исходные данные',
                       assetName: 'assets/icons/file-earmark-bar-graph.svg',
-                      onClick: () {},
+                      onClick: () {
+                        Navigator.pushNamed(context, firstAppRoute);
+                      },
                       active: ModalRoute.of(context)?.settings.name ==
                           firstAppRoute,
                     ),
@@ -30,7 +33,9 @@ class FirstAppNavBar extends StatelessWidget {
                     NavBarButton(
                       text: 'Фрагмент результатов ОЭ',
                       assetName: 'assets/icons/file-earmark-spreadsheet.svg',
-                      onClick: () {},
+                      onClick: () {
+                        Navigator.pushNamed(context, firstAppSecondRoute);
+                      },
                       active: ModalRoute.of(context)?.settings.name ==
                           firstAppSecondRoute,
                     )

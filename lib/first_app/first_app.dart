@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../utils/debounce.dart';
 import 'components/header.dart';
 import 'components/nav_bar.dart';
 
@@ -25,7 +26,8 @@ class _FirstAppState extends State<FirstApp> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-
+    final _nameDebouncer = Debouncer(milliseconds: 5000);
+    final _countDebouncer = Debouncer(milliseconds: 3000);
     return Scaffold(
       appBar: AppHeaderBar(nextPage: ''),
       body: Center(
@@ -50,77 +52,155 @@ class _FirstAppState extends State<FirstApp> {
                         Form(
                             key: _formKey,
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                TextFormField(
-                                  initialValue: (context
-                                      .watch<FirstAppProvider>()
-                                      .deviceName),
-                                  keyboardType: TextInputType.text,
-                                  validator: (String? value) {
-                                    if (value == null ||
-                                        value.isEmpty ||
-                                        value.length < 2) {
-                                      return 'Пожалуйста введите правильное название';
-                                    }
-                                    return null;
-                                  },
-                                  onChanged: (value) => context
-                                      .read<FirstAppProvider>()
-                                      .setDeviceName(value),
-                                  decoration: const InputDecoration(
-                                      border: UnderlineInputBorder(),
-                                      labelText:
-                                          'Навзание полупроводникового приборы',
-                                      labelStyle: TextStyle(fontSize: 20)),
-                                ),
+                                Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Название прибора, который будет учавствовать в эксперементе:',
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
+                                      SizedBox(
+                                          width: 720,
+                                          child: TextFormField(
+                                            initialValue: (context
+                                                .watch<FirstAppProvider>()
+                                                .deviceName),
+                                            keyboardType: TextInputType.text,
+                                            validator: (String? value) {
+                                              if (value == null ||
+                                                  value.isEmpty ||
+                                                  value.length < 2) {
+                                                return 'Пожалуйста введите правильное название';
+                                              }
+                                              return null;
+                                            },
+                                            onChanged: (value) {
+                                              _nameDebouncer.run(() {
+                                                context
+                                                    .read<FirstAppProvider>()
+                                                    .setDeviceName(value);
+                                              });
+                                            },
+                                            style: TextStyle(
+                                                fontSize: 20, height: 1),
+                                            decoration: const InputDecoration(
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 0),
+                                                hoverColor: Color(0xFF455A64),
+                                                border: OutlineInputBorder(
+                                                    gapPadding: 2),
+                                                hintText: 'КТ872А',
+                                                hintStyle: TextStyle(
+                                                    color: Colors.black26),
+                                                labelStyle:
+                                                    TextStyle(fontSize: 20)),
+                                          ))
+                                    ]),
                                 const SizedBox(
                                   height: 16,
                                 ),
-                                TextFormField(
-                                    initialValue: (context
-                                            .watch<FirstAppProvider>()
-                                            .deviceCount)
-                                        .toString(),
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                      NumericalRangeFormatter(
-                                          max: 10000, min: 0)
-                                    ],
-                                    keyboardType: TextInputType.number,
-                                    validator: (String? value) {
-                                      if (value == null ||
-                                          value.isEmpty ||
-                                          value == '0') {
-                                        return 'Пожалуйста введите число от 1 до 10000';
-                                      }
-                                      return null;
-                                    },
-                                    onChanged: (value) {
-                                      try {
-                                        context
-                                            .read<FirstAppProvider>()
-                                            .setDevicesCount(value != ''
-                                                ? int.parse(value)
-                                                : 0);
-                                      } catch (e) {
-                                        _formKey.currentState!.validate();
-                                      }
-                                    },
-                                    decoration: const InputDecoration(
-                                        border: UnderlineInputBorder(),
-                                        labelText: 'Количество экземпляров',
-                                        labelStyle: TextStyle(fontSize: 20))),
+                                Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Объём обучающей выборки был определён в количестве (экземпляров):',
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
+                                      SizedBox(
+                                          width: 720,
+                                          child: TextFormField(
+                                            initialValue: (context
+                                                    .watch<FirstAppProvider>()
+                                                    .deviceCount)
+                                                .toString(),
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly,
+                                              NumericalRangeFormatter(
+                                                  max: 10000, min: 0)
+                                            ],
+                                            keyboardType: TextInputType.number,
+                                            validator: (String? value) {
+                                              if (value == null ||
+                                                  value.isEmpty ||
+                                                  value == '0') {
+                                                return 'Пожалуйста введите число от 1 до 10000';
+                                              }
+                                              return null;
+                                            },
+                                            onChanged: (value) {
+                                              _countDebouncer.run(() {
+                                                try {
+                                                  context
+                                                      .read<FirstAppProvider>()
+                                                      .setDevicesCount(
+                                                          value != ''
+                                                              ? int.parse(value)
+                                                              : 0);
+                                                } catch (e) {
+                                                  _formKey.currentState!
+                                                      .validate();
+                                                }
+                                              });
+                                            },
+                                            style: const TextStyle(
+                                              fontSize: 20,
+                                              height: 1,
+                                            ),
+                                            decoration: const InputDecoration(
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 0),
+                                                hoverColor: Color(0xFF455A64),
+                                                border: OutlineInputBorder(
+                                                    gapPadding: 2),
+                                                hintText: '100',
+                                                hintStyle: TextStyle(
+                                                    color: Colors.black26),
+                                                labelStyle:
+                                                    TextStyle(fontSize: 20)),
+                                          )),
+                                    ]),
                                 const SizedBox(
                                   height: 16,
                                 ),
                                 const Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                      'Параметры рабочего режима транзисторов',
+                                      'Таблица 1 – Параметры рабочего режима транзисторов',
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
                                         fontSize: 20,
                                       )),
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: SizedBox(
+                                      width: 720,
+                                      child: Text(
+                                          'Параметры рабочего режима транзисторов типа ${(context.watch<FirstAppProvider>().deviceName ?? '')}, относительно которых определён режим проведения ускоренных испытаний.',
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                          ))),
                                 ),
                                 const SizedBox(
                                   height: 4,
@@ -221,7 +301,7 @@ class _TableInputRowState extends State<TableInputRow> {
   void handleChange(String value) {
     context
         .read<FirstAppProvider>()
-        .updateDeviceParam(id: widget.id, name:value);
+        .updateDeviceParam(id: widget.id, name: value);
   }
 
   @override
@@ -264,6 +344,9 @@ class DialogAddParam extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.black,
+      ),
       onPressed: () => showDialog<String>(
           context: context,
           builder: (BuildContext context) => Dialog(
