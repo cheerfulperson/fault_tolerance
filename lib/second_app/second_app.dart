@@ -124,7 +124,7 @@ class _SecondAppState extends State<SecondApp> {
                             },
                             decoration: const InputDecoration(
                               border: UnderlineInputBorder(),
-                              labelText: 'Введите объем обучающей выборки n',
+                              labelText: 'Ввведите объем обучающей выборки n',
                               labelStyle: TextStyle(fontSize: 20),
                             ),
                             onFieldSubmitted: (value) {
