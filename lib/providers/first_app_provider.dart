@@ -9,15 +9,15 @@ class DeviceParams {
   DeviceParams(
       {required this.name,
       required this.shortName,
-      this.prefix = '',
+      this.shortNameDescription = '',
       this.number = 0,
-      required this.value});
+      required this.unit});
   String id = uuid.v4();
   int number;
   String name;
   String shortName;
-  String prefix;
-  String value;
+  String shortNameDescription;
+  String unit;
 }
 
 class FirstAppState {
@@ -56,18 +56,23 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
   void addDeviceParam({
     required String name,
     required String shortName,
-    required String value,
+    required String shortNameDescription,
+    required String unit,
   }) {
-    _deviceParams
-        .add(DeviceParams(name: name, shortName: shortName, value: value));
+    _deviceParams.add(DeviceParams(
+        name: name,
+        shortName: shortName,
+        unit: unit,
+        shortNameDescription: shortNameDescription));
     notifyListeners();
   }
 
   void updateDeviceParam({
     required String id,
-    String? name,
-    String? shortName,
-    String? value,
+    required String name,
+    required String shortName,
+    required String shortNameDescription,
+    required String unit,
   }) {
     _deviceParams.forEach((el) => {
           if (el.id == id)
@@ -76,7 +81,11 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
               el.shortName = (shortName == null || shortName.isEmpty)
                   ? el.shortName
                   : shortName,
-              el.value = (value == null || value.isEmpty) ? el.value : value
+              el.unit = (unit == null || unit.isEmpty) ? el.unit : unit,
+              el.shortNameDescription =
+                  (shortNameDescription == null || shortNameDescription.isEmpty)
+                      ? el.shortNameDescription
+                      : shortNameDescription
             }
         });
     notifyListeners();
