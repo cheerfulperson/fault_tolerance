@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../utils/debounce.dart';
 import 'components/header.dart';
 import 'components/nav_bar.dart';
+import './first_app.utils.dart';
 
 class FirstApp extends StatefulWidget {
   const FirstApp({super.key, required this.title});
@@ -182,7 +183,7 @@ class _FirstAppState extends State<FirstApp> {
                                 const Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                      'Таблица 1 – Параметры рабочего режима транзисторов',
+                                      'Таблица 1 – Информативные параметры ППП',
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
                                         fontSize: 20,
@@ -196,7 +197,7 @@ class _FirstAppState extends State<FirstApp> {
                                   child: SizedBox(
                                       width: 720,
                                       child: Text(
-                                          'Параметры рабочего режима транзисторов типа ${(context.watch<FirstAppProvider>().deviceName ?? '')}, относительно которых определён режим проведения ускоренных испытаний.',
+                                          'В случае, если информативные параметры ППП ${(context.watch<FirstAppProvider>().deviceName ?? '')} интересующего типа известны изначально, то рекомендуемое их число k выбирать от 2-х до 4-х.',
                                           textAlign: TextAlign.left,
                                           style: TextStyle(
                                             fontSize: 14,
@@ -205,11 +206,20 @@ class _FirstAppState extends State<FirstApp> {
                                 const SizedBox(
                                   height: 4,
                                 ),
-                                const TableWithParams(),
+                                TableWithParams(),
                                 const SizedBox(
                                   height: 8,
                                 ),
-                                DialogAddParam()
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.black,
+                                    ),
+                                    onPressed: () => showDialog<String>(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              DialogAddParam(),
+                                        ),
+                                    child: const Text('Добавить параметр +'))
                               ],
                             )),
                       ]),
@@ -225,7 +235,8 @@ class _FirstAppState extends State<FirstApp> {
 enum FieldKey { name, shortName, value }
 
 class TableWithParams extends StatelessWidget {
-  const TableWithParams({super.key});
+  TableWithParams({super.key});
+  int index = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -234,7 +245,7 @@ class TableWithParams extends StatelessWidget {
       columnWidths: const <int, TableColumnWidth>{
         0: FlexColumnWidth(),
         1: FixedColumnWidth(180),
-        2: FixedColumnWidth(180),
+        2: FixedColumnWidth(80),
       },
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       children: <TableRow>[
@@ -242,41 +253,97 @@ class TableWithParams extends StatelessWidget {
           children: <Widget>[
             Container(
               height: 32,
+              padding: EdgeInsets.symmetric(horizontal: 8),
               child: const Text('Название параметра',
-                  textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
             ),
             Container(
               height: 32,
+              padding: EdgeInsets.symmetric(horizontal: 8),
               child: const Text('Обозначение',
-                  textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
             ),
             Container(
               height: 32,
-              child: const Text('Величина',
-                  textAlign: TextAlign.center,
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: const Text('',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
             ),
           ],
         ),
-        ...context.watch<FirstAppProvider>().deviceParams.map<TableRow>(
-              (param) => TableRow(
-                children: <Widget>[
-                  TableInputRow(
-                      id: param.id, value: param.name, fieldKey: FieldKey.name),
-                  TableInputRow(
-                      id: param.id,
-                      value: param.shortName,
-                      fieldKey: FieldKey.shortName),
-                  TableInputRow(
-                      id: param.id,
-                      value: param.value,
-                      fieldKey: FieldKey.value),
-                ],
+        ...context
+            .watch<FirstAppProvider>()
+            .deviceParams
+            .map<TableRow>((param) {
+          index += 1;
+          return TableRow(
+            children: <Widget>[
+              TableInputRow(
+                id: param.id,
+                name: '${index.toString()}. ${param.name}',
               ),
-            )
+              TableInputRow(
+                  id: param.id,
+                  shortName: param.shortName,
+                  shortDescription: param.shortNameDescription,
+                  unit: param.unit),
+              RowActions(param: param),
+            ],
+          );
+        })
       ],
+    );
+  }
+}
+
+class RowActions extends StatelessWidget {
+  RowActions({
+    super.key,
+    required this.param,
+  });
+
+  final DeviceParams param;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 32,
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      child:
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+        IconButton(
+          onPressed: () => showDialog<String>(
+              context: context,
+              builder: (BuildContext context) => DialogAddParam(
+                    param: this.param,
+                  )),
+          icon: Icon(
+            Icons.edit,
+            size: 24,
+          ),
+          iconSize: 24,
+          style: IconButton.styleFrom(maximumSize: Size(24, 24)),
+          padding: EdgeInsets.all(0),
+          constraints: BoxConstraints(maxWidth: 24, maxHeight: 24),
+        ),
+        SizedBox(width: 16),
+        IconButton(
+          onPressed: () {
+            context.read<FirstAppProvider>().removeDeviceParam(
+                  id: this.param?.id ?? '',
+                );
+          },
+          icon: Icon(
+            Icons.delete,
+            size: 24,
+            color: Colors.red,
+          ),
+          iconSize: 24,
+          style: IconButton.styleFrom(maximumSize: Size(24, 24)),
+          padding: EdgeInsets.all(0),
+          constraints: BoxConstraints(maxWidth: 24, maxHeight: 24),
+        )
+      ]),
     );
   }
 }
@@ -285,100 +352,143 @@ class TableInputRow extends StatefulWidget {
   TableInputRow({
     super.key,
     required this.id,
-    this.value = '',
-    this.fieldKey = FieldKey.name,
+    this.name = '',
+    this.shortName = '',
+    this.shortDescription = '',
+    this.unit = '',
   });
 
   String id;
-  String value;
-  FieldKey fieldKey;
+  String name;
+  String shortName;
+  String shortDescription;
+  String unit;
 
   @override
   State<TableInputRow> createState() => _TableInputRowState();
 }
 
 class _TableInputRowState extends State<TableInputRow> {
-  void handleChange(String value) {
-    context
-        .read<FirstAppProvider>()
-        .updateDeviceParam(id: widget.id, name: value);
-  }
-
   @override
   Widget build(BuildContext context) {
-    String v = widget.value;
     return Container(
       height: 48,
       alignment: Alignment.center,
       child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: TextFormField(
-            initialValue: widget.value,
-            keyboardType: TextInputType.text,
-            decoration: const InputDecoration.collapsed(
-                border: InputBorder.none, hintText: ''),
-            validator: (String? value) {
-              if (value == null || value.isEmpty || value.length < 2) {
-                return '';
-              }
-              return null;
-            },
-            onEditingComplete: () {
-              handleChange(v);
-            },
-            onChanged: (newValue) {
-              v = newValue;
-            },
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                widget.name,
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400,
+                    fontStyle: FontStyle.italic),
+              ),
+              Text(
+                widget.shortName,
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'Consolas',
+                    fontStyle: FontStyle.italic),
+              ),
+              Text(
+                widget.shortDescription,
+                style: TextStyle(
+                    fontSize: 12,
+                    fontFamily: 'Consolas',
+                    fontStyle: FontStyle.italic),
+              ),
+              Text(widget.unit.isEmpty ? '' : ', ${widget.unit}',
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Consolas',
+                      fontStyle: FontStyle.italic))
+            ],
           )),
     );
   }
 }
 
-class DialogAddParam extends StatelessWidget {
-  DialogAddParam({super.key});
+class DialogAddParam extends StatefulWidget {
+  DialogAddParam({super.key, this.param});
+  final DeviceParams? param;
+  @override
+  State<DialogAddParam> createState() => _DialogAddParamState();
+}
+
+class _DialogAddParamState extends State<DialogAddParam> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final nameController = TextEditingController();
-  final shortNameController = TextEditingController();
-  final valueController = TextEditingController();
+
+  late TextEditingController _nameController;
+
+  late TextEditingController _shortNameDescriptionController;
+
+  String _shortName = allSymbols[8];
+
+  String _paramUnit = unitsOfMeasurement[8];
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.param?.name ?? '');
+    _shortNameDescriptionController =
+        TextEditingController(text: widget.param?.shortNameDescription ?? '');
+    setState(() {
+      _shortName = widget.param?.shortName ?? allSymbols[8];
+      _paramUnit = widget.param?.unit ?? unitsOfMeasurement[8];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.black,
-      ),
-      onPressed: () => showDialog<String>(
-          context: context,
-          builder: (BuildContext context) => Dialog(
-              backgroundColor: Colors.transparent,
-              insetPadding: const EdgeInsets.all(16),
-              child: Stack(
-                alignment: Alignment.center,
+    return Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(16),
+        child: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Container(
+              width: 720,
+              height: 400,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4), color: Colors.white),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Container(
-                    width: 720,
-                    height: 400,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.white),
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Form(
-                            key: _formKey,
-                            child: Column(
+                  Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          Title(
+                              color: Colors.black,
+                              child: const Text(
+                                'Добавление информативного параметра',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              )),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Title(
-                                    color: Colors.black,
-                                    child: const Text(
-                                      'Заполните все поля',
-                                      style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.w600),
-                                    )),
+                                const Text(
+                                  'Полное название информативного параметра рабочего режима:',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
                                 TextFormField(
-                                  controller: nameController,
+                                  controller: _nameController,
                                   keyboardType: TextInputType.text,
                                   validator: (String? value) {
                                     if (value == null ||
@@ -388,88 +498,224 @@ class DialogAddParam extends StatelessWidget {
                                     }
                                     return null;
                                   },
+                                  style: TextStyle(fontSize: 20, height: 1),
                                   decoration: const InputDecoration(
-                                      border: UnderlineInputBorder(),
-                                      labelText:
-                                          'Название параметра рабочего режима',
+                                      contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 0),
+                                      hoverColor: Color(0xFF455A64),
+                                      border: OutlineInputBorder(gapPadding: 2),
+                                      hintText:
+                                          'Статический коэффициент передачи тока',
+                                      hintStyle:
+                                          TextStyle(color: Colors.black26),
                                       labelStyle: TextStyle(fontSize: 20)),
-                                ),
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                                TextFormField(
-                                  controller: shortNameController,
-                                  keyboardType: TextInputType.text,
-                                  validator: (String? value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Пожалуйста введите правильное обозначение';
-                                    }
-                                    return null;
-                                  },
-                                  decoration: const InputDecoration(
-                                      border: UnderlineInputBorder(),
-                                      labelText: 'Обозначение параметра',
-                                      labelStyle: TextStyle(fontSize: 20)),
-                                ),
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                                TextFormField(
-                                  controller: valueController,
-                                  keyboardType: TextInputType.text,
-                                  validator: (String? value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Пожалуйста введите правильную величину';
-                                    }
-                                    return null;
-                                  },
-                                  decoration: const InputDecoration(
-                                      border: UnderlineInputBorder(),
-                                      labelText: 'Величина параметра',
-                                      labelStyle: TextStyle(fontSize: 20)),
-                                ),
-                              ],
-                            )),
-                        const Spacer(),
-                        Center(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.pop(context, 'Cancel'),
-                                child: const Text('Отмена'),
-                              ),
-                              const SizedBox(
-                                width: 120,
-                              ),
-                              ElevatedButton(
-                                onPressed: () => {
-                                  if (_formKey.currentState!.validate())
-                                    {
-                                      context
-                                          .read<FirstAppProvider>()
-                                          .addDeviceParam(
-                                              name: nameController.text,
-                                              shortName:
-                                                  shortNameController.text,
-                                              value: valueController.text),
-                                      Navigator.pop(context, 'OK'),
-                                    }
-                                },
-                                child: const Text('Добавить'),
-                              ),
-                            ],
+                                )
+                              ]),
+                          const SizedBox(
+                            height: 16,
                           ),
-                        )
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Обозначения величины:',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    const SizedBox(
+                                      height: 4,
+                                    ),
+                                    SizedBox(
+                                        width: 340,
+                                        child: DropdownButtonFormField<String>(
+                                          value: _shortName,
+                                          items: allSymbols
+                                              .map<DropdownMenuItem<String>>(
+                                                  (String value) =>
+                                                      DropdownMenuItem<String>(
+                                                        child: Text(value,
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black)),
+                                                        value: value,
+                                                        alignment:
+                                                            Alignment.center,
+                                                      ))
+                                              .toList(growable: false),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              if (value != null) {
+                                                _shortName = value;
+                                              }
+                                            });
+                                          },
+                                          style: TextStyle(
+                                              fontSize: 20, height: 1),
+                                          icon: Icon(Icons.arrow_drop_down),
+                                          decoration: const InputDecoration(
+                                              floatingLabelAlignment:
+                                                  FloatingLabelAlignment.center,
+                                              contentPadding:
+                                                  EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 0),
+                                              hoverColor: Color(0xFF455A64),
+                                              border: OutlineInputBorder(
+                                                  gapPadding: 2),
+                                              hintStyle: TextStyle(
+                                                  color: Colors.black26),
+                                              labelStyle:
+                                                  TextStyle(fontSize: 20)),
+                                        ))
+                                  ]),
+                              Spacer(),
+                              Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Описание обозначения величины:',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    const SizedBox(
+                                      height: 4,
+                                    ),
+                                    SizedBox(
+                                        width: 320,
+                                        child: TextFormField(
+                                          controller:
+                                              _shortNameDescriptionController,
+                                          keyboardType: TextInputType.text,
+                                          style: TextStyle(
+                                              fontSize: 20, height: 1),
+                                          decoration: const InputDecoration(
+                                              contentPadding:
+                                                  EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 0),
+                                              hoverColor: Color(0xFF455A64),
+                                              border: OutlineInputBorder(
+                                                  gapPadding: 2),
+                                              hintText: 'кб.',
+                                              hintStyle: TextStyle(
+                                                  color: Colors.black26),
+                                              labelStyle:
+                                                  TextStyle(fontSize: 20)),
+                                        ))
+                                  ]),
+                            ],
+                          )
+                        ],
+                      )),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Единица измерений:',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(
+                          height: 4,
+                        ),
+                        SizedBox(
+                            width: 340,
+                            child: DropdownButtonFormField(
+                              value: _paramUnit,
+                              items: unitsOfMeasurement
+                                  .map<DropdownMenuItem<String>>(
+                                      (String value) =>
+                                          DropdownMenuItem<String>(
+                                            child: Text(value,
+                                                style: TextStyle(
+                                                    color: Colors.black)),
+                                            value: value,
+                                            alignment: Alignment.center,
+                                          ))
+                                  .toList(growable: false),
+                              onChanged: (value) {
+                                setState(() {
+                                  if (value != null) {
+                                    _paramUnit = value;
+                                  }
+                                });
+                              },
+                              style: TextStyle(fontSize: 20, height: 1),
+                              icon: Icon(Icons.arrow_drop_down),
+                              decoration: const InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 0),
+                                  hoverColor: Color(0xFF455A64),
+                                  border: OutlineInputBorder(gapPadding: 2),
+                                  hintText: 'В',
+                                  hintStyle: TextStyle(color: Colors.black26),
+                                  labelStyle: TextStyle(fontSize: 20)),
+                            ))
+                      ]),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  const Spacer(),
+                  Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'Cancel'),
+                          child: const Text('Отмена',
+                              style: TextStyle(color: Colors.black)),
+                          style: TextButton.styleFrom(
+                              side: BorderSide(color: Colors.black, width: 1),
+                              minimumSize: Size(240, 48)),
+                        ),
+                        const SizedBox(width: 48),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              if (widget.param?.id != null) {
+                                context
+                                    .read<FirstAppProvider>()
+                                    .updateDeviceParam(
+                                        id: widget.param?.id ?? '',
+                                        name: _nameController.text,
+                                        shortName: _shortName,
+                                        shortNameDescription:
+                                            _shortNameDescriptionController
+                                                .text,
+                                        unit: _paramUnit);
+                              } else {
+                                context.read<FirstAppProvider>().addDeviceParam(
+                                    name: _nameController.text,
+                                    shortName: _shortName,
+                                    shortNameDescription:
+                                        _shortNameDescriptionController.text,
+                                    unit: _paramUnit);
+                              }
+                              Navigator.pop(context, 'OK');
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black,
+                              minimumSize: Size(240, 48)),
+                          child: Text(widget.param?.id != null
+                              ? 'Сохранить'
+                              : 'Добавить'),
+                        ),
                       ],
                     ),
-                  ),
+                  )
                 ],
-              ))),
-      child: const Text('Добавить параметр +'),
-    );
+              ),
+            ),
+          ],
+        ));
   }
 }
 
