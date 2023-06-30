@@ -1,24 +1,40 @@
 import 'package:flutter/material.dart';
+import 'components/header.dart';
+import '../routes.dart';
 
-class SecondApp extends StatefulWidget {
-  const SecondApp({Key? key, required this.title}) : super(key: key);
+void _navigateToTwoPage(BuildContext context) {
+  Navigator.pushNamed(
+    context,
+    secondAppDatafields,
+  );
+}
+
+class SecondAppDataFieldsOnePage extends StatefulWidget {
+  const SecondAppDataFieldsOnePage({Key? key, required this.title})
+      : super(key: key);
 
   final String title;
 
   @override
-  _SecondAppState createState() => _SecondAppState();
+  _SecondAppDataFieldsOnePageState createState() =>
+      _SecondAppDataFieldsOnePageState();
 }
 
-class _SecondAppState extends State<SecondApp> {
+class _SecondAppDataFieldsOnePageState
+    extends State<SecondAppDataFieldsOnePage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String trainingSetVolume = '';
-  String validationSetVolume = '';
+  String trainingSetVolume = ''; // множество n
+  String validationSetVolume = ''; // множество m
   String btName = '';
-  String lFactorPoints = '';
+  String lFactorPoints = ''; // количество точек имитационного фактора
+  String result = '';
+
   FocusNode trainingSetFocusNode = FocusNode();
   FocusNode validationSetFocusNode = FocusNode();
   FocusNode btNameFocusNode = FocusNode();
   FocusNode lFactorPointsFocusNode = FocusNode();
+  FocusNode mValueFocusNode = FocusNode();
+
   List<List<String>> tableData = [];
   List<List<String>> validationTableData = [];
 
@@ -34,12 +50,22 @@ class _SecondAppState extends State<SecondApp> {
     }
   }
 
+//Функция, которая должна рассчитывать формулу (2) для экземпляра из множества m (переменная trainingSetFocusNode). Сейчас она  рассчитывает понос, это для примера
+  void calculateResult(String value) {
+    setState(() {
+      int mValue = int.tryParse(value) ?? 0;
+      double calculation = mValue * 2;
+      result = calculation.toStringAsFixed(2);
+    });
+  }
+
   @override
   void dispose() {
     trainingSetFocusNode.dispose();
     validationSetFocusNode.dispose();
     btNameFocusNode.dispose();
     lFactorPointsFocusNode.dispose();
+    mValueFocusNode.dispose();
     super.dispose();
   }
 
@@ -62,10 +88,9 @@ class _SecondAppState extends State<SecondApp> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
+      appBar: AppHeaderBar(nextPage: ''),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -82,114 +107,177 @@ class _SecondAppState extends State<SecondApp> {
                     Form(
                       key: _formKey,
                       child: Column(
+                        // Помогло
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextFormField(
-                            focusNode: btNameFocusNode,
-                            initialValue: btName,
-                            keyboardType: TextInputType.text,
-                            onChanged: (value) {
-                              setState(() {
-                                btName = value;
-                              });
-                            },
-                            decoration: const InputDecoration(
-                              border: UnderlineInputBorder(),
-                              labelText: 'Название БТ',
-                              labelStyle: TextStyle(fontSize: 20),
-                            ),
-                            onFieldSubmitted: (value) {
-                              FocusScope.of(context)
-                                  .requestFocus(trainingSetFocusNode);
-                            },
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Название прибора, который будет учавствовать в эксперементе:',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              SizedBox(
+                                width: 720,
+                                child: TextFormField(
+                                  focusNode: btNameFocusNode,
+                                  initialValue: btName,
+                                  keyboardType: TextInputType.text,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      btName = value;
+                                    });
+                                  },
+                                  style: TextStyle(fontSize: 20, height: 1),
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(gapPadding: 2),
+                                    hintText: 'КТ872А',
+                                    hintStyle: TextStyle(fontSize: 20),
+                                    labelStyle: TextStyle(fontSize: 20),
+                                  ),
+                                  onFieldSubmitted: (value) {
+                                    FocusScope.of(context)
+                                        .requestFocus(trainingSetFocusNode);
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(
                             height: 16,
                           ),
-                          TextFormField(
-                            focusNode: trainingSetFocusNode,
-                            initialValue: trainingSetVolume,
-                            keyboardType: TextInputType.number,
-                            validator: (String? value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  value == '0') {
-                                return 'Пожалуйста введите число больше нуля';
-                              }
-                              return null;
-                            },
-                            onChanged: (value) {
-                              setState(() {
-                                trainingSetVolume = value;
-                              });
-                            },
-                            decoration: const InputDecoration(
-                              border: UnderlineInputBorder(),
-                              labelText: 'Ввведите объем обучающей выборки n',
-                              labelStyle: TextStyle(fontSize: 20),
-                            ),
-                            onFieldSubmitted: (value) {
-                              submitForm('training');
-                            },
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Объём обучающей выборки n:',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              const SizedBox(height: 4),
+                              SizedBox(
+                                width: 720,
+                                child: TextFormField(
+                                  focusNode: trainingSetFocusNode,
+                                  initialValue: trainingSetVolume,
+                                  keyboardType: TextInputType.number,
+                                  validator: (String? value) {
+                                    if (value == null ||
+                                        value.isEmpty ||
+                                        value == '0') {
+                                      return 'Пожалуйста введите число больше нуля';
+                                    }
+                                    return null;
+                                  },
+                                  onChanged: (value) {
+                                    setState(() {
+                                      trainingSetVolume = value;
+                                    });
+                                  },
+                                  style: TextStyle(fontSize: 20, height: 1),
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(gapPadding: 2),
+                                    hintText: '10',
+                                    hintStyle: TextStyle(fontSize: 20),
+                                    labelStyle: TextStyle(fontSize: 2),
+                                  ),
+                                  onFieldSubmitted: (value) {
+                                    submitForm('training');
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(
                             height: 16,
                           ),
-                          TextFormField(
-                            focusNode: validationSetFocusNode,
-                            initialValue: validationSetVolume,
-                            keyboardType: TextInputType.number,
-                            validator: (String? value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  value == '0') {
-                                return 'Пожалуйста введите число больше нуля';
-                              }
-                              return null;
-                            },
-                            onChanged: (value) {
-                              setState(() {
-                                validationSetVolume = value;
-                              });
-                            },
-                            decoration: const InputDecoration(
-                              border: UnderlineInputBorder(),
-                              labelText: 'Введите объем контрольной выборки m',
-                              labelStyle: TextStyle(fontSize: 20),
-                            ),
-                            onFieldSubmitted: (value) {
-                              setState(() {
-                                validationTableData = List.generate(
-                                  int.tryParse(value) ?? 0,
-                                  (_) => List<String>.filled(2, ''),
-                                );
-                              });
-                              submitForm('validation');
-                            },
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Объём контрольной выборки m:',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              SizedBox(
+                                width: 720,
+                                child: TextFormField(
+                                  focusNode: validationSetFocusNode,
+                                  initialValue: validationSetVolume,
+                                  keyboardType: TextInputType.number,
+                                  validator: (String? value) {
+                                    if (value == null ||
+                                        value.isEmpty ||
+                                        value == '0') {
+                                      return 'Пожалуйста введите число больше нуля';
+                                    }
+                                    return null;
+                                  },
+                                  onChanged: (value) {
+                                    setState(() {
+                                      validationSetVolume = value;
+                                    });
+                                  },
+                                  style: TextStyle(fontSize: 20, height: 1),
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(gapPadding: 2),
+                                    hintText: '10',
+                                    hintStyle: TextStyle(fontSize: 20),
+                                    labelStyle: TextStyle(fontSize: 2),
+                                  ),
+                                  onFieldSubmitted: (value) {
+                                    setState(() {
+                                      validationTableData = List.generate(
+                                        int.tryParse(value) ?? 0,
+                                        (_) => List<String>.filled(2, ''),
+                                      );
+                                    });
+                                    submitForm('validation');
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(
                             height: 16,
                           ),
-                          TextFormField(
-                            focusNode: lFactorPointsFocusNode,
-                            initialValue: lFactorPoints,
-                            keyboardType: TextInputType.number,
-                            onChanged: (value) {
-                              setState(() {
-                                lFactorPoints = value;
-                              });
-                            },
-                            decoration: const InputDecoration(
-                              border: UnderlineInputBorder(),
-                              labelText:
-                                  'Количество точек имитационного фактора l',
-                              labelStyle: TextStyle(fontSize: 20),
-                            ),
-                            onFieldSubmitted: (value) {
-                              submitForm('lFactor');
-                            },
-                          ),
-                          const SizedBox(
-                            height: 16,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Количество точек имитационного фактора l:',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              const SizedBox(height: 4),
+                              SizedBox(
+                                width: 720,
+                                child: TextFormField(
+                                  focusNode: lFactorPointsFocusNode,
+                                  initialValue: lFactorPoints,
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      lFactorPoints = value;
+                                    });
+                                  },
+                                  style: TextStyle(fontSize: 20, height: 1),
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(gapPadding: 2),
+                                    hintText: '5',
+                                    hintStyle: TextStyle(fontSize: 20),
+                                    labelStyle: TextStyle(fontSize: 2),
+                                  ),
+                                  onFieldSubmitted: (value) {
+                                    submitForm('lFactor');
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -199,13 +287,14 @@ class _SecondAppState extends State<SecondApp> {
                     ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Зависимость параметра P i-го экземпляра объединенной выборки от тока коллектора Ik',
+                          'Таблица 1 - Зависимость параметра P i-го экземпляра объединенной выборки от тока коллектора Ik',
+                          textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontSize: 20,
                             fontWeight: FontWeight.bold,
+                            fontSize: 20,
                           ),
                         ),
                         SizedBox(
@@ -213,8 +302,11 @@ class _SecondAppState extends State<SecondApp> {
                         ),
                       ],
                     ),
-                    Table(
+                    Container(
+                        child: Table(
                       border: TableBorder.all(),
+                      defaultVerticalAlignment:
+                          TableCellVerticalAlignment.middle,
                       children: [
                         TableRow(
                           children: [
@@ -223,8 +315,10 @@ class _SecondAppState extends State<SecondApp> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
                                   '№ экземпляра объединенной выборки',
-                                  style: const TextStyle(
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
                                     fontWeight: FontWeight.bold,
+                                    fontSize: 15,
                                   ),
                                 ),
                               ),
@@ -233,21 +327,24 @@ class _SecondAppState extends State<SecondApp> {
                               TableCell(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: TextFormField(
-                                    onChanged: (value) {
-                                      setState(() {
-                                        if (i - 1 < tableData[0].length) {
-                                          tableData[0][i - 1] = value;
-                                        }
-                                      });
-                                    },
-                                    initialValue: tableData.isNotEmpty
-                                        ? tableData[0][i - 1]
-                                        : '',
-                                    keyboardType: TextInputType.number,
-                                    decoration: InputDecoration(
-                                      border: UnderlineInputBorder(),
-                                      hintText: 'Ik ($i)',
+                                  child: SizedBox(
+                                    width: 72,
+                                    child: TextFormField(
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (i - 1 < tableData[0].length) {
+                                            tableData[0][i - 1] = value;
+                                          }
+                                        });
+                                      },
+                                      initialValue: tableData.isNotEmpty
+                                          ? tableData[0][i - 1]
+                                          : '',
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        hintText: 'Ik ($i)',
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -262,7 +359,23 @@ class _SecondAppState extends State<SecondApp> {
                               TableCell(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text('$rowIndex'),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0),
+                                        child: Text(
+                                          '$rowIndex',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                               for (int columnIndex = 1;
@@ -271,28 +384,37 @@ class _SecondAppState extends State<SecondApp> {
                                 TableCell(
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: TextFormField(
-                                      onChanged: (value) {
-                                        setState(() {
-                                          if (columnIndex - 1 <
-                                              tableData[rowIndex - 1].length) {
-                                            tableData[rowIndex - 1]
-                                                [columnIndex - 1] = value;
-                                          }
-                                        });
-                                      },
-                                      initialValue: tableData.isNotEmpty &&
-                                              rowIndex - 1 < tableData.length &&
-                                              columnIndex - 1 <
-                                                  tableData[rowIndex - 1].length
-                                          ? tableData[rowIndex - 1]
-                                              [columnIndex - 1]
-                                          : '',
-                                      keyboardType: TextInputType.number,
-                                      decoration: InputDecoration(
-                                        border: UnderlineInputBorder(),
-                                        hintText:
-                                            'P${rowIndex} (Ik${columnIndex})',
+                                    child: SizedBox(
+                                      width: 72,
+                                      child: TextFormField(
+                                        onChanged: (value) {
+                                          setState(() {
+                                            if (columnIndex - 1 <
+                                                tableData[rowIndex - 1]
+                                                    .length) {
+                                              tableData[rowIndex - 1]
+                                                  [columnIndex - 1] = value;
+                                            }
+                                          });
+                                        },
+                                        initialValue: tableData.isNotEmpty &&
+                                                rowIndex - 1 <
+                                                    tableData.length &&
+                                                columnIndex - 1 <
+                                                    tableData[rowIndex - 1]
+                                                        .length
+                                            ? tableData[rowIndex - 1]
+                                                [columnIndex - 1]
+                                            : '',
+                                        keyboardType: TextInputType.number,
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                        decoration: InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          hintText:
+                                              'P$rowIndex (Ik$columnIndex)',
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -300,6 +422,62 @@ class _SecondAppState extends State<SecondApp> {
                             ],
                           ),
                       ],
+                    )),
+
+                    const SizedBox(height: 16),
+                    Container(
+                      width: 720,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '№ экземпляра выборки m, для которого отобразить формулу вида Pi = f (Ik):',
+                            style: TextStyle(fontSize: 20),
+                            textAlign: TextAlign.left,
+                          ),
+                          const SizedBox(
+                            width: 16,
+                            height: 4,
+                          ),
+                          TextFormField(
+                            focusNode: mValueFocusNode,
+                            keyboardType: TextInputType.number,
+                            onChanged: (value) {
+                              calculateResult(value);
+                            },
+                            style: TextStyle(fontSize: 20, height: 1),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(gapPadding: 2),
+                              hintText: '1',
+                              hintStyle: TextStyle(fontSize: 20),
+                              labelStyle: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(
+                      width: 16,
+                      height: 4,
+                    ),
+
+                    SizedBox(
+                      height: 16,
+                    ),
+                    //
+                    Text(
+                      'Формула: $result',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => _navigateToTwoPage(context),
+                      child: Text('Перейти ко второй странице'),
                     ),
                   ],
                 ),
@@ -310,12 +488,4 @@ class _SecondAppState extends State<SecondApp> {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    title: 'Form Example',
-    theme: ThemeData(primarySwatch: Colors.blue),
-    home: SecondApp(title: 'Form Example'),
-  ));
 }
