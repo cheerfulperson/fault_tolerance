@@ -67,11 +67,6 @@ class _DataTableFOsState extends State<DataTableFOs> {
                   labelStyle: TextStyle(fontSize: 20)),
               items: [
                 DropdownMenuItem(
-                  child: Text('', style: TextStyle(color: Colors.black)),
-                  alignment: Alignment.center,
-                  value: '',
-                ),
-                DropdownMenuItem(
                   child: Text('0', style: TextStyle(color: Colors.black)),
                   alignment: Alignment.center,
                   value: '0',

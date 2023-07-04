@@ -109,7 +109,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
               (index) => DeviceParamValue(
                   paramId: _deviceParams[index].id,
                   value: isEmpty ? '' : (rng.nextInt(100) / 1000).toString())),
-          number: isEmpty ? '' : getRandomValue());
+          number: isEmpty ? '0' : getRandomValue());
     });
   }
 
