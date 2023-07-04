@@ -38,7 +38,17 @@ class FirstAppNavBar extends StatelessWidget {
                       },
                       active: ModalRoute.of(context)?.settings.name ==
                           firstAppSecondRoute,
-                    )
+                    ),
+                    NavBarSpacer(index: 2),
+                    NavBarButton(
+                      text: 'Определение центров',
+                      assetName: 'assets/icons/chevron-bar-contract.svg',
+                      onClick: () {
+                        Navigator.pushNamed(context, firstAppCenteredValuesRoute);
+                      },
+                      active: ModalRoute.of(context)?.settings.name ==
+                          firstAppCenteredValuesRoute,
+                    ),
                   ],
                 )),
           ],

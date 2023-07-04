@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:Method/providers/store.dart';
+import './first_app_elements.dart';
 
 const Uuid uuid = Uuid();
 
@@ -20,10 +23,35 @@ class DeviceParams {
   String unit;
 }
 
+class DeviceParamValue {
+  DeviceParamValue({
+    required this.paramId,
+    required this.value,
+  });
+  String paramId;
+  String value;
+}
+
+class FO {
+  FO({
+    required this.index,
+    required this.params,
+    this.number = '',
+  });
+  String index;
+  List<DeviceParamValue> params;
+  String number;
+}
+
 class FirstAppState {
   int get deviceCount => 10;
   String get deviceName => '';
   List<DeviceParams> get deviceParams => [];
+}
+
+String getRandomValue() {
+  var rgn = Random().nextInt(2);
+  return rgn.toString();
 }
 
 class FirstAppProvider with ChangeNotifier implements FirstAppState {
@@ -33,8 +61,11 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
 
   final AppStorage _appStore = AppStorage(fileName: 'first_app.json');
   final List<DeviceParams> _deviceParams = [];
+  List<FO> _deviceFOs = [];
+  List<TableRow> _deviceRows = [];
   String _deviceName = '';
   int _deviceCount = 10;
+  bool _isSortedFos = false;
 
   @override
   int get deviceCount => _deviceCount;
@@ -42,15 +73,50 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
   String get deviceName => _deviceName;
   @override
   List<DeviceParams> get deviceParams => _deviceParams;
+  @override
+  List<FO> get deviceFOs => _deviceFOs;
+  @override
+  bool get isSortedFos => _isSortedFos;
+
+  Widget get TableFOs => DataTableFOs(
+        deviceFOs: _deviceFOs,
+        isSortedFos: _isSortedFos,
+      );
 
   void setDeviceName(String name) {
     _deviceName = name;
     notifyListeners();
   }
 
+  void setSortedFos(bool isSortedFos) {
+    _isSortedFos = isSortedFos;
+    notifyListeners();
+  }
+
   void setDevicesCount(int count) {
     _deviceCount = count;
+    generateDeviceFOs(true);
     notifyListeners();
+  }
+
+  void generateDeviceFOs(bool isEmpty) {
+    var rng = Random();
+    _deviceFOs = List<FO>.generate(deviceCount, (index) {
+      return FO(
+          index: index.toString(),
+          params: List<DeviceParamValue>.generate(
+              _deviceParams.length,
+              (index) => DeviceParamValue(
+                  paramId: _deviceParams[index].id,
+                  value: isEmpty ? '' : (rng.nextInt(100) / 1000).toString())),
+          number: isEmpty ? '' : getRandomValue());
+    });
+  }
+
+  void updateDeviceFOs(List<FO> devices) {
+    devices.forEach((element) {
+      _deviceFOs[int.parse(element.index)] = element;
+    });
   }
 
   void addDeviceParam({
@@ -59,11 +125,15 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
     required String shortNameDescription,
     required String unit,
   }) {
-    _deviceParams.add(DeviceParams(
+    DeviceParams param = DeviceParams(
         name: name,
         shortName: shortName,
         unit: unit,
-        shortNameDescription: shortNameDescription));
+        shortNameDescription: shortNameDescription);
+    _deviceParams.add(param);
+    _deviceFOs.forEach((element) {
+      element.params.add(DeviceParamValue(paramId: param.id, value: ''));
+    });
     notifyListeners();
   }
 
