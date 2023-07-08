@@ -23,6 +23,13 @@ class DeviceParams {
   String unit;
 }
 
+class CenteredValue {
+  CenteredValue({required this.k1, required this.k0, required this.paramId});
+  String paramId;
+  String k1;
+  String k0;
+}
+
 class DeviceParamValue {
   DeviceParamValue({
     required this.paramId,
@@ -159,6 +166,40 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
             }
         });
     notifyListeners();
+  }
+
+  CenteredValue getCenteredValues(String paramId) {
+    List<DeviceParams> deviceParams = this.deviceParams;
+    List<FO> k1 =
+        this.deviceFOs.where((element) => element.number == '1').toList();
+    List<FO> k0 =
+        this.deviceFOs.where((element) => element.number == '0').toList();
+    double value = 0.0;
+    double valueK0 = 0.0;
+    k1.forEach((element) {
+      try {
+        value += double.parse(element.params
+            .where((element) => element.paramId == paramId)
+            .first
+            .value);
+      } catch (e) {
+        //no
+      }
+    });
+    k0.forEach((element) {
+      try {
+        valueK0 += double.parse(element.params
+            .where((element) => element.paramId == paramId)
+            .first
+            .value);
+      } catch (e) {
+        //no
+      }
+    });
+    return CenteredValue(
+        k1: (value / k1.length).toStringAsFixed(4),
+        k0: (valueK0 / k0.length).toStringAsFixed(4),
+        paramId: paramId);
   }
 
   void removeDeviceParam({
