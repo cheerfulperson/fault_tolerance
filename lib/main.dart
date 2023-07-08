@@ -1,4 +1,9 @@
 import 'dart:io';
+import 'package:Method/second_app/second_app.dart';
+import 'package:Method/second_app/second_app_five.dart';
+import 'package:Method/second_app/second_app_four.dart';
+import 'package:Method/second_app/second_app_three.dart';
+import 'package:Method/second_app/second_app_two.dart';
 import 'package:Method/first_app/first_app_centered_values.dart';
 import 'package:window_size/window_size.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +52,16 @@ class MyApp extends StatelessWidget {
         firstAppRoute: (context) => const FirstApp(title: 'Исходные данные'),
         firstAppSecondRoute: (context) => const FRResultsPage(
             title: 'Фрагмент результатов ОЭ представлен в таблице'),
+        secondAppRoute: (context) =>
+            const SecondAppDataFieldsOnePage(title: ''),
+        secondAppDatafields: (context) =>
+            const SecondAppDataFieldsTwoPage(title: 'Вторая страница'),
+        secondAppDatafieldsThreePage: (context) =>
+            const SecondAppDataFieldsThreePage(title: 'Третья страница'),
+        secondAppDatafieldsFourPage: (context) =>
+            const SecondAppDataFieldsFourPage(title: 'Четвертая страница'),
+        secondAppDatafieldsFivePage: (context) =>
+            const SecondAppDataFieldsFivePage(title: 'Пятая страница'),
         firstAppCenteredValuesRoute: (context) =>
             FirstAppCenteredValues(title: 'Определение центров классов K1 и K0')
       },
