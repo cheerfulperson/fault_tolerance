@@ -195,6 +195,7 @@ class ElemParams extends StatelessWidget {
   });
 
   List<DeviceParamValue> paramsValue;
+
   int index = 0;
   @override
   Widget build(BuildContext context) {

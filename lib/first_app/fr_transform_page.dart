@@ -7,15 +7,15 @@ import 'components/header.dart';
 import 'components/nav_bar.dart';
 import '../utils/debounce.dart';
 
-class FRResultsPage extends StatefulWidget {
-  const FRResultsPage({super.key, required this.title});
+class FRTransformPage extends StatefulWidget {
+  const FRTransformPage({super.key, required this.title});
   final String title;
 
   @override
-  State<FRResultsPage> createState() => _FRResultsPageState();
+  State<FRTransformPage> createState() => _FRTransformPageState();
 }
 
-class _FRResultsPageState extends State<FRResultsPage> {
+class _FRTransformPageState extends State<FRTransformPage> {
   final _debouncer = Debouncer(milliseconds: 1000);
 
   @override
@@ -52,23 +52,6 @@ class _FRResultsPageState extends State<FRResultsPage> {
                         ),
                         Row(
                           children: [
-                            ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.black,
-                                ),
-                                onPressed: () {
-                                  _debouncer.run(() {
-                                    context
-                                        .read<FirstAppProvider>()
-                                        .generateDeviceFOs(false);
-                                  });
-                                  Navigator.pushNamed(
-                                      context, firstAppSecondRoute);
-                                },
-                                child: const Text('Сгенерировать значения')),
-                            const SizedBox(
-                              width: 12,
-                            ),
                             Checkbox(
                               checkColor: Colors.white,
                               fillColor:
@@ -218,7 +201,9 @@ class _DisplayTableDataState extends State<DisplayTableData> {
             ])
           ],
         ),
-        context.watch<FirstAppProvider>().TableFOs,
+        DataTableFOs(
+            deviceFOs: context.watch<FirstAppProvider>().deviceFOs,
+            isSortedFos: context.watch<FirstAppProvider>().isSortedFos),
       ],
     );
   }
@@ -261,6 +246,7 @@ class Parameters extends StatelessWidget {
                                   : 1))),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         e.shortName,
@@ -288,5 +274,227 @@ class Parameters extends StatelessWidget {
         }).toList(),
       ),
     ));
+  }
+}
+
+class DataTableFOs extends StatefulWidget {
+  DataTableFOs({
+    super.key,
+    required this.deviceFOs,
+    required this.isSortedFos,
+  });
+  List<FO> deviceFOs = [];
+  bool isSortedFos;
+
+  @override
+  State<DataTableFOs> createState() => _DataTableFOsState();
+}
+
+class _DataTableFOsState extends State<DataTableFOs> {
+  int index = 0;
+  TableRow getRow(FO data) {
+    List<CenteredValue> centeredVales = data.params
+        .map((e) =>
+            context.watch<FirstAppProvider>().getCenteredValues(e.paramId))
+        .toList();
+
+    index++;
+    return TableRow(
+      children: [
+        Container(
+            height: 32,
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+                border: Border(
+                    left: BorderSide(width: 1), bottom: BorderSide(width: 1))),
+            child: Text(
+              (index).toString(),
+              style: TextStyle(fontSize: 20),
+            )),
+        Container(
+          height: 32,
+          decoration: BoxDecoration(
+              border: Border(
+                  left: BorderSide(width: 1),
+                  bottom: BorderSide(width: 1),
+                  right: BorderSide(width: 1))),
+          child: ElemParams(
+              centeredValues: centeredVales, paramsValue: data.params),
+        ),
+        Container(
+          height: 32,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+              border: Border(
+                  right: BorderSide(width: 1), bottom: BorderSide(width: 1))),
+          child: Text(
+            data.number,
+            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 18),
+          ),
+        )
+      ],
+    );
+  }
+
+  List<TableRow> getTableRows() {
+    index = 0;
+    if (widget.isSortedFos) {
+      List<TableRow> k1 = widget.deviceFOs
+          .where((element) => element.number == '1')
+          .map<TableRow>(getRow)
+          .toList();
+      index = 0;
+      List<TableRow> k0 = widget.deviceFOs
+          .where((element) => element.number == '0')
+          .map<TableRow>(getRow)
+          .toList();
+      return [
+        TableRow(
+          children: [
+            Container(
+                height: 32,
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    border: Border(
+                        left: BorderSide(width: 1),
+                        bottom: BorderSide(width: 1))),
+                child: Text('')),
+            Container(
+              height: 32,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  border: Border(
+                bottom: BorderSide(width: 1),
+              )),
+              child: RichText(
+                  text: TextSpan(children: [
+                TextSpan(text: 'Экземпляры класса K'),
+                TextSpan(text: '1', style: TextStyle(fontSize: 12))
+              ], style: TextStyle(color: Colors.black, fontSize: 18))),
+            ),
+            Container(
+              height: 32,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  border: Border(
+                      right: BorderSide(width: 1),
+                      bottom: BorderSide(width: 1))),
+              child: Text(''),
+            )
+          ],
+        ),
+        ...k1,
+        TableRow(
+          children: [
+            Container(
+                height: 32,
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    border: Border(
+                        left: BorderSide(width: 1),
+                        bottom: BorderSide(width: 1))),
+                child: Text('')),
+            Container(
+              height: 32,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  border: Border(
+                bottom: BorderSide(width: 1),
+              )),
+              child: RichText(
+                  text: TextSpan(children: [
+                TextSpan(text: 'Экземпляры класса K'),
+                TextSpan(text: '0', style: TextStyle(fontSize: 12))
+              ], style: TextStyle(color: Colors.black, fontSize: 18))),
+            ),
+            Container(
+              height: 32,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  border: Border(
+                      right: BorderSide(width: 1),
+                      bottom: BorderSide(width: 1))),
+              child: Text(''),
+            )
+          ],
+        ),
+        ...k0
+      ];
+    }
+    return widget.deviceFOs.map<TableRow>(getRow).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Table(
+        defaultVerticalAlignment: TableCellVerticalAlignment.top,
+        columnWidths: const <int, TableColumnWidth>{
+          0: FixedColumnWidth(160),
+          1: FlexColumnWidth(),
+          2: FixedColumnWidth(200),
+        },
+        children: getTableRows());
+  }
+}
+
+class ElemParams extends StatelessWidget {
+  ElemParams({
+    super.key,
+    required this.paramsValue,
+    required this.centeredValues,
+  });
+
+  List<DeviceParamValue> paramsValue;
+  List<CenteredValue> centeredValues;
+  String getParam({String value = '0', required CenteredValue data}) {
+    try {
+      double k1 = double.parse(data.k1);
+      double k0 = double.parse(data.k0);
+      double parsedValue = double.parse(value);
+      bool isK1Biggger = k0 < k1;
+      if (isK1Biggger) {
+        if (parsedValue > k1) {
+          return '1';
+        }
+        if (parsedValue < k0) {
+          return '0';
+        }
+        return 'R';
+      }
+      if (parsedValue > k0) {
+        return '1';
+      }
+      if (parsedValue < k1) {
+        return '0';
+      }
+      return 'R';
+    } catch (e) {
+      return 'R';
+    }
+  }
+
+  int index = 0;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+        children: paramsValue.map((data) {
+      index += 1;
+      return Expanded(
+          child: Container(
+              height: 31,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  border: Border(
+                      right: BorderSide(
+                          width: index == paramsValue.length ? 0 : 1))),
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: SelectableText(
+                getParam(data: centeredValues[index - 1], value: data.value),
+                style: TextStyle(fontSize: 18.0),
+              )));
+    }).toList());
   }
 }
