@@ -43,6 +43,7 @@ dependencies:
       path: plugins/window_size
   path_provider: ^2.0.15
   uuid: ^3.0.7
+  lazy_memo: ^0.1.7
 
 dev_dependencies:
   flutter_test:

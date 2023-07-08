@@ -28,7 +28,17 @@ class _FirstAppState extends State<FirstApp> {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     final _nameDebouncer = Debouncer(milliseconds: 5000);
-    final _countDebouncer = Debouncer(milliseconds: 3000);
+    final _countDebouncer = Debouncer(milliseconds: 2000);
+    String deviceName = '';
+
+    @override
+    void initState() {
+      super.initState();
+      setState(() {
+        deviceName = context.watch<FirstAppProvider>().deviceName;
+      });
+    }
+
     return Scaffold(
       appBar: AppHeaderBar(nextPage: ''),
       body: Center(
@@ -88,6 +98,9 @@ class _FirstAppState extends State<FirstApp> {
                                                     .read<FirstAppProvider>()
                                                     .setDeviceName(value);
                                               });
+                                              setState(() {
+                                                deviceName = value;
+                                              });
                                             },
                                             style: TextStyle(
                                                 fontSize: 20, height: 1),
@@ -132,14 +145,14 @@ class _FirstAppState extends State<FirstApp> {
                                               FilteringTextInputFormatter
                                                   .digitsOnly,
                                               NumericalRangeFormatter(
-                                                  max: 10000, min: 0)
+                                                  max: 1000, min: 5)
                                             ],
                                             keyboardType: TextInputType.number,
                                             validator: (String? value) {
                                               if (value == null ||
                                                   value.isEmpty ||
                                                   value == '0') {
-                                                return 'Пожалуйста введите число от 1 до 10000';
+                                                return 'Пожалуйста введите число от 5 до 1000';
                                               }
                                               return null;
                                             },
@@ -732,10 +745,20 @@ class NumericalRangeFormatter extends TextInputFormatter {
   ) {
     if (newValue.text == '') {
       return newValue;
-    } else if (int.parse(newValue.text) < min) {
-      return TextEditingValue().copyWith(text: min.toStringAsFixed(2));
-    } else {
-      return int.parse(newValue.text) > max ? oldValue : newValue;
+    }
+    List<String> replacedValue = newValue.text.replaceAll(',', '.').split('.');
+    String secondPart = replacedValue.skip(1).join('');
+    String value =
+        '${replacedValue.first}${secondPart.length > 0 ? '.' : ''}${secondPart}';
+    try {
+      double parsedValue = double.parse(value);
+      if (parsedValue < min) {
+        return TextEditingValue().copyWith(text: min.toStringAsFixed(2));
+      } else {
+        return parsedValue > max ? oldValue : newValue;
+      }
+    } catch (e) {
+      return newValue;
     }
   }
 }
