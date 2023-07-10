@@ -2,7 +2,7 @@ import 'package:Method/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-class FirstAppNavBar extends StatelessWidget {
+class SecondAppNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,24 +21,68 @@ class FirstAppNavBar extends StatelessWidget {
                 child: Row(
                   children: [
                     NavBarButton(
-                      text: 'Исходные данные',
+                      text: '\t\tВвод\nданных',
+                      // text: '1',
                       assetName: 'assets/icons/file-earmark-bar-graph.svg',
                       onClick: () {
-                        Navigator.pushNamed(context, firstAppRoute);
+                        Navigator.pushNamed(context, secondAppRoute);
                       },
                       active: ModalRoute.of(context)?.settings.name ==
-                          firstAppRoute,
+                          secondAppRoute,
                     ),
                     NavBarSpacer(index: 1),
                     NavBarButton(
-                      text: 'Фрагмент результатов ОЭ',
+                      text:
+                          '\tЗависимость параметра P\nот имитационного фактора',
+                      // text: '2',
                       assetName: 'assets/icons/file-earmark-spreadsheet.svg',
                       onClick: () {
-                        Navigator.pushNamed(context, firstAppSecondRoute);
+                        Navigator.pushNamed(context, secondAppDatafields);
                       },
                       active: ModalRoute.of(context)?.settings.name ==
-                          firstAppSecondRoute,
-                    )
+                          secondAppDatafields,
+                    ),
+                    NavBarSpacer(index: 2),
+                    NavBarButton(
+                      text:
+                          'Ускоренные испытания на \n\t\t\tдлительную наработку ',
+                      // text: '3',
+                      assetName: 'assets/icons/file-earmark-spreadsheet.svg',
+
+                      onClick: () {
+                        Navigator.pushNamed(
+                            context, secondAppDatafieldsThreePage);
+                      },
+                      active: ModalRoute.of(context)?.settings.name ==
+                          secondAppDatafieldsThreePage,
+                    ),
+                    NavBarSpacer(index: 3),
+                    NavBarButton(
+                      text:
+                          'Зависимость параметра P\n\t\t\t\t\t\t\t\t\t\tот наработки t',
+                      // text: '4',
+                      assetName: 'assets/icons/file-earmark-spreadsheet.svg',
+
+                      onClick: () {
+                        Navigator.pushNamed(
+                            context, secondAppDatafieldsFourPage);
+                      },
+                      active: ModalRoute.of(context)?.settings.name ==
+                          secondAppDatafieldsFourPage,
+                    ),
+                    NavBarSpacer(index: 4),
+                    NavBarButton(
+                      text: '\tИндивидуальное \nпрогнозирование',
+                      // text: '5',
+                      assetName: 'assets/icons/file-earmark-spreadsheet.svg',
+
+                      onClick: () {
+                        Navigator.pushNamed(
+                            context, secondAppDatafieldsFivePage);
+                      },
+                      active: ModalRoute.of(context)?.settings.name ==
+                          secondAppDatafieldsFivePage,
+                    ),
                   ],
                 )),
           ],

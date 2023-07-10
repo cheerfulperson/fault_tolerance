@@ -9,3 +9,5 @@ const String secondAppDatafields = '/secondAppDatafields';
 const String secondAppDatafieldsThreePage = '/secondAppDatafieldsThreePage';
 const String secondAppDatafieldsFourPage = '/secondAppDatafieldsFourPage';
 const String secondAppDatafieldsFivePage = '/secondAppDatafieldsFivePage';
+const String pageOne = '/pageOne';
+const String pageTwo = '/pageTwo';

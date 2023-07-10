@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../routes.dart';
 import 'components/header.dart';
+import 'components/nav_bar.dart';
+import '../providers/second_app_providers.dart';
 
 void _navigateToThreePage(BuildContext context) {
   Navigator.pushNamed(
@@ -26,17 +29,22 @@ class _SecondAppDataFieldsTwoPageState
   List<int> rightColumnData = List.generate(10, (index) => index + 1);
   int n = 0;
   int lFactorPoints = 5;
+  int lFactorPointsShow = 10; // Added variable for user input
 
-  // void _navigateToSecondPage(BuildContext context) {
-  //   Navigator.pushNamed(
-  //     context,
-  //     '/secondAppDatafieldsThree',
-  //   );
-  // }
+// Нужно создать функцию расчета формулы (3) методы
+  //
+  //
 
-// Нужно создать функцию расчета формулы (3)
-//
-//
+  @override
+  void initState() {
+    super.initState();
+    final provider = Provider.of<SecondAppProvider>(context, listen: false);
+    lFactorPoints = int.parse(provider.lFactorPoints);
+  }
+
+  // Нужно создать функцию расчета формулы (3)
+  //
+  //
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +57,7 @@ class _SecondAppDataFieldsTwoPageState
       body: Center(
         child: Column(
           children: <Widget>[
+            SecondAppNavBar(),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: SizedBox(
@@ -75,7 +84,6 @@ class _SecondAppDataFieldsTwoPageState
                       //значением ячеек  P1 (Ik2), P2 (Ik2), P3 (Ik2) и тд. Это должно прсчитывать нек-рая ф-ция
                       //
                       //
-
                       border: TableBorder.all(),
                       defaultColumnWidth: FixedColumnWidth(120),
                       children: [
@@ -126,7 +134,7 @@ class _SecondAppDataFieldsTwoPageState
                                   child: Align(
                                     alignment: Alignment.center,
                                     child: Text(
-                                      'I(k${i + 1})',
+                                      'Iк(${i + 1})',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(fontSize: 20),
                                     ),
@@ -141,7 +149,7 @@ class _SecondAppDataFieldsTwoPageState
                                   child: Align(
                                     alignment: Alignment.center,
                                     child: Text(
-                                      '${rightColumnData[i]}',
+                                      'Pср(Iк${rightColumnData[i]})',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(fontSize: 20),
                                     ),
@@ -152,56 +160,49 @@ class _SecondAppDataFieldsTwoPageState
                           ),
                       ],
                     ),
-                    // SizedBox(height: 16),
-                    // Text(
-                    //   // Здесь должен выводиться результат функции по расчету формулы (3) вместо resultText
-                    //   //
-                    //   //
+                    SizedBox(height: 16),
 
-                    //   resultText,
-                    //   style: TextStyle(fontSize: 20),
-                    // ),
-                    // SizedBox(
-                    //   height: 16,
-                    // ),
-                    // //ы
-                    // Column(
+                    // Здесь должен выводиться результат функции по расчету формулы (3) вместо resultText
+                    //
+                    //
 
-                    // ElevatedButton(
-                    //   onPressed: () => _navigateToSecondPage(context),
-                    //   child: Text('Перейти ко второй странице'),
-                    // )),
+                    // ... (other parts of the code)
 
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '№ экземпляра выборки m, для которого отобразить формулу вида Pi = f (Ik):',
+                          '№ экземпляра из m, для которого отобразить формулу вида Pi = f1 (Ik):', // Replace with the desired text
                           style: TextStyle(fontSize: 20),
+                        ),
+                        SizedBox(height: 4),
+                        SizedBox(
+                          width: 720, // Set the width of the input field to 720
+                          child: TextFormField(
+                            style: TextStyle(fontSize: 20, height: 1),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(gapPadding: 2),
+                              hintText: '10',
+                              hintStyle: TextStyle(fontSize: 20),
+                              labelStyle: TextStyle(fontSize: 2),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                lFactorPointsShow = int.tryParse(value) ?? 0;
+                              });
+                            },
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(
-                      width: 16,
-                      height: 4,
-                    ),
 
-                    SizedBox(
-                      height: 16,
-                    ),
-                    //
+                    // ... (other parts of the code)
+
+                    SizedBox(height: 16),
                     Text(
-                      'Формула: $result',
+                      'Результат: $lFactorPointsShow',
                       style: TextStyle(fontSize: 20),
                     ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    ElevatedButton(
-                      onPressed: () => _navigateToThreePage(context),
-                      child: Text('Перейти к третьей странице'),
-                    ),
-                    SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -214,17 +215,22 @@ class _SecondAppDataFieldsTwoPageState
 }
 
 void main() {
-  runApp(MaterialApp(
-    title: 'Second App',
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => SecondAppProvider(),
+      child: MaterialApp(
+        title: 'Second App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: SecondAppDataFieldsTwoPage(title: 'Second App'),
+        routes: {
+          '/secondAppDatafieldsThree': (context) =>
+              ThirdAppDataFields(title: 'Third App'),
+        },
+      ),
     ),
-    home: SecondAppDataFieldsTwoPage(title: 'Second App'),
-    routes: {
-      '/secondAppDatafieldsThree': (context) =>
-          ThirdAppDataFields(title: 'Third App'),
-    },
-  ));
+  );
 }
 
 class ThirdAppDataFields extends StatelessWidget {

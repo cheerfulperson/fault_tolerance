@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'package:Method/providers/second_app_providers.dart';
 import 'package:Method/second_app/second_app.dart';
 import 'package:Method/second_app/second_app_five.dart';
 import 'package:Method/second_app/second_app_four.dart';
 import 'package:Method/second_app/second_app_three.dart';
 import 'package:Method/second_app/second_app_two.dart';
 import 'package:Method/first_app/first_app_centered_values.dart';
+import 'package:Method/second_app/testOne.dart';
+import 'package:Method/second_app/testTwo.dart';
 import 'package:window_size/window_size.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +27,10 @@ void main() {
   }
 
   runApp(MultiProvider(
-    providers: [ChangeNotifierProvider(create: (_) => FirstAppProvider())],
+    providers: [
+      ChangeNotifierProvider(create: (_) => FirstAppProvider()),
+      ChangeNotifierProvider(create: (_) => SecondAppProvider())
+    ],
     child: const MyApp(),
   ));
 }
@@ -62,8 +68,10 @@ class MyApp extends StatelessWidget {
             const SecondAppDataFieldsFourPage(title: 'Четвертая страница'),
         secondAppDatafieldsFivePage: (context) =>
             const SecondAppDataFieldsFivePage(title: 'Пятая страница'),
-        firstAppCenteredValuesRoute: (context) =>
-            FirstAppCenteredValues(title: 'Определение центров классов K1 и K0')
+        firstAppCenteredValuesRoute: (context) => FirstAppCenteredValues(
+            title: 'Определение центров классов K1 и K0'),
+        // pageOne: (context) => TestOne(title: 'test1'),
+        // pageTwo: (context) => TestTwo(title: 'test2'),
       },
     );
   }
