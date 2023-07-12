@@ -29,7 +29,7 @@ class FirstAppNavBar extends StatelessWidget {
                       active: ModalRoute.of(context)?.settings.name ==
                           firstAppRoute,
                     ),
-                    NavBarSpacer(index: 1),
+                    SizedBox(width: 8,),
                     NavBarButton(
                       text: 'Фрагмент результатов ОЭ',
                       assetName: 'assets/icons/file-earmark-spreadsheet.svg',
@@ -39,7 +39,7 @@ class FirstAppNavBar extends StatelessWidget {
                       active: ModalRoute.of(context)?.settings.name ==
                           firstAppSecondRoute,
                     ),
-                    NavBarSpacer(index: 2),
+                    SizedBox(width: 8,),
                     NavBarButton(
                       text: 'Определение центров',
                       assetName: 'assets/icons/chevron-bar-contract.svg',
@@ -48,6 +48,16 @@ class FirstAppNavBar extends StatelessWidget {
                       },
                       active: ModalRoute.of(context)?.settings.name ==
                           firstAppCenteredValuesRoute,
+                    ),
+                      SizedBox(width: 8,),
+                    NavBarButton(
+                      text: 'Преобразование в код',
+                      assetName: 'assets/icons/code-slash.svg',
+                      onClick: () {
+                        Navigator.pushNamed(context, firstAppTransformationRoute);
+                      },
+                      active: ModalRoute.of(context)?.settings.name ==
+                          firstAppTransformationRoute,
                     ),
                   ],
                 )),

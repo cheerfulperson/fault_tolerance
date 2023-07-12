@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
 import 'components/header.dart';
 import '../routes.dart';
 import 'components/nav_bar.dart';
 
 import '../providers/second_app_providers.dart';
+
 
 void _navigateToTwoPage(BuildContext context) {
   Navigator.pushNamed(
@@ -23,6 +25,7 @@ class SecondAppDataFieldsOnePage extends StatefulWidget {
   _SecondAppDataFieldsOnePageState createState() =>
       _SecondAppDataFieldsOnePageState();
 }
+
 
 // Переключатель
 enum FactorType {
@@ -58,9 +61,13 @@ class _SecondAppDataFieldsOnePageState
   String resultTrainingSetVolume = '';
   String resultValidationSetVolume = '';
 
+
   FocusNode trainingSetFocusNode = FocusNode();
   FocusNode validationSetFocusNode = FocusNode();
   FocusNode btNameFocusNode = FocusNode();
+
+  FocusNode lFactorPointsFocusNode = FocusNode();
+
   FocusNode mValueFocusNode = FocusNode();
 
   List<List<String>> tableData = [];
@@ -92,6 +99,7 @@ class _SecondAppDataFieldsOnePageState
       resultLFactorPoints = calculation.toStringAsFixed(2);
       resultTrainingSetVolume = calculation.toStringAsFixed(2);
       resultValidationSetVolume = calculation.toStringAsFixed(2);
+
     });
   }
 
@@ -101,6 +109,7 @@ class _SecondAppDataFieldsOnePageState
     _validationSetVolumeController.dispose();
     _lFactorPointsController.dispose();
     btNameFocusNode.dispose();
+
     mValueFocusNode.dispose();
     super.dispose();
   }
@@ -129,6 +138,7 @@ class _SecondAppDataFieldsOnePageState
         child: Column(
           children: <Widget>[
             SecondAppNavBar(),
+
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: SizedBox(
@@ -227,6 +237,7 @@ class _SecondAppDataFieldsOnePageState
                                     FocusScope.of(context)
                                         .requestFocus(trainingSetFocusNode);
                                     validationSetFocusNode.dispose();
+
                                   },
                                 ),
                               ),
@@ -235,7 +246,6 @@ class _SecondAppDataFieldsOnePageState
                           const SizedBox(
                             height: 16,
                           ),
-
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

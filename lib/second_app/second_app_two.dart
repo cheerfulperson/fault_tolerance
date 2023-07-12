@@ -29,6 +29,7 @@ class _SecondAppDataFieldsTwoPageState
   List<int> rightColumnData = List.generate(10, (index) => index + 1);
   int n = 0;
   int lFactorPoints = 5;
+
   int lFactorPointsShow = 10; // Added variable for user input
 
 // Нужно создать функцию расчета формулы (3) методы
@@ -172,6 +173,7 @@ class _SecondAppDataFieldsTwoPageState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
+
                           '№ экземпляра из m, для которого отобразить формулу вида Pi = f1 (Ik):', // Replace with the desired text
                           style: TextStyle(fontSize: 20),
                         ),
@@ -215,6 +217,7 @@ class _SecondAppDataFieldsTwoPageState
 }
 
 void main() {
+
   runApp(
     ChangeNotifierProvider(
       create: (context) => SecondAppProvider(),

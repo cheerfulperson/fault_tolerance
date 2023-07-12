@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:Method/providers/second_app_providers.dart';
+import 'package:Method/first_app/fr_transform_page.dart';
 import 'package:Method/second_app/second_app.dart';
 import 'package:Method/second_app/second_app_five.dart';
 import 'package:Method/second_app/second_app_four.dart';
@@ -58,6 +59,9 @@ class MyApp extends StatelessWidget {
         firstAppRoute: (context) => const FirstApp(title: 'Исходные данные'),
         firstAppSecondRoute: (context) => const FRResultsPage(
             title: 'Фрагмент результатов ОЭ представлен в таблице'),
+        firstAppCenteredValuesRoute: (context) => FirstAppCenteredValues(
+            title: 'Определение центров классов K1 и K0'),
+        firstAppTransformationRoute: (context) => FRTransformPage(title: 'Преобразование информативных параметров в код'),
         secondAppRoute: (context) =>
             const SecondAppDataFieldsOnePage(title: ''),
         secondAppDatafields: (context) =>
@@ -70,8 +74,6 @@ class MyApp extends StatelessWidget {
             const SecondAppDataFieldsFivePage(title: 'Пятая страница'),
         firstAppCenteredValuesRoute: (context) => FirstAppCenteredValues(
             title: 'Определение центров классов K1 и K0'),
-        // pageOne: (context) => TestOne(title: 'test1'),
-        // pageTwo: (context) => TestTwo(title: 'test2'),
       },
     );
   }

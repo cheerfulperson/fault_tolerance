@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
 import 'components/header.dart';
 import '../routes.dart';
@@ -6,6 +7,7 @@ import 'components/nav_bar.dart';
 import '../providers/second_app_providers.dart';
 
 void _navigateToNextPage(BuildContext context) {
+
   Navigator.pushNamed(
     context,
     secondAppDatafieldsFivePage,
@@ -25,6 +27,7 @@ class SecondAppDataFieldsFourPage extends StatefulWidget {
 
 class _SecondAppDataFieldsFourPageState
     extends State<SecondAppDataFieldsFourPage> {
+
   late List<List<int>> tableData;
   int n = 0;
   int runningTime = 0;
@@ -229,7 +232,6 @@ class _SecondAppDataFieldsFourPageState
     );
   }
 }
-
 void main() {
   runApp(MaterialApp(
     title: 'Second App',
