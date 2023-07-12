@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'components/header.dart';
 import '../routes.dart';
 
+import 'components/nav_bar.dart';
+import 'package:provider/provider.dart';
+import '../providers/second_app_providers.dart';
+
+
 void _navigateToFourPage(BuildContext context) {
   Navigator.pushNamed(
     context,
@@ -26,13 +31,29 @@ class _SecondAppDataFieldsThreePageState
   late List<int> rightColumnData;
   int n = 0;
 
+  int runningTime = 0;
+  int trainingSetVolume = 0;
+  int validationSetVolume = 0;
+  int lFactorPoints = 0;
+
+
   @override
   void initState() {
     super.initState();
     // Размеры таблицы
-    int lFactorPoints = 5;
-    int trainingSetVolume = 2;
-    int validationSetVolume = 2;
+
+//     lFactorPoints =
+//         Provider.of<SecondAppProvider>(context, listen: false).lFactorPoints;
+// trainingSetVolume =
+//         Provider.of<SecondAppProvider>(context, listen: false).trainingSetVolume;
+// validationSetVolume =
+//         Provider.of<SecondAppProvider>(context, listen: false).validationSetVolume;
+
+    final provider = Provider.of<SecondAppProvider>(context, listen: false);
+    lFactorPoints = int.parse(provider.lFactorPoints);
+    trainingSetVolume = int.parse(provider.trainingSetVolume);
+    validationSetVolume = int.parse(provider.validationSetVolume);
+
 
     // Создание таблицы с заданными размерами
     tableData = List.generate(
@@ -73,9 +94,6 @@ class _SecondAppDataFieldsThreePageState
   }
 
   double calculateAverage(int columnIndex) {
-    int lFactorPoints = 5;
-    int trainingSetVolume = 2;
-    int validationSetVolume = 2;
     int sum = 0;
     int count = 0;
 
@@ -83,7 +101,9 @@ class _SecondAppDataFieldsThreePageState
     for (int i = validationSetVolume + 1;
         i <= trainingSetVolume + validationSetVolume;
         i++) {
-      sum += tableData[i][columnIndex];
+
+      // sum += tableData[i][columnIndex];
+
       count++;
     }
 
@@ -91,6 +111,9 @@ class _SecondAppDataFieldsThreePageState
     double average = sum / count;
     return average;
   }
+
+
+// Нужно написать по расчету формулы (4) методы
 
   @override
   Widget build(BuildContext context) {
@@ -102,9 +125,13 @@ class _SecondAppDataFieldsThreePageState
       appBar: AppHeaderBar(nextPage: ''),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+
+          children: <Widget>[
+            Column(
+              children: [
+                SecondAppNavBar(),
+              ],
+            ),
             SizedBox(
               width: 1020,
               height: MediaQuery.of(context).size.height - 160,
@@ -118,7 +145,8 @@ class _SecondAppDataFieldsThreePageState
                   Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: Text(
-                      'Таблица 4 - Зависимость параметра P i-го экземпляра объединенной выборки от наработки  t',
+                      'Таблица 3 - Зависимость параметра P i-го экземпляра объединенной выборки от наработки  t',
+
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -126,18 +154,37 @@ class _SecondAppDataFieldsThreePageState
                     ),
                   ),
                   SizedBox(height: 4),
-                  Table(
-                    // Ячейки с числами 11, 12, 13, 21, 22, 23 и тд нужно заполнить функцией по расчету формулы (3)
-                    //
-                    //
-                    //
 
+
+                  // Данные берутся из App 1
+                  Table(
                     border: TableBorder.all(),
                     children: [
-                      for (int i = 0; i < tableData.length; i++)
+                      TableRow(
+                        children: [
+                          for (int j = 0; j < lFactorPoints + 1; j++)
+                            TableCell(
+                              child: Container(
+                                height: 30,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  (j == 0)
+                                      ? '№ экземпляра объединенной выборки'
+                                      : 'Параметр P для заданной наработки t, ч',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      for (int i = 0;
+                          i < trainingSetVolume + validationSetVolume + 1;
+                          i++)
                         TableRow(
                           children: [
-                            for (int j = 0; j < tableData[i].length; j++)
+                            for (int j = 0; j < lFactorPoints + 1; j++)
                               TableCell(
                                 child: Container(
                                   height: 30,
@@ -149,7 +196,8 @@ class _SecondAppDataFieldsThreePageState
                                             ? 't${tableData[i][j]}'
                                             : (j == 0)
                                                 ? '${tableData[i][j]}'
-                                                : '${tableData[i][j]}',
+                                                : 'Значение из App 1',
+
                                     style: TextStyle(
                                       fontWeight: (i == 0 || j == 0)
                                           ? FontWeight.bold
@@ -165,7 +213,9 @@ class _SecondAppDataFieldsThreePageState
                   Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: Text(
-                      'Таблица 5 - Зависимость среднего значения P экземпляров множества n от наработки t',
+
+                      'Таблица 4 - Зависимость среднего значения P экземпляров множества n от наработки t',
+
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -174,8 +224,9 @@ class _SecondAppDataFieldsThreePageState
                   ),
                   SizedBox(height: 4),
                   Table(
-                    // В ячейках левого и правого столбцах должны выводиться числа в соответствии
-                    // с FirstApp
+
+                    // второй столбец рассчитываем по формуле (2), а третий столбец - методом линейной интерполяции таблицы 3.
+
                     border: TableBorder.all(),
                     children: [
                       TableRow(
@@ -206,12 +257,14 @@ class _SecondAppDataFieldsThreePageState
                           ),
                         ],
                       ),
-                      for (int i = 1; i <= 5; i++)
+                      for (int i = 1;
+                          i <= trainingSetVolume + validationSetVolume;
+                          i++)
                         TableRow(
                           children: [
                             TableCell(
                               child: Container(
-                                height: 30, // Обновленная высота ячеек
+                                height: 30,
                                 alignment: Alignment.center,
                                 child: Text(
                                   't$i',
@@ -223,10 +276,10 @@ class _SecondAppDataFieldsThreePageState
                             ),
                             TableCell(
                               child: Container(
-                                height: 30, // Обновленная высота ячеек
+                                height: 30,
                                 alignment: Alignment.center,
                                 child: Text(
-                                  '${calculateAverage(i)}',
+                                  'P (t$i)',
                                 ),
                               ),
                             ),
@@ -234,43 +287,41 @@ class _SecondAppDataFieldsThreePageState
                         ),
                     ],
                   ),
-                  // SizedBox(height: 20),
-                  // Text(
-                  //   // Тут должен выводиться результат функции по расчету формулы (4)
-                  //   //
-                  //   //
-                  //   //
-
-                  //   'Формула: $resultFour',
-                  //   style: TextStyle(fontSize: 20),
-                  // ),
+                  SizedBox(height: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '№ экземпляра выборки m, для которого отобразить формулу вида Pi = f (Ik):',
+                        '№ экземпляра из m, для которого отобразить формулу вида P = f2 (t)',
                         style: TextStyle(fontSize: 20),
+                      ),
+                      SizedBox(height: 4),
+                      SizedBox(
+                        width: 720,
+                        child: TextFormField(
+                          style: TextStyle(fontSize: 20, height: 1),
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(gapPadding: 2),
+                            hintText: '10',
+                            hintStyle: TextStyle(fontSize: 20),
+                            labelStyle: TextStyle(fontSize: 2),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              n = int.tryParse(value) ?? 0;
+                            });
+                          },
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    width: 16,
-                    height: 4,
-                  ),
-
-                  SizedBox(
-                    height: 16,
-                  ),
-                  //
-
-                  SizedBox(
-                    height: 16,
-                  ),
-                  ElevatedButton(
-                    onPressed: () => _navigateToFourPage(context),
-                    child: Text('Перейти к четвертой странице'),
-                  ),
                   SizedBox(height: 16),
+                  Text(
+                    // Здесь должен отображаться результат работы функции по расчту формулы (4),
+                    // resultText выводится для примера
+                    '$resultText',
+                    style: TextStyle(fontSize: 20, height: 1),
+                  ),
                 ],
               ),
             ),
@@ -282,17 +333,22 @@ class _SecondAppDataFieldsThreePageState
 }
 
 void main() {
-  runApp(MaterialApp(
-    title: 'Second App',
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => SecondAppProvider(),
+      child: MaterialApp(
+        title: 'Second App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: SecondAppDataFieldsThreePage(title: 'Second App'),
+        routes: {
+          '/secondAppDatafieldsThree': (context) =>
+              ThirdAppDataFields(title: 'Third App'),
+        },
+      ),
     ),
-    home: SecondAppDataFieldsThreePage(title: 'Second App'),
-    routes: {
-      '/secondAppDatafieldsThree': (context) =>
-          ThirdAppDataFields(title: 'Third App'),
-    },
-  ));
+  );
 }
 
 class ThirdAppDataFields extends StatelessWidget {

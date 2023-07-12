@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
-import '../routes.dart';
-import 'components/header.dart';
 
-void _navigateToFivePage(BuildContext context) {
+import 'package:provider/provider.dart';
+import 'components/header.dart';
+import '../routes.dart';
+import 'components/nav_bar.dart';
+import '../providers/second_app_providers.dart';
+
+void _navigateToNextPage(BuildContext context) {
+
   Navigator.pushNamed(
     context,
     secondAppDatafieldsFivePage,
@@ -22,194 +27,239 @@ class SecondAppDataFieldsFourPage extends StatefulWidget {
 
 class _SecondAppDataFieldsFourPageState
     extends State<SecondAppDataFieldsFourPage> {
-  final _formKey = GlobalKey<FormState>();
-  int validationSetFocusNode =
-      10; // переменная из первой страницы, значение которой вводит пользователь с клавиатуры
-  //в поле m, сейчас она для примера равна 10
-  double averagePredictionError = 10;
-  int numberM = 0;
-  double calculationResult = 0;
 
-  // остальной код остается без изменений
+  late List<List<int>> tableData;
+  int n = 0;
+  int runningTime = 0;
+  int lFactorPoints = 5;
+  int trainingSetVolume = 1;
+  int validationSetVolume = 0;
+  int testValue = 0;
+
+// Нужно написать по расчету формулы (6) методы
+
+  @override
+  void initState() {
+    super.initState();
+    // Размеры таблицы
+
+    final provider = Provider.of<SecondAppProvider>(context, listen: false);
+    lFactorPoints = int.parse(provider.lFactorPoints);
+    trainingSetVolume = int.parse(provider.trainingSetVolume);
+    validationSetVolume = int.parse(provider.validationSetVolume);
+
+    // Создание таблицы с заданными размерами
+    tableData = List.generate(
+      trainingSetVolume + validationSetVolume + 1,
+      (_) => List<int>.filled(lFactorPoints + 1, 0),
+    );
+
+    // Заполнение текстом столбца k
+    for (int i = 0; i <= lFactorPoints; i++) {
+      tableData[0][i] = i == 0 ? 0 : i;
+    }
+
+    // Заполнение текстом строки s
+    for (int j = 0; j <= trainingSetVolume + validationSetVolume; j++) {
+      tableData[j][0] = j == 0 ? 0 : j;
+    }
+
+    // Заполнение значений второго столбца "Pпр i"
+    for (int i = 1; i <= trainingSetVolume + validationSetVolume; i++) {
+      tableData[i][1] = i;
+    }
+
+    // Заполнение текстом третьего столбца "Pист i"
+    for (int i = 1; i <= trainingSetVolume + validationSetVolume; i++) {
+      tableData[i][2] = i;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    String resultText = 'Формула (5): $averagePredictionError';
-
     return Scaffold(
       appBar: AppHeaderBar(nextPage: ''),
       body: Center(
         child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: SizedBox(
-                width: 1020,
-                height: MediaQuery.of(context).size.height - 160,
-                child: ListView(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 8.0,
+          children: <Widget>[
+            Column(
+              children: [
+                SecondAppNavBar(),
+              ],
+            ),
+            SizedBox(
+              width: 1020,
+              height: MediaQuery.of(context).size.height - 160,
+              child: ListView(
+                shrinkWrap: true,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 8.0,
+                ),
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Text(
+                      'Таблица 5 - Зависимость параметра P i-го экземпляра объединенной выборки от наработки t',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                  children: [
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  SizedBox(height: 4),
+                  Table(
+                    border: TableBorder.all(),
+                    children: [
+                      TableRow(
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Таблица 6 - Зависимость параметра P i-го экземпляра объединенной выборки от наработки t',
+                          TableCell(
+                            child: Container(
+                              height: 30,
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Значение t, час',
                                 style: TextStyle(
-                                  fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(height: 4),
-                            ],
-                          ),
-                          Table(
-                            // Таблица состоит из m+шапка строк, m есть переменная validationSetFocusNode
-                            // первый столбец просто порядковые номера, второй столбе заполняется
-                            // результатом работы функции по расчету формулы (2), третий
-                            // столбец заполняется интерполяцией данных таблицы 4 (стр. 16 п.4 методы)
-                            border: TableBorder.all(),
-                            children: [
-                              TableRow(
-                                children: [
-                                  TableCell(
-                                    child: Container(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 8),
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        '№ экземпляра объединенной выборки',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    child: Center(
-                                      child: Container(
-                                        padding:
-                                            EdgeInsets.symmetric(vertical: 8),
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          'Прогнозное значение параметра Pпр(i)',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    child: Center(
-                                      child: Container(
-                                        padding:
-                                            EdgeInsets.symmetric(vertical: 8),
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          'Истинное  значение параметра Pист(i)',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              for (int i = 1; i <= validationSetFocusNode; i++)
-                                TableRow(
-                                  children: [
-                                    TableCell(
-                                      child: Container(
-                                        padding:
-                                            EdgeInsets.symmetric(vertical: 8),
-                                        alignment: Alignment.center,
-                                        child: Text('$i'),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Center(
-                                        child: Container(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 8),
-                                          alignment: Alignment.center,
-                                          child: Text('Pпр $i'),
-                                        ),
-                                      ),
-                                    ),
-                                    TableCell(
-                                      child: Center(
-                                        child: Container(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 8),
-                                          alignment: Alignment.center,
-                                          child: Text('Pист $i'),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                            ],
-                          ),
-                          TextField(
-                            onChanged: (value) {
-                              setState(() {
-                                numberM = int.tryParse(value) ?? 0;
-                                calculationResult =
-                                    averagePredictionError * numberM;
-                              });
-                            },
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              labelText: 'Введите значение для Number_m',
                             ),
                           ),
-                          SizedBox(height: 20),
-                          Text(
-                            'Результат: $averagePredictionError * $numberM = $calculationResult',
-                            style: TextStyle(fontSize: 18),
+                          TableCell(
+                            child: Container(
+                              height: 30,
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Pпр i',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ),
-                          SizedBox(height: 10),
+                          TableCell(
+                            child: Container(
+                              height: 30,
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Pист i',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '№ экземпляра выборки m, для которого отобразить формулу вида Pi = f (Ik):',
-                          style: TextStyle(fontSize: 20),
+                      for (int i = 1; i <= 0 + validationSetVolume; i++)
+                        TableRow(
+                          children: [
+                            TableCell(
+                              child: Container(
+                                height: 30,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '$i',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            TableCell(
+                              child: Container(
+                                height: 30,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'Pпр $i',
+                                ),
+                              ),
+                            ),
+                            TableCell(
+                              child: Container(
+                                height: 30,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'Pист $i',
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(
-                      width: 16,
-                      height: 4,
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () => _navigateToFivePage(context),
-                      child: Text('Перейти ко второй странице'),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '№ экземпляра множества m, для которого отобразить среднюю ошибку прогнозирования:', // Replace with the desired text
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      SizedBox(height: 4),
+                      SizedBox(
+                        width: 720,
+                        child: TextFormField(
+                          style: TextStyle(fontSize: 20, height: 1),
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(gapPadding: 2),
+                            hintText: '10',
+                            hintStyle: TextStyle(fontSize: 20),
+                            labelStyle: TextStyle(fontSize: 2),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              testValue = int.tryParse(value) ?? 0;
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        // Здесь должен отображаться результат работы функции по расчту формулы (6),
+                        // testValue выводится для примера
+                        'Результат: $testValue',
+                        style: TextStyle(fontSize: 20),
+                      )
+                    ],
+                  ),
+                ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+void main() {
+  runApp(MaterialApp(
+    title: 'Second App',
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+    ),
+    home: SecondAppDataFieldsFourPage(title: 'Second App'),
+    routes: {
+      '/secondAppDatafieldsNext': (context) =>
+          SecondAppDataFieldsNextPage(title: 'Next App'),
+    },
+  ));
+}
+
+class SecondAppDataFieldsNextPage extends StatelessWidget {
+  final String title;
+
+  const SecondAppDataFieldsNextPage({Key? key, required this.title})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: Center(
+        child: Text('This is the next page', style: TextStyle(fontSize: 24)),
       ),
     );
   }
