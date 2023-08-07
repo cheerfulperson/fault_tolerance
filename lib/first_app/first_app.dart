@@ -2,12 +2,15 @@ import 'package:Method/providers/first_app_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/src/rendering/box.dart';
 
 import '../utils/debounce.dart';
 import 'components/header.dart';
 import 'components/nav_bar.dart';
 import './first_app.utils.dart';
+
+class UnDoSecondAppAction extends Intent {
+  const UnDoSecondAppAction();
+}
 
 class FirstApp extends StatefulWidget {
   const FirstApp({super.key, required this.title});
@@ -18,7 +21,13 @@ class FirstApp extends StatefulWidget {
 }
 
 class _FirstAppState extends State<FirstApp> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _countController = TextEditingController();
+
+  late FocusNode _node;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String deviceName = '';
+
   void submitForm(Function cb) {
     if (_formKey.currentState!.validate()) {
       cb();
@@ -26,19 +35,42 @@ class _FirstAppState extends State<FirstApp> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _node = FocusNode(debugLabel: 'Focus');
+
+      final String text =
+          Provider.of<FirstAppProvider>(context, listen: false).deviceName;
+      final String count = Provider.of<FirstAppProvider>(context, listen: false)
+          .deviceCount
+          .toStringAsFixed(0);
+      _nameController.value = _nameController.value.copyWith(
+        text: text,
+        selection:
+            TextSelection(baseOffset: text.length, extentOffset: text.length),
+        composing: TextRange.empty,
+      );
+      _countController.value = _countController.value.copyWith(
+        text: count,
+        selection:
+            TextSelection(baseOffset: count.length, extentOffset: count.length),
+        composing: TextRange.empty,
+      );
+      deviceName = '';
+
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-    final _nameDebouncer = Debouncer(milliseconds: 5000);
+    final _nameDebouncer = Debouncer(milliseconds: 1000);
     final _countDebouncer = Debouncer(milliseconds: 2000);
-    String deviceName = '';
-
-    @override
-    void initState() {
-      super.initState();
-      setState(() {
-        deviceName = context.watch<FirstAppProvider>().deviceName;
-      });
-    }
 
     return Scaffold(
       appBar: AppHeaderBar(nextPage: ''),
@@ -49,6 +81,50 @@ class _FirstAppState extends State<FirstApp> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             FirstAppNavBar(),
+            // Added shortcuts to handle undo event
+            Shortcuts(
+                shortcuts: <LogicalKeySet, Intent>{
+                  LogicalKeySet(LogicalKeyboardKey.keyZ,
+                      LogicalKeyboardKey.controlLeft): UnDoSecondAppAction(),
+                },
+                child: Actions(
+                    actions: <Type, Action<Intent>>{
+                      UnDoSecondAppAction: CallbackAction<UnDoSecondAppAction>(
+                        onInvoke: (UnDoSecondAppAction intent) {
+                          Provider.of<FirstAppProvider>(context, listen: false)
+                              .undoLastAction(context: context);
+                          setState(() {
+                            final String text = Provider.of<FirstAppProvider>(
+                                    context,
+                                    listen: false)
+                                .deviceName;
+                            final String count = Provider.of<FirstAppProvider>(
+                                    context,
+                                    listen: false)
+                                .deviceCount
+                                .toStringAsFixed(0);
+                            _nameController.value =
+                                _nameController.value.copyWith(
+                              text: text,
+                              selection: TextSelection(
+                                  baseOffset: text.length,
+                                  extentOffset: text.length),
+                              composing: TextRange.empty,
+                            );
+                            _countController.value =
+                                _countController.value.copyWith(
+                              text: count,
+                              selection: TextSelection(
+                                  baseOffset: count.length,
+                                  extentOffset: count.length),
+                              composing: TextRange.empty,
+                            );
+                          });
+                        },
+                      )
+                    },
+                    child: Focus(
+                        autofocus: true, focusNode: _node, child: Text('')))),
             Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: SizedBox(
@@ -81,9 +157,7 @@ class _FirstAppState extends State<FirstApp> {
                                       SizedBox(
                                           width: 720,
                                           child: TextFormField(
-                                            initialValue: (context
-                                                .watch<FirstAppProvider>()
-                                                .deviceName),
+                                            controller: _nameController,
                                             keyboardType: TextInputType.text,
                                             validator: (String? value) {
                                               if (value == null ||
@@ -102,6 +176,9 @@ class _FirstAppState extends State<FirstApp> {
                                               setState(() {
                                                 deviceName = value;
                                               });
+                                            },
+                                            onTapOutside: (event) {
+                                              _node.requestFocus();
                                             },
                                             style: TextStyle(
                                                 fontSize: 20, height: 1),
@@ -135,42 +212,42 @@ class _FirstAppState extends State<FirstApp> {
                                       const SizedBox(
                                         height: 4,
                                       ),
+                                      const Text(
+                                        '** Пожалуйста введите число от 5 до 1000',
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
                                       SizedBox(
                                           width: 720,
                                           child: TextFormField(
-                                            initialValue: (context
-                                                    .watch<FirstAppProvider>()
-                                                    .deviceCount)
-                                                .toString(),
+                                            controller: _countController,
                                             inputFormatters: [
                                               FilteringTextInputFormatter
                                                   .digitsOnly,
                                               NumericalRangeFormatter(
-                                                  max: 1000, min: 5)
+                                                  max: 1000, min: 0)
                                             ],
                                             keyboardType: TextInputType.number,
-                                            validator: (String? value) {
-                                              if (value == null ||
-                                                  value.isEmpty ||
-                                                  value == '0') {
-                                                return 'Пожалуйста введите число от 5 до 1000';
-                                              }
-                                              return null;
-                                            },
                                             onChanged: (value) {
                                               _countDebouncer.run(() {
                                                 try {
+                                                  int newValue = value != ''
+                                                      ? int.parse(value)
+                                                      : 10;
                                                   context
                                                       .read<FirstAppProvider>()
                                                       .setDevicesCount(
-                                                          value != ''
-                                                              ? int.parse(value)
-                                                              : 0);
+                                                          newValue);
                                                 } catch (e) {
                                                   _formKey.currentState!
                                                       .validate();
                                                 }
                                               });
+                                            },
+                                            onTapOutside: (event) {
+                                              _node.requestFocus();
                                             },
                                             style: const TextStyle(
                                               fontSize: 20,
@@ -211,7 +288,7 @@ class _FirstAppState extends State<FirstApp> {
                                   child: SizedBox(
                                       width: 720,
                                       child: Text(
-                                          'В случае, если информативные параметры ППП ${(context.watch<FirstAppProvider>().deviceName ?? '')} интересующего типа известны изначально, то рекомендуемое их число k выбирать от 2-х до 4-х.',
+                                          'В случае, если информативные параметры ППП $deviceName интересующего типа известны изначально, то рекомендуемое их число k выбирать от 2-х до 4-х.',
                                           textAlign: TextAlign.left,
                                           style: TextStyle(
                                             fontSize: 14,
@@ -254,6 +331,7 @@ class TableWithParams extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    index = 0;
     return Table(
       border: TableBorder.all(),
       columnWidths: const <int, TableColumnWidth>{
@@ -536,7 +614,7 @@ class _DialogAddParamState extends State<DialogAddParam> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const Text(
-                                      'Обозначения величины:',
+                                      'Обозначение величины:',
                                       style: TextStyle(fontSize: 16),
                                     ),
                                     const SizedBox(

@@ -1,6 +1,12 @@
+import 'dart:io';
+
 import 'package:Method/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart';
+
+import '../../providers/first_app_provider.dart';
 
 class AppHeaderBar extends AppBar {
   AppHeaderBar({super.key, required this.nextPage, this.onClickNext});
@@ -40,23 +46,18 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
                 text: 'Сохранить',
                 assetName: 'assets/icons/file-earmark.svg',
                 onClick: () {
-                  bool canPop = Navigator.canPop(context);
-                  if (canPop) {
-                    Navigator.pop(context);
-                  }
-                },
-              ),
-              const SizedBox(
-                width: 12,
-              ),
-              AppHeaderButton(
-                text: 'Сохранить как',
-                assetName: 'assets/icons/download.svg',
-                onClick: () {
-                  bool canPop = Navigator.canPop(context);
-                  if (canPop) {
-                    Navigator.pop(context);
-                  }
+                  // TODO move it to file class
+                  FilePicker.platform.pickFiles(
+                    allowedExtensions: ['json'],
+                    type: FileType.custom,
+                  ).then((result) {
+                    if (result?.files.single.path != null) {
+                      File file = File(result?.files.single.path ?? '');
+                      print(result?.files.single.path);
+                    } else {
+                      // User canceled the picker
+                    }
+                  });
                 },
               ),
               const SizedBox(
@@ -66,24 +67,61 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
                 text: 'Открыть сохранение',
                 assetName: 'assets/icons/folder2-open.svg',
                 onClick: () {
-                  bool canPop = Navigator.canPop(context);
-                  if (canPop) {
-                    Navigator.pop(context);
-                  }
+                        // TODO move it to file class
+                  FilePicker.platform.pickFiles(
+                    allowedExtensions: ['json'],
+                    type: FileType.custom,
+                  ).then((result) {
+                    if (result?.files.single.path != null) {
+                      File file = File(result?.files.single.path ?? '');
+                      print(result?.files.single.path);
+                    } else {
+                      // User canceled the picker
+                    }
+                  });
                 },
               ),
               const SizedBox(
                 width: 12,
               ),
               AppHeaderButton(
-                text: 'Отменить последнее действие',
+                text: 'Отменить действие',
                 assetName: 'assets/icons/arrow-90deg-left.svg',
                 onClick: () {
-                  bool canPop = Navigator.canPop(context);
-                  if (canPop) {
-                    Navigator.pop(context);
+                  Provider.of<FirstAppProvider>(context, listen: false)
+                      .undoLastAction(context: context);
+                  if (ModalRoute.of(context)?.settings.name ==
+                      firstAppSecondRoute) {
+                    Navigator.pushNamed(context, firstAppSecondRoute);
                   }
                 },
+              ),
+              const SizedBox(
+                width: 12,
+              ),
+              Row(
+                children: [
+                  Checkbox(
+                    checkColor: Colors.white,
+                    fillColor: MaterialStateProperty.all(Colors.black),
+                    value: context.watch<FirstAppProvider>().isSortedFos,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        context
+                            .read<FirstAppProvider>()
+                            .setSortedFos(value ?? false);
+                      });
+                    },
+                  ),
+                  RichText(
+                    text: TextSpan(children: [
+                      TextSpan(text: 'Cгруппировать отдельно по классам K'),
+                      TextSpan(text: '1', style: TextStyle(fontSize: 8)),
+                      TextSpan(text: ' и K'),
+                      TextSpan(text: '0', style: TextStyle(fontSize: 8)),
+                    ], style: TextStyle(color: Colors.black, fontSize: 12)),
+                  )
+                ],
               ),
             ],
           ),

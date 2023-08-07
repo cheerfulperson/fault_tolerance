@@ -4,6 +4,8 @@ const String firstAppRoute = '/firstAppRoute';
 const String firstAppSecondRoute = '/firstAppSecondRoute';
 const String firstAppCenteredValuesRoute = '/firstAppCenteredValuesRoute';
 const String firstAppTransformationRoute= '/firstAppTransformationRoute';
+const String firstAppPrivateInformationPage = '/PrivateInformationPage';
+const String firstAppResultsPage = '/firstAppResultsPage';
 
 const String secondAppRoute = '/secondAppRoute';
 const String secondAppDatafields = '/secondAppDatafields';

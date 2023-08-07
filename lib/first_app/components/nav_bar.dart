@@ -1,10 +1,15 @@
+import 'package:Method/providers/first_app_provider.dart';
 import 'package:Method/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 class FirstAppNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    bool isAllDisabled =
+        context.watch<FirstAppProvider>().deviceParams.length == 0;
+
     return Container(
         height: 64,
         constraints: BoxConstraints(maxHeight: 64),
@@ -24,40 +29,92 @@ class FirstAppNavBar extends StatelessWidget {
                       text: 'Исходные данные',
                       assetName: 'assets/icons/file-earmark-bar-graph.svg',
                       onClick: () {
+                        if (ModalRoute.of(context)?.settings.name ==
+                            firstAppSecondRoute) {
+                          Provider.of<FirstAppProvider>(context, listen: false)
+                              .addAction(
+                                  action: EClientActions.navigation,
+                                  data: {'route': firstAppSecondRoute});
+                        }
                         Navigator.pushNamed(context, firstAppRoute);
                       },
                       active: ModalRoute.of(context)?.settings.name ==
                           firstAppRoute,
                     ),
-                    SizedBox(width: 8,),
+                    SizedBox(
+                      width: 8,
+                    ),
                     NavBarButton(
                       text: 'Фрагмент результатов ОЭ',
                       assetName: 'assets/icons/file-earmark-spreadsheet.svg',
                       onClick: () {
+                        if (ModalRoute.of(context)?.settings.name ==
+                            firstAppRoute) {
+                          Provider.of<FirstAppProvider>(context, listen: false)
+                              .addAction(
+                                  action: EClientActions.navigation,
+                                  data: {'route': firstAppRoute});
+                        }
                         Navigator.pushNamed(context, firstAppSecondRoute);
                       },
+                      disabled: isAllDisabled,
                       active: ModalRoute.of(context)?.settings.name ==
                           firstAppSecondRoute,
                     ),
-                    SizedBox(width: 8,),
+                    SizedBox(
+                      width: 8,
+                    ),
                     NavBarButton(
                       text: 'Определение центров',
                       assetName: 'assets/icons/chevron-bar-contract.svg',
                       onClick: () {
-                        Navigator.pushNamed(context, firstAppCenteredValuesRoute);
+                        Navigator.pushNamed(
+                            context, firstAppCenteredValuesRoute);
                       },
+                      disabled: isAllDisabled,
                       active: ModalRoute.of(context)?.settings.name ==
                           firstAppCenteredValuesRoute,
                     ),
-                      SizedBox(width: 8,),
+                    SizedBox(
+                      width: 8,
+                    ),
                     NavBarButton(
                       text: 'Преобразование в код',
                       assetName: 'assets/icons/code-slash.svg',
                       onClick: () {
-                        Navigator.pushNamed(context, firstAppTransformationRoute);
+                        Navigator.pushNamed(
+                            context, firstAppTransformationRoute);
                       },
+                      disabled: isAllDisabled,
                       active: ModalRoute.of(context)?.settings.name ==
                           firstAppTransformationRoute,
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    NavBarButton(
+                      text: 'Частная информация',
+                      assetName: 'assets/icons/file-earmark-medical.svg',
+                      onClick: () {
+                        Navigator.pushNamed(
+                            context, firstAppPrivateInformationPage);
+                      },
+                      disabled: isAllDisabled,
+                      active: ModalRoute.of(context)?.settings.name ==
+                          firstAppPrivateInformationPage,
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    NavBarButton(
+                      text: 'Проверка качества',
+                      assetName: 'assets/icons/box-seam.svg',
+                      onClick: () {
+                        Navigator.pushNamed(context, firstAppResultsPage);
+                      },
+                      disabled: isAllDisabled,
+                      active: ModalRoute.of(context)?.settings.name ==
+                          firstAppResultsPage,
                     ),
                   ],
                 )),
@@ -71,24 +128,49 @@ class NavBarButton extends StatelessWidget {
       {super.key,
       required this.text,
       this.onClick,
+      this.disabled = false,
       required this.assetName,
       required this.active});
   final String text;
   final String assetName;
   final bool active;
+  final bool disabled;
   void Function()? onClick;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: active
-            ? Color.fromARGB(255, 214, 214, 214)
-            : const Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: disabled
+            ? Color.fromARGB(255, 126, 126, 126)
+            : active
+                ? Color.fromARGB(255, 230, 230, 230)
+                : const Color.fromARGB(255, 255, 255, 255),
         minimumSize: const Size(120.0, 48.0),
         maximumSize: const Size(1000.0, 48.0),
       ),
-      onPressed: onClick,
+      onPressed: () {
+        if (!disabled) {
+          onClick!();
+        } else {
+          final snackBar = SnackBar(
+            backgroundColor: Colors.red.shade500,
+            content: const Text(
+                'Вы ввели недостаточно данных, чтобы перейти на эту страницу!'),
+            action: SnackBarAction(
+              label: 'Ок',
+              textColor: Colors.white,
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+            ),
+          );
+          // Find the ScaffoldMessenger in the widget tree
+          // and use it to show a SnackBar.
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      },
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,

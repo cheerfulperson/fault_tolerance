@@ -1,23 +1,23 @@
 import 'dart:io';
-import 'package:Method/providers/second_app_providers.dart';
+import 'package:Method/first_app/results.dart';
+import 'package:window_size/window_size.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
+
+import 'package:Method/first_app/first_app.dart';
+import 'package:Method/first_app/first_app_centered_values.dart';
+import 'package:Method/first_app/fr_results_page.dart';
 import 'package:Method/first_app/fr_transform_page.dart';
+import 'package:Method/first_app/private_information.dart';
+import 'package:Method/providers/first_app_provider.dart';
+import 'package:Method/providers/second_app_providers.dart';
 import 'package:Method/second_app/second_app.dart';
 import 'package:Method/second_app/second_app_five.dart';
 import 'package:Method/second_app/second_app_four.dart';
 import 'package:Method/second_app/second_app_three.dart';
 import 'package:Method/second_app/second_app_two.dart';
-import 'package:Method/first_app/first_app_centered_values.dart';
-import 'package:Method/second_app/testOne.dart';
-import 'package:Method/second_app/testTwo.dart';
-import 'package:window_size/window_size.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
 import 'home.dart';
 import 'routes.dart';
-import 'first_app/first_app.dart';
-import 'package:Method/providers/first_app_provider.dart';
-import 'package:Method/first_app/fr_results_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,12 +56,21 @@ class MyApp extends StatelessWidget {
       home: const HomePage(title: 'Главный экран'),
       routes: {
         homeRoute: (context) => const HomePage(title: 'Главный экран'),
+
+        // First app Routes
         firstAppRoute: (context) => const FirstApp(title: 'Исходные данные'),
-        firstAppSecondRoute: (context) => const FRResultsPage(
-            title: 'Фрагмент результатов ОЭ представлен в таблице'),
-        firstAppCenteredValuesRoute: (context) => FirstAppCenteredValues(
-            title: 'Определение центров классов K1 и K0'),
-        firstAppTransformationRoute: (context) => FRTransformPage(title: 'Преобразование информативных параметров в код'),
+        firstAppSecondRoute: (context) => const FRResultsPage(title: ''),
+        firstAppCenteredValuesRoute: (context) =>
+            const FirstAppCenteredValues(title: ''),
+        firstAppTransformationRoute: (context) =>
+            const FRTransformPage(title: ''),
+        firstAppCenteredValuesRoute: (context) =>
+            const FirstAppCenteredValues(title: ''),
+        firstAppPrivateInformationPage: (context) =>
+            const PrivateInformationPage(title: ''),
+        firstAppResultsPage: (context) => const FirstAppResults(title: ''),
+
+        // Second app Routes
         secondAppRoute: (context) =>
             const SecondAppDataFieldsOnePage(title: ''),
         secondAppDatafields: (context) =>
@@ -72,8 +81,6 @@ class MyApp extends StatelessWidget {
             const SecondAppDataFieldsFourPage(title: 'Четвертая страница'),
         secondAppDatafieldsFivePage: (context) =>
             const SecondAppDataFieldsFivePage(title: 'Пятая страница'),
-        firstAppCenteredValuesRoute: (context) => FirstAppCenteredValues(
-            title: 'Определение центров классов K1 и K0'),
       },
     );
   }

@@ -43,48 +43,11 @@ class _FRTransformPageState extends State<FRTransformPage> {
                         horizontal: 8.0,
                       ),
                       children: [
-                        Text(
-                          'Найстройка таблицы',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        const SizedBox(
-                          height: 12,
-                        ),
-                        Row(
-                          children: [
-                            Checkbox(
-                              checkColor: Colors.white,
-                              fillColor:
-                                  MaterialStateProperty.all(Colors.black),
-                              value:
-                                  context.watch<FirstAppProvider>().isSortedFos,
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  context
-                                      .read<FirstAppProvider>()
-                                      .setSortedFos(value ?? false);
-                                });
-                              },
-                            ),
-                            RichText(
-                              text: TextSpan(children: [
-                                TextSpan(
-                                    text:
-                                        'Cгруппировать отдельно по классам K'),
-                                TextSpan(
-                                    text: '1', style: TextStyle(fontSize: 12)),
-                                TextSpan(text: ' и K'),
-                                TextSpan(
-                                    text: '0', style: TextStyle(fontSize: 12)),
-                              ], style: TextStyle(color: Colors.black)),
-                            )
-                          ],
-                        ),
-                        const SizedBox(
+                                                const SizedBox(
                           height: 12,
                         ),
                         Text(
-                          'Таблица 2 – Фрагмент результатов ОЭ',
+                          'Таблица 5 – Результаты преобразования информативных параметров в кодовые сигналы для фрагмента результатов ОЭ, показанного в таблице 2',
                           style: TextStyle(fontSize: 20),
                         ),
                         const SizedBox(

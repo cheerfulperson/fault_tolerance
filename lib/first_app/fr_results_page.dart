@@ -1,11 +1,17 @@
 import 'package:Method/providers/first_app_provider.dart';
+import 'package:Method/providers/first_app_elements.dart';
 import 'package:Method/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 
 import 'components/header.dart';
 import 'components/nav_bar.dart';
 import '../utils/debounce.dart';
+
+class UnDoAction extends Intent {
+  const UnDoAction();
+}
 
 class FRResultsPage extends StatefulWidget {
   const FRResultsPage({super.key, required this.title});
@@ -17,10 +23,19 @@ class FRResultsPage extends StatefulWidget {
 
 class _FRResultsPageState extends State<FRResultsPage> {
   final _debouncer = Debouncer(milliseconds: 1000);
+  late FocusNode _node;
+
+  @override
+  void initState() {
+    super.initState();
+    _node = FocusNode(debugLabel: 'Focus');
+  }
 
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
+    List<FO> deviceFOs = context.watch<FirstAppProvider>().deviceFOs;
+    bool isSorted = context.watch<FirstAppProvider>().isSortedFos;
 
     return Scaffold(
       appBar: AppHeaderBar(nextPage: ''),
@@ -43,6 +58,21 @@ class _FRResultsPageState extends State<FRResultsPage> {
                         horizontal: 8.0,
                       ),
                       children: [
+                        Shortcuts(
+                            shortcuts: <LogicalKeySet, Intent>{
+                              LogicalKeySet(LogicalKeyboardKey.keyZ,
+                                  LogicalKeyboardKey.controlLeft): UnDoAction(),
+                            },
+                            child: Actions(
+                                actions: <Type, Action<Intent>>{
+                                  UnDoAction: CallbackAction<UnDoAction>(
+                                    onInvoke: (UnDoAction intent) {},
+                                  )
+                                },
+                                child: Focus(
+                                    autofocus: true,
+                                    focusNode: _node,
+                                    child: Text('')))),
                         Text(
                           'Найстройка таблицы',
                           style: TextStyle(fontSize: 20),
@@ -60,45 +90,44 @@ class _FRResultsPageState extends State<FRResultsPage> {
                                   _debouncer.run(() {
                                     context
                                         .read<FirstAppProvider>()
-                                        .generateDeviceFOs(false);
+                                        .generateDeviceFOs(
+                                          isEmpty: false,
+                                          cb: () {
+                                            Navigator.pushNamed(
+                                                context, firstAppSecondRoute);
+                                          },
+                                        );
                                   });
-                                  Navigator.pushNamed(
-                                      context, firstAppSecondRoute);
                                 },
                                 child: const Text('Сгенерировать значения')),
                             const SizedBox(
                               width: 12,
                             ),
-                            Checkbox(
-                              checkColor: Colors.white,
-                              fillColor:
-                                  MaterialStateProperty.all(Colors.black),
-                              value:
-                                  context.watch<FirstAppProvider>().isSortedFos,
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  context
-                                      .read<FirstAppProvider>()
-                                      .setSortedFos(value ?? false);
-                                });
-                              },
-                            ),
-                            RichText(
-                              text: TextSpan(children: [
-                                TextSpan(
-                                    text:
-                                        'Cгруппировать отдельно по классам K'),
-                                TextSpan(
-                                    text: '1', style: TextStyle(fontSize: 12)),
-                                TextSpan(text: ' и K'),
-                                TextSpan(
-                                    text: '0', style: TextStyle(fontSize: 12)),
-                              ], style: TextStyle(color: Colors.black)),
-                            )
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.black,
+                                ),
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, firstAppSecondRoute);
+                                },
+                                child: const Text('Обновить таблицу')),
                           ],
                         ),
                         const SizedBox(
-                          height: 12,
+                          height: 24,
+                        ),
+                        SelectableText.rich(TextSpan(
+                            text:
+                                '** Чтобы редактировать данные в таблице, необходимо нажать на ячейку таблицы и вписать свое значение')),
+                        const SizedBox(
+                          height: 4,
+                        ),
+                        SelectableText.rich(TextSpan(
+                            text:
+                                '** Если номер класса не соответсвует в таблице, то нажмите на кнопку "Обновить таблицу"')),
+                        const SizedBox(
+                          height: 4,
                         ),
                         Text(
                           'Таблица 2 – Фрагмент результатов ОЭ',
@@ -107,7 +136,10 @@ class _FRResultsPageState extends State<FRResultsPage> {
                         const SizedBox(
                           height: 4,
                         ),
-                        const DisplayTableData()
+                        DisplayTableData(
+                          deviceFOs: deviceFOs,
+                          isSortedFos: isSorted,
+                        )
                       ],
                     ))),
           ],
@@ -118,9 +150,14 @@ class _FRResultsPageState extends State<FRResultsPage> {
 }
 
 class DisplayTableData extends StatefulWidget {
-  const DisplayTableData({
+  DisplayTableData({
     super.key,
+    required this.deviceFOs,
+    required this.isSortedFos,
   });
+
+  List<FO> deviceFOs = [];
+  bool isSortedFos;
 
   @override
   State<DisplayTableData> createState() => _DisplayTableDataState();
@@ -218,7 +255,8 @@ class _DisplayTableDataState extends State<DisplayTableData> {
             ])
           ],
         ),
-        context.watch<FirstAppProvider>().TableFOs,
+        DataTableFOs(
+            deviceFOs: widget.deviceFOs, isSortedFos: widget.isSortedFos),
       ],
     );
   }
