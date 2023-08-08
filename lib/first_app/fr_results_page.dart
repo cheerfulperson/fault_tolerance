@@ -66,7 +66,18 @@ class _FRResultsPageState extends State<FRResultsPage> {
                             child: Actions(
                                 actions: <Type, Action<Intent>>{
                                   UnDoAction: CallbackAction<UnDoAction>(
-                                    onInvoke: (UnDoAction intent) {},
+                                    onInvoke: (UnDoAction intent) {
+                                      Provider.of<FirstAppProvider>(context,
+                                              listen: false)
+                                          .undoLastAction(context: context);
+                                      if (ModalRoute.of(context)
+                                              ?.settings
+                                              .name ==
+                                          firstAppSecondRoute) {
+                                        Navigator.pushNamed(
+                                            context, firstAppSecondRoute);
+                                      }
+                                    },
                                   )
                                 },
                                 child: Focus(

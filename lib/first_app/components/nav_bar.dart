@@ -29,13 +29,6 @@ class FirstAppNavBar extends StatelessWidget {
                       text: 'Исходные данные',
                       assetName: 'assets/icons/file-earmark-bar-graph.svg',
                       onClick: () {
-                        if (ModalRoute.of(context)?.settings.name ==
-                            firstAppSecondRoute) {
-                          Provider.of<FirstAppProvider>(context, listen: false)
-                              .addAction(
-                                  action: EClientActions.navigation,
-                                  data: {'route': firstAppSecondRoute});
-                        }
                         Navigator.pushNamed(context, firstAppRoute);
                       },
                       active: ModalRoute.of(context)?.settings.name ==
@@ -48,13 +41,6 @@ class FirstAppNavBar extends StatelessWidget {
                       text: 'Фрагмент результатов ОЭ',
                       assetName: 'assets/icons/file-earmark-spreadsheet.svg',
                       onClick: () {
-                        if (ModalRoute.of(context)?.settings.name ==
-                            firstAppRoute) {
-                          Provider.of<FirstAppProvider>(context, listen: false)
-                              .addAction(
-                                  action: EClientActions.navigation,
-                                  data: {'route': firstAppRoute});
-                        }
                         Navigator.pushNamed(context, firstAppSecondRoute);
                       },
                       disabled: isAllDisabled,

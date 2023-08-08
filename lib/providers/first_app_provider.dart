@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:Method/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -19,7 +20,6 @@ enum EClientActions {
   deleteDeviceParam,
   generateFOs,
   navigation,
-  // TODO implement undo
   updateFoNumber,
   updateFoParams,
 }
@@ -180,6 +180,16 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
     ClientAction lastAction = _actions.elementAt(_actions.length - 1);
     _actions.removeAt(_actions.length - 1);
 
+    if (context != null) {
+      if (lastAction.action == EClientActions.generateFOs ||
+          lastAction.action == EClientActions.updateFoNumber ||
+          lastAction.action == EClientActions.updateFoParams) {
+        Navigator.pushNamed(context, firstAppSecondRoute);
+      } else {
+        Navigator.pushNamed(context, firstAppRoute);
+      }
+    }
+
     switch (lastAction.action) {
       case EClientActions.nameChanged:
         if (lastAction != null) {
@@ -232,6 +242,25 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
         String name = lastAction.data['route'];
         if (context != null) {
           Navigator.pushNamed(context, name);
+        }
+        break;
+      case EClientActions.updateFoNumber:
+        String number = lastAction.data['number'];
+        int? index = int.tryParse(lastAction.data['index']);
+        if (index != null) {
+          _deviceFOs[index].number = number;
+        }
+        break;
+      case EClientActions.updateFoParams:
+        String paramValue = lastAction.data['paramValue'];
+        String paramId = lastAction.data['paramId'];
+        int? index = int.tryParse(lastAction.data['index']);
+        if (index != null) {
+          _deviceFOs[index].params.forEach((el) {
+            if (el.paramId == paramId) {
+              el.value = paramValue;
+            }
+          });
         }
         break;
       default:
@@ -300,6 +329,9 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
     required String unit,
     bool isAddAction = true,
   }) {
+    if (_deviceParams.length == 0 && _deviceFOs.length == 0) {
+      generateDeviceFOs(isEmpty: true);
+    }
     DeviceParams param = DeviceParams(
         name: name,
         shortName: shortName,

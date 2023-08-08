@@ -3,6 +3,7 @@ import 'package:Method/providers/first_app_provider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class DataTableFOs extends StatefulWidget {
   DataTableFOs({
@@ -41,7 +42,7 @@ class _DataTableFOsState extends State<DataTableFOs> {
                   left: BorderSide(width: 1),
                   bottom: BorderSide(width: 1),
                   right: BorderSide(width: 1))),
-          child: ElemParams(paramsValue: data.params),
+          child: ElemParams(paramsValue: data.params, index: data.index),
         ),
         Container(
           height: 32,
@@ -78,6 +79,9 @@ class _DataTableFOsState extends State<DataTableFOs> {
                 )
               ],
               onChanged: (e) {
+                Provider.of<FirstAppProvider>(context, listen: false).addAction(
+                    action: EClientActions.updateFoNumber,
+                    data: {'index': data.index, 'number': data.number});
                 data.number = e ?? '';
               }),
         )
@@ -192,23 +196,24 @@ class ElemParams extends StatelessWidget {
   ElemParams({
     super.key,
     required this.paramsValue,
+    required this.index,
   });
 
   List<DeviceParamValue> paramsValue;
-
-  int index = 0;
+  String index;
+  int i = 0;
   @override
   Widget build(BuildContext context) {
     return Row(
         children: paramsValue.map((data) {
-      index += 1;
+      i += 1;
       return Expanded(
           child: Container(
         height: 31,
         alignment: Alignment.center,
         decoration: BoxDecoration(
             border: Border(
-                right: BorderSide(width: index == paramsValue.length ? 0 : 1))),
+                right: BorderSide(width: i == paramsValue.length ? 0 : 1))),
         padding: EdgeInsets.symmetric(horizontal: 8),
         child: TextFormField(
           initialValue: (data.value).toString(),
@@ -224,6 +229,13 @@ class ElemParams extends StatelessWidget {
           keyboardType: TextInputType.number,
           onChanged: (value) {
             try {
+              Provider.of<FirstAppProvider>(context, listen: false).addAction(
+                  action: EClientActions.updateFoParams,
+                  data: {
+                    'index': index,
+                    'paramId': data.paramId,
+                    'paramValue': data.value
+                  });
               data.value = double.parse(value.replaceAll(',', '.')).toString();
             } catch (e) {
               data.value = '0';
