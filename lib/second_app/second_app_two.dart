@@ -30,7 +30,9 @@ class _SecondAppDataFieldsTwoPageState
   int n = 0;
   int lFactorPoints = 5;
 
-  int lFactorPointsShow = 10; // Added variable for user input
+  int lFactorPointsShow = 10;
+
+  String selectedParameter = ''; // Added variable for user input
 
 // Нужно создать функцию расчета формулы (3) методы
   //
@@ -41,7 +43,19 @@ class _SecondAppDataFieldsTwoPageState
     super.initState();
     final provider = Provider.of<SecondAppProvider>(context, listen: false);
     lFactorPoints = int.parse(provider.lFactorPoints);
+    selectedParameter = provider.selectedParameter;
   }
+
+  String getTextForSelectedParameter() {
+    if (selectedParameter == 'Ток коллектора') {
+      return 'тока коллектора';
+    } else if (selectedParameter == 'Температура') {
+      return 'температуры';
+    } else if (selectedParameter == 'Напряжение коллектор-эмиттер') {
+      return 'напряжения коллектор-эмиттер';
+    }
+    return ''; // Вернуть пустую строку, если значение не распознано
+  } // Это для отображение нормальных окончаний
 
   // Нужно создать функцию расчета формулы (3)
   //
@@ -72,7 +86,7 @@ class _SecondAppDataFieldsTwoPageState
                   ),
                   children: [
                     Text(
-                      'Таблица 2 - Зависимость параметра P от тока коллектора Ik',
+                      'Таблица 2 - Зависимость $selectedParameter от тока коллектора Ik',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -112,7 +126,7 @@ class _SecondAppDataFieldsTwoPageState
                                 child: Align(
                                   alignment: Alignment.center,
                                   child: Text(
-                                    'Среднее значение параметра P экземпляров множества n',
+                                    'Среднее значение $selectedParameter экземпляров множества n',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 20,
@@ -173,7 +187,6 @@ class _SecondAppDataFieldsTwoPageState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-
                           '№ экземпляра из m, для которого отобразить формулу вида Pi = f1 (Ik):', // Replace with the desired text
                           style: TextStyle(fontSize: 20),
                         ),
@@ -217,7 +230,6 @@ class _SecondAppDataFieldsTwoPageState
 }
 
 void main() {
-
   runApp(
     ChangeNotifierProvider(
       create: (context) => SecondAppProvider(),

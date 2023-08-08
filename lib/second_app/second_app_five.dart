@@ -16,9 +16,9 @@ class SecondAppDataFieldsFivePage extends StatefulWidget {
 
 class _SecondAppDataFieldsFivePageState
     extends State<SecondAppDataFieldsFivePage> {
-
   int t = 0;
   String resultText = '';
+  String selectedParameter = '';
   final _formKey = GlobalKey<FormState>();
 
   @override
