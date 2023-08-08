@@ -7,7 +7,6 @@ import 'components/nav_bar.dart';
 
 import '../providers/second_app_providers.dart';
 
-
 void _navigateToTwoPage(BuildContext context) {
   Navigator.pushNamed(
     context,
@@ -26,13 +25,8 @@ class SecondAppDataFieldsOnePage extends StatefulWidget {
       _SecondAppDataFieldsOnePageState();
 }
 
-
 // Переключатель
-enum FactorType {
-  CollectorCurrent,
-  Temperature,
-  CollectorEmitterVoltage,
-}
+enum FactorType { CollectorCurrent, Temperature, CollectorEmitterVoltage, F }
 
 class _SecondAppDataFieldsOnePageState
     extends State<SecondAppDataFieldsOnePage> {
@@ -43,6 +37,8 @@ class _SecondAppDataFieldsOnePageState
       TextEditingController();
   final TextEditingController _lFactorPointsController =
       TextEditingController();
+  final TextEditingController _selectedParameter = TextEditingController();
+
   FactorType currentFactor = FactorType.CollectorCurrent;
   @override
   void initState() {
@@ -51,6 +47,7 @@ class _SecondAppDataFieldsOnePageState
     _trainingSetVolumeController.text = provider.trainingSetVolume;
     _validationSetVolumeController.text = provider.validationSetVolume;
     _lFactorPointsController.text = provider.lFactorPoints;
+    _selectedParameter.text = provider.selectedParameter;
   }
 
   String trainingSetVolume = '';
@@ -60,7 +57,7 @@ class _SecondAppDataFieldsOnePageState
   String resultLFactorPoints = '';
   String resultTrainingSetVolume = '';
   String resultValidationSetVolume = '';
-
+  String selectedParameter = ''; // Тройная кнопка
 
   FocusNode trainingSetFocusNode = FocusNode();
   FocusNode validationSetFocusNode = FocusNode();
@@ -85,6 +82,17 @@ class _SecondAppDataFieldsOnePageState
     }
   }
 
+  String getTextForSelectedParameter() {
+    if (selectedParameter == 'Ток коллектора') {
+      return 'тока коллектора';
+    } else if (selectedParameter == 'Температура') {
+      return 'температуры';
+    } else if (selectedParameter == 'Напряжение коллектор-эмиттер') {
+      return 'напряжения коллектор-эмиттер';
+    }
+    return ''; // Вернуть пустую строку, если значение не распознано
+  } // Это для отображение нормальных окончаний
+
 //Функция, которая должна рассчитывать формулу (2) методы для экземпляра из множества m.
 //Сейчас она  рассчитывает понос, это для примера
   void calculateResult(String value) {
@@ -99,7 +107,6 @@ class _SecondAppDataFieldsOnePageState
       resultLFactorPoints = calculation.toStringAsFixed(2);
       resultTrainingSetVolume = calculation.toStringAsFixed(2);
       resultValidationSetVolume = calculation.toStringAsFixed(2);
-
     });
   }
 
@@ -138,7 +145,6 @@ class _SecondAppDataFieldsOnePageState
         child: Column(
           children: <Widget>[
             SecondAppNavBar(),
-
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: SizedBox(
@@ -177,11 +183,15 @@ class _SecondAppDataFieldsOnePageState
                                     if (index == 0) {
                                       currentFactor =
                                           FactorType.CollectorCurrent;
+                                      selectedParameter = 'Ток коллектора';
                                     } else if (index == 1) {
                                       currentFactor = FactorType.Temperature;
+                                      selectedParameter = 'Температура';
                                     } else if (index == 2) {
                                       currentFactor =
                                           FactorType.CollectorEmitterVoltage;
+                                      selectedParameter =
+                                          'Напряжение коллектор-эмиттер';
                                     }
                                   });
                                 },
@@ -237,7 +247,6 @@ class _SecondAppDataFieldsOnePageState
                                     FocusScope.of(context)
                                         .requestFocus(trainingSetFocusNode);
                                     validationSetFocusNode.dispose();
-
                                   },
                                 ),
                               ),
@@ -371,15 +380,17 @@ class _SecondAppDataFieldsOnePageState
                               ),
                             ],
                           ),
+
                           const SizedBox(
                             height: 16,
                           ),
+
                           Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Таблица 1 - Зависимость параметра P i-го экземпляра объединенной выборки от тока коллектора Ik',
+                                'Таблица 1 - Зависимость ${getTextForSelectedParameter()} i-го экземпляра объединенной выборки от тока коллектора Ik',
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -559,6 +570,8 @@ class _SecondAppDataFieldsOnePageState
                               ],
                             ),
                           ),
+
+                          // Конец
                           const SizedBox(height: 16),
                           Container(
                             width: 720,

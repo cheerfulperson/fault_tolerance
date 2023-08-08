@@ -6,7 +6,6 @@ import 'components/nav_bar.dart';
 import 'package:provider/provider.dart';
 import '../providers/second_app_providers.dart';
 
-
 void _navigateToFourPage(BuildContext context) {
   Navigator.pushNamed(
     context,
@@ -35,7 +34,7 @@ class _SecondAppDataFieldsThreePageState
   int trainingSetVolume = 0;
   int validationSetVolume = 0;
   int lFactorPoints = 0;
-
+  String selectedParameter = '';
 
   @override
   void initState() {
@@ -53,7 +52,18 @@ class _SecondAppDataFieldsThreePageState
     lFactorPoints = int.parse(provider.lFactorPoints);
     trainingSetVolume = int.parse(provider.trainingSetVolume);
     validationSetVolume = int.parse(provider.validationSetVolume);
+    selectedParameter = provider.selectedParameter;
 
+    String getTextForSelectedParameter() {
+      if (selectedParameter == 'Ток коллектора') {
+        return 'тока коллектора';
+      } else if (selectedParameter == 'Температура') {
+        return 'температуры';
+      } else if (selectedParameter == 'Напряжение коллектор-эмиттер') {
+        return 'напряжения коллектор-эмиттер';
+      }
+      return ''; // Вернуть пустую строку, если значение не распознано
+    } // Это для отображение нормальных окончаний
 
     // Создание таблицы с заданными размерами
     tableData = List.generate(
@@ -101,7 +111,6 @@ class _SecondAppDataFieldsThreePageState
     for (int i = validationSetVolume + 1;
         i <= trainingSetVolume + validationSetVolume;
         i++) {
-
       // sum += tableData[i][columnIndex];
 
       count++;
@@ -111,7 +120,6 @@ class _SecondAppDataFieldsThreePageState
     double average = sum / count;
     return average;
   }
-
 
 // Нужно написать по расчету формулы (4) методы
 
@@ -125,7 +133,6 @@ class _SecondAppDataFieldsThreePageState
       appBar: AppHeaderBar(nextPage: ''),
       body: Center(
         child: Column(
-
           children: <Widget>[
             Column(
               children: [
@@ -145,8 +152,7 @@ class _SecondAppDataFieldsThreePageState
                   Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: Text(
-                      'Таблица 3 - Зависимость параметра P i-го экземпляра объединенной выборки от наработки  t',
-
+                      'Таблица 3 - Зависимость $selectedParameter i-го экземпляра объединенной выборки от наработки  t',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -154,7 +160,6 @@ class _SecondAppDataFieldsThreePageState
                     ),
                   ),
                   SizedBox(height: 4),
-
 
                   // Данные берутся из App 1
                   Table(
@@ -197,7 +202,6 @@ class _SecondAppDataFieldsThreePageState
                                             : (j == 0)
                                                 ? '${tableData[i][j]}'
                                                 : 'Значение из App 1',
-
                                     style: TextStyle(
                                       fontWeight: (i == 0 || j == 0)
                                           ? FontWeight.bold
@@ -213,9 +217,7 @@ class _SecondAppDataFieldsThreePageState
                   Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: Text(
-
-                      'Таблица 4 - Зависимость среднего значения P экземпляров множества n от наработки t',
-
+                      'Таблица 4 - Зависимость среднего значения $selectedParameter экземпляров множества n от наработки t',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -224,7 +226,6 @@ class _SecondAppDataFieldsThreePageState
                   ),
                   SizedBox(height: 4),
                   Table(
-
                     // второй столбец рассчитываем по формуле (2), а третий столбец - методом линейной интерполяции таблицы 3.
 
                     border: TableBorder.all(),

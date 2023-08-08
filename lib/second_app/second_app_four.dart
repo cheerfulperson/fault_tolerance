@@ -7,7 +7,6 @@ import 'components/nav_bar.dart';
 import '../providers/second_app_providers.dart';
 
 void _navigateToNextPage(BuildContext context) {
-
   Navigator.pushNamed(
     context,
     secondAppDatafieldsFivePage,
@@ -27,7 +26,6 @@ class SecondAppDataFieldsFourPage extends StatefulWidget {
 
 class _SecondAppDataFieldsFourPageState
     extends State<SecondAppDataFieldsFourPage> {
-
   late List<List<int>> tableData;
   int n = 0;
   int runningTime = 0;
@@ -35,6 +33,18 @@ class _SecondAppDataFieldsFourPageState
   int trainingSetVolume = 1;
   int validationSetVolume = 0;
   int testValue = 0;
+  String selectedParameter = '';
+
+  String getTextForSelectedParameter() {
+    if (selectedParameter == 'Ток коллектора') {
+      return 'тока коллектора';
+    } else if (selectedParameter == 'Температура') {
+      return 'температуры';
+    } else if (selectedParameter == 'Напряжение коллектор-эмиттер') {
+      return 'напряжения коллектор-эмиттер';
+    }
+    return ''; // Вернуть пустую строку, если значение не распознано
+  } // Это для отображение нормальных окончаний
 
 // Нужно написать по расчету формулы (6) методы
 
@@ -47,6 +57,7 @@ class _SecondAppDataFieldsFourPageState
     lFactorPoints = int.parse(provider.lFactorPoints);
     trainingSetVolume = int.parse(provider.trainingSetVolume);
     validationSetVolume = int.parse(provider.validationSetVolume);
+    selectedParameter = provider.selectedParameter;
 
     // Создание таблицы с заданными размерами
     tableData = List.generate(
@@ -232,6 +243,7 @@ class _SecondAppDataFieldsFourPageState
     );
   }
 }
+
 void main() {
   runApp(MaterialApp(
     title: 'Second App',
