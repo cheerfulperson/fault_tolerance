@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Method/routes.dart';
+import 'package:Method/utils/debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,8 @@ class AppHeaderBar extends AppBar {
 }
 
 class _AppHeaderBarState extends State<AppHeaderBar> {
+  final _saveDebouncer = Debouncer(milliseconds: 1000);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -37,6 +40,26 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
                   if (canPop) {
                     Navigator.pushNamed(context, homeRoute);
                   }
+                  final snackBar = SnackBar(
+                    backgroundColor: Colors.grey,
+                    content: const Text('Не забудьте сохранить изменения!'),
+                    action: SnackBarAction(
+                      label: 'Хорошо',
+                      textColor: Colors.white,
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      },
+                    ),
+                  );
+                  // Find the ScaffoldMessenger in the widget tree
+                  // and use it to show a SnackBar.
+                  bool isChanged =
+                      Provider.of<FirstAppProvider>(context, listen: false)
+                          .isSmthChanged;
+                  if (isChanged) {
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
                 },
               ),
               const SizedBox(
@@ -45,18 +68,59 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
               AppHeaderButton(
                 text: 'Сохранить',
                 assetName: 'assets/icons/file-earmark.svg',
+                bgColor: Provider.of<FirstAppProvider>(context, listen: false)
+                        .isSmthChanged
+                    ? Colors.green.shade100
+                    : null,
                 onClick: () {
-                  // TODO move it to file class
-                  FilePicker.platform.pickFiles(
-                    allowedExtensions: ['json'],
-                    type: FileType.custom,
-                  ).then((result) {
-                    if (result?.files.single.path != null) {
-                      File file = File(result?.files.single.path ?? '');
-                      print(result?.files.single.path);
-                    } else {
-                      // User canceled the picker
-                    }
+                  _saveDebouncer.run(() {
+                    Provider.of<FirstAppProvider>(context, listen: false)
+                        .saveToFile()
+                        .then((value) {
+                      final snackBar = SnackBar(
+                        backgroundColor: Colors.green.shade400,
+                        content: const Text('Изменения сохранены!'),
+                        action: SnackBarAction(
+                          label: 'Ок',
+                          textColor: Colors.white,
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          },
+                        ),
+                      );
+                      // Find the ScaffoldMessenger in the widget tree
+                      // and use it to show a SnackBar.
+                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    });
+                  });
+                },
+              ),
+              const SizedBox(
+                width: 12,
+              ),
+              AppHeaderButton(
+                text: 'Сохранить как',
+                assetName: 'assets/icons/save-as.svg',
+                onClick: () {
+                  Provider.of<FirstAppProvider>(context, listen: false)
+                      .saveToFile(isNeedNewPath: true)
+                      .then((value) {
+                    final snackBar = SnackBar(
+                      backgroundColor: Colors.green.shade400,
+                      content: const Text('Изменения сохранены!'),
+                      action: SnackBarAction(
+                        label: 'Ок',
+                        textColor: Colors.white,
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        },
+                      ),
+                    );
+                    // Find the ScaffoldMessenger in the widget tree
+                    // and use it to show a SnackBar.
+                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   });
                 },
               ),
@@ -67,16 +131,12 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
                 text: 'Открыть сохранение',
                 assetName: 'assets/icons/folder2-open.svg',
                 onClick: () {
-                        // TODO move it to file class
-                  FilePicker.platform.pickFiles(
-                    allowedExtensions: ['json'],
-                    type: FileType.custom,
-                  ).then((result) {
-                    if (result?.files.single.path != null) {
-                      File file = File(result?.files.single.path ?? '');
-                      print(result?.files.single.path);
-                    } else {
-                      // User canceled the picker
+                  Provider.of<FirstAppProvider>(context, listen: false)
+                      .importData()
+                      .then((value) {
+                    String? name = ModalRoute.of(context)?.settings.name;
+                    if (name != null) {
+                      Navigator.pushNamed(context, name);
                     }
                   });
                 },
@@ -131,8 +191,13 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
 
 class AppHeaderButton extends StatelessWidget {
   AppHeaderButton(
-      {super.key, required this.text, this.onClick, required this.assetName});
+      {super.key,
+      this.bgColor,
+      required this.text,
+      this.onClick,
+      required this.assetName});
   final String text;
+  Color? bgColor;
   final String assetName;
   void Function()? onClick;
 
@@ -140,7 +205,7 @@ class AppHeaderButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       style: TextButton.styleFrom(
-          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+          backgroundColor: bgColor ?? const Color.fromARGB(255, 255, 255, 255),
           minimumSize: const Size(120.0, 36.0),
           side: BorderSide(width: 1.0, color: Color.fromARGB(255, 0, 0, 0))),
       onPressed: onClick,

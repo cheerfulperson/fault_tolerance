@@ -44,6 +44,18 @@ class DeviceParams {
   String shortName;
   String shortNameDescription;
   String unit;
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['number'] = this.number;
+    data['name'] = this.name;
+    data['shortName'] = this.shortName;
+    data['shortNameDescription'] = this.shortNameDescription;
+    data['unit'] = this.unit;
+
+    return data;
+  }
 }
 
 class PrivateInfo {
@@ -116,6 +128,14 @@ class DeviceParamValue {
   });
   String paramId;
   String value;
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['paramId'] = this.paramId;
+    data['value'] = this.value;
+
+    return data;
+  }
 }
 
 class FO {
@@ -127,6 +147,15 @@ class FO {
   String index;
   List<DeviceParamValue> params;
   String number;
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['index'] = this.index;
+    data['number'] = this.number;
+    data['params'] = this.params.map((e) => e.toJson()).toList();
+
+    return data;
+  }
 }
 
 class FirstAppState {
@@ -145,7 +174,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
     _init();
   }
 
-  final AppStorage _appStore = AppStorage(fileName: 'first_app.json');
+  final AppStorage _store = AppStorage();
   final List<DeviceParams> _deviceParams = [];
   List<FO> _deviceFOs = [];
   List<ClientAction> _actions = [];
@@ -153,6 +182,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
   String _deviceName = '';
   int _deviceCount = 10;
   bool _isSortedFos = false;
+  bool _isSmthChanged = false;
 
   @override
   int get deviceCount => _deviceCount;
@@ -164,6 +194,8 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
   List<FO> get deviceFOs => _deviceFOs;
   @override
   bool get isSortedFos => _isSortedFos;
+  @override
+  bool get isSmthChanged => _isSmthChanged;
 
   void addAction(
       {required EClientActions action, required Map<String, dynamic> data}) {
@@ -273,11 +305,13 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
   void setDeviceName(String name) {
     addAction(action: EClientActions.nameChanged, data: {'name': _deviceName});
     _deviceName = name;
+    _isSmthChanged = true;
     notifyListeners();
   }
 
   void setSortedFos(bool isSortedFos) {
     _isSortedFos = isSortedFos;
+    _isSmthChanged = true;
     notifyListeners();
   }
 
@@ -285,6 +319,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
     if (count > 1000 || count < 5) {
       return;
     }
+    _isSmthChanged = true;
     addAction(
         action: EClientActions.countChanged, data: {'count': _deviceCount});
     _deviceCount = count;
@@ -299,6 +334,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
         'deviceFOs': [..._deviceFOs]
       });
     }
+    _isSmthChanged = true;
     _deviceFOs.clear();
     _deviceFOs = List<FO>.generate(deviceCount, (index) {
       return FO(
@@ -317,6 +353,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
   }
 
   void updateDeviceFOs(List<FO> devices) {
+    _isSmthChanged = true;
     devices.forEach((element) {
       _deviceFOs[int.parse(element.index)] = element;
     });
@@ -332,6 +369,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
     if (_deviceParams.length == 0 && _deviceFOs.length == 0) {
       generateDeviceFOs(isEmpty: true);
     }
+    _isSmthChanged = true;
     DeviceParams param = DeviceParams(
         name: name,
         shortName: shortName,
@@ -355,6 +393,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
     required String unit,
     bool isAddAction = true,
   }) {
+    _isSmthChanged = true;
     _deviceParams.forEach((el) {
       if (el.id == id) {
         if (isAddAction) {
@@ -395,6 +434,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
         'index': index,
       });
     }
+    _isSmthChanged = true;
     this._deviceFOs.forEach((element) {
       element.params.removeAt(index);
     });
@@ -675,6 +715,62 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
         k1: (value / k1.length).toStringAsFixed(4),
         k0: (valueK0 / k0.length).toStringAsFixed(4),
         paramId: paramId);
+  }
+
+  Future<void> saveToFile({bool isNeedNewPath = false}) async {
+    if (!_isSmthChanged && !isNeedNewPath) {
+      return;
+    }
+
+    Map<String, dynamic> data = new Map<String, dynamic>();
+    data['deviceName'] = _deviceName;
+    data['deviceCount'] = _deviceCount;
+    data['deviceParams'] = _deviceParams.map((e) => e.toJson()).toList();
+    data['deviceFOs'] = _deviceFOs.map((e) => e.toJson()).toList();
+    data['isSortedFos'] = _isSortedFos;
+    _isSmthChanged = false;
+
+    await _store.saveToFile(data: data, isNeedNewPath: isNeedNewPath);
+    notifyListeners();
+  }
+
+  Future<void> importData() async {
+    try {
+      Map<String, dynamic>? data = await _store.getDataFromFile();
+      print(data);
+      if (data == null) {
+        return;
+      }
+      List<dynamic> deviceParams = data['deviceParams'];
+      List<dynamic> deviceFOs = data['deviceFOs'];
+      _deviceName = data['deviceName'];
+      _deviceCount = data['deviceCount'];
+      _isSortedFos = data['isSortedFos'];
+      _deviceParams.clear();
+      deviceParams.forEach((e) {
+        DeviceParams param = DeviceParams(
+            name: e['name'],
+            shortName: e['shortName'],
+            unit: e['unit'],
+            number: e['number'],
+            shortNameDescription: e['shortNameDescription']);
+        param.id = e['id'];
+        print(param);
+        _deviceParams.add(param);
+      });
+      _deviceFOs = deviceFOs.map((e) {
+        List<dynamic> params = e['params'];
+        FO fo = FO(
+            index: e['index'],
+            params: params
+                .map((e) =>
+                    DeviceParamValue(paramId: e['paramId'], value: e['value']))
+                .toList(),
+            number: e['number']);
+        return fo;
+      }).toList();
+      notifyListeners();
+    } catch (e) {}
   }
 
   void _init() async {

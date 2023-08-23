@@ -70,7 +70,7 @@ class _FirstAppState extends State<FirstApp> {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     final _nameDebouncer = Debouncer(milliseconds: 1000);
-    final _countDebouncer = Debouncer(milliseconds: 2000);
+    final _countDebouncer = Debouncer(milliseconds: 1200);
 
     return Scaffold(
       appBar: AppHeaderBar(nextPage: ''),
