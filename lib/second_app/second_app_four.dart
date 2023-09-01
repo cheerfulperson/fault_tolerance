@@ -111,7 +111,7 @@ class _SecondAppDataFieldsFourPageState
                   Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: Text(
-                      'Таблица 5 - Зависимость параметра P i-го экземпляра объединенной выборки от наработки t',
+                      'Таблица 4 - Значения Pпрi и Pистi, соответсвующее заданной наработке t для эмножества m',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -125,6 +125,8 @@ class _SecondAppDataFieldsFourPageState
                       TableRow(
                         children: [
                           TableCell(
+                            verticalAlignment: TableCellVerticalAlignment
+                                .middle, // Объединенная ячейка
                             child: Container(
                               height: 30,
                               alignment: Alignment.center,
@@ -166,6 +168,8 @@ class _SecondAppDataFieldsFourPageState
                         TableRow(
                           children: [
                             TableCell(
+                              verticalAlignment: TableCellVerticalAlignment
+                                  .top, // Переход к обычным ячейкам
                               child: Container(
                                 height: 30,
                                 alignment: Alignment.center,

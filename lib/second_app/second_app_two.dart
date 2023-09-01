@@ -86,7 +86,7 @@ class _SecondAppDataFieldsTwoPageState
                   ),
                   children: [
                     Text(
-                      'Таблица 2 - Зависимость $selectedParameter от тока коллектора Ik',
+                      'Таблица 2 - Зависимость среднего значения параметра P выборки n от фактора F',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -110,7 +110,7 @@ class _SecondAppDataFieldsTwoPageState
                                 child: Align(
                                   alignment: Alignment.center,
                                   child: Text(
-                                    'Значение Ik, A',
+                                    'Значение F',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 20,
@@ -149,7 +149,7 @@ class _SecondAppDataFieldsTwoPageState
                                   child: Align(
                                     alignment: Alignment.center,
                                     child: Text(
-                                      'Iк(${i + 1})',
+                                      'F(${i + 1})',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(fontSize: 20),
                                     ),

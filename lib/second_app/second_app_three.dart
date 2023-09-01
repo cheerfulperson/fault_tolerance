@@ -152,7 +152,7 @@ class _SecondAppDataFieldsThreePageState
                   Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: Text(
-                      'Таблица 3 - Зависимость $selectedParameter i-го экземпляра объединенной выборки от наработки  t',
+                      'Таблица 1 - Зависимость параметра P выборки N от наработки t',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -160,8 +160,6 @@ class _SecondAppDataFieldsThreePageState
                     ),
                   ),
                   SizedBox(height: 4),
-
-                  // Данные берутся из App 1
                   Table(
                     border: TableBorder.all(),
                     children: [
@@ -201,7 +199,7 @@ class _SecondAppDataFieldsThreePageState
                                             ? 't${tableData[i][j]}'
                                             : (j == 0)
                                                 ? '${tableData[i][j]}'
-                                                : 'Значение из App 1',
+                                                : 'Заполняется пользователем как в табл.1',
                                     style: TextStyle(
                                       fontWeight: (i == 0 || j == 0)
                                           ? FontWeight.bold
@@ -217,7 +215,7 @@ class _SecondAppDataFieldsThreePageState
                   Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: Text(
-                      'Таблица 4 - Зависимость среднего значения $selectedParameter экземпляров множества n от наработки t',
+                      'Таблица 4 - Зависимость среднего значения параметра P выборки n от наработки t',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,

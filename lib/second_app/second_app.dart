@@ -57,7 +57,7 @@ class _SecondAppDataFieldsOnePageState
   String resultLFactorPoints = '';
   String resultTrainingSetVolume = '';
   String resultValidationSetVolume = '';
-  String selectedParameter = ''; // Тройная кнопка
+  String selectedParameter = 'Ток коллектора'; // Тройная кнопка
 
   FocusNode trainingSetFocusNode = FocusNode();
   FocusNode validationSetFocusNode = FocusNode();
@@ -91,7 +91,7 @@ class _SecondAppDataFieldsOnePageState
       return 'напряжения коллектор-эмиттер';
     }
     return ''; // Вернуть пустую строку, если значение не распознано
-  } // Это для отображение нормальных окончаний
+  } // Это для отображение нормальных окончаний в названиях таблиц
 
 //Функция, которая должна рассчитывать формулу (2) методы для экземпляра из множества m.
 //Сейчас она  рассчитывает понос, это для примера
@@ -390,7 +390,7 @@ class _SecondAppDataFieldsOnePageState
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Таблица 1 - Зависимость ${getTextForSelectedParameter()} i-го экземпляра объединенной выборки от тока коллектора Ik',
+                                'Таблица 1 - Зависимость параметра P выборки N от фактора F',
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -435,7 +435,7 @@ class _SecondAppDataFieldsOnePageState
                                           child: SizedBox(
                                             width: 72,
                                             child: Text(
-                                              'Параметр P при значении тока Ik',
+                                              'Параметр P при значении фактора F',
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
