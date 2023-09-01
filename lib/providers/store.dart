@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 class AppStorage {
   AppStorage();
 
-  late String? _fileName;
+  String? _fileName = null;
 
   @override
   String? get fileName => _fileName;

@@ -2,7 +2,6 @@ import 'package:Method/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-
 class SecondAppNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -22,7 +21,7 @@ class SecondAppNavBar extends StatelessWidget {
                 child: Row(
                   children: [
                     NavBarButton(
-                      text: '\t\tВвод\nданных',
+                      text: 'Ввод \nданных',
                       // text: '1',
                       assetName: 'assets/icons/file-earmark-bar-graph.svg',
                       onClick: () {
@@ -31,10 +30,12 @@ class SecondAppNavBar extends StatelessWidget {
                       active: ModalRoute.of(context)?.settings.name ==
                           secondAppRoute,
                     ),
-                    NavBarSpacer(index: 1),
+                    SizedBox(
+                      width: 8,
+                    ),
                     NavBarButton(
                       text:
-                          '\tЗависимость параметра P\nот имитационного фактора',
+                          'Зависимость параметра P\nот имитационного фактора',
                       // text: '2',
                       assetName: 'assets/icons/file-earmark-spreadsheet.svg',
                       onClick: () {
@@ -43,10 +44,12 @@ class SecondAppNavBar extends StatelessWidget {
                       active: ModalRoute.of(context)?.settings.name ==
                           secondAppDatafields,
                     ),
-                    NavBarSpacer(index: 2),
+                    SizedBox(
+                      width: 8,
+                    ),
                     NavBarButton(
                       text:
-                          'Ускоренные испытания на \n\t\t\tдлительную наработку ',
+                          'Ускоренные испытания на \nдлительную наработку ',
                       // text: '3',
                       assetName: 'assets/icons/file-earmark-spreadsheet.svg',
 
@@ -57,10 +60,12 @@ class SecondAppNavBar extends StatelessWidget {
                       active: ModalRoute.of(context)?.settings.name ==
                           secondAppDatafieldsThreePage,
                     ),
-                    NavBarSpacer(index: 3),
+                    SizedBox(
+                      width: 8,
+                    ),
                     NavBarButton(
                       text:
-                          'Зависимость параметра P\n\t\t\t\t\t\t\t\t\t\tот наработки t',
+                          'Зависимость параметра P\nот наработки t',
                       // text: '4',
                       assetName: 'assets/icons/file-earmark-spreadsheet.svg',
 
@@ -71,9 +76,11 @@ class SecondAppNavBar extends StatelessWidget {
                       active: ModalRoute.of(context)?.settings.name ==
                           secondAppDatafieldsFourPage,
                     ),
-                    NavBarSpacer(index: 4),
+                    SizedBox(
+                      width: 8,
+                    ),
                     NavBarButton(
-                      text: '\tИндивидуальное \nпрогнозирование',
+                      text: 'Индивидуальное \nпрогнозирование',
                       // text: '5',
                       assetName: 'assets/icons/file-earmark-spreadsheet.svg',
 
@@ -96,24 +103,49 @@ class NavBarButton extends StatelessWidget {
       {super.key,
       required this.text,
       this.onClick,
+      this.disabled = false,
       required this.assetName,
       required this.active});
   final String text;
   final String assetName;
   final bool active;
+  final bool disabled;
   void Function()? onClick;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: active
-            ? Color.fromARGB(255, 214, 214, 214)
-            : const Color.fromARGB(255, 255, 255, 255),
-        minimumSize: const Size(120.0, 48.0),
-        maximumSize: const Size(1000.0, 48.0),
+        backgroundColor: disabled
+            ? Color.fromARGB(255, 126, 126, 126)
+            : active
+                ? Color.fromARGB(255, 230, 230, 230)
+                : const Color.fromARGB(255, 255, 255, 255),
+        minimumSize: const Size(120.0, 54.0),
+        maximumSize: const Size(1000.0, 54.0),
       ),
-      onPressed: onClick,
+      onPressed: () {
+        if (!disabled) {
+          onClick!();
+        } else {
+          final snackBar = SnackBar(
+            backgroundColor: Colors.red.shade500,
+            content: const Text(
+                'Вы ввели недостаточно данных, чтобы перейти на эту страницу!'),
+            action: SnackBarAction(
+              label: 'Ок',
+              textColor: Colors.white,
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+            ),
+          );
+          // Find the ScaffoldMessenger in the widget tree
+          // and use it to show a SnackBar.
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      },
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -123,12 +155,15 @@ class NavBarButton extends StatelessWidget {
                     Color.fromARGB(255, 0, 0, 0), BlendMode.srcIn),
                 semanticsLabel: 'A red up arrow'),
             const SizedBox(
-              width: 4,
+              height: 4,
             ),
             Text(
               text,
+                     textAlign: TextAlign.center,
               style: const TextStyle(
-                  color: Color.fromARGB(255, 36, 36, 36), fontSize: 14),
+                  color: Color.fromARGB(255, 36, 36, 36),
+                  fontSize: 14,
+                  height: 0.9),
             )
           ]),
     );
@@ -156,6 +191,7 @@ class NavBarSpacer extends StatelessWidget {
                         width: 1.0, color: Color.fromRGBO(0, 0, 0, 1)))),
             child: Text(
               index.toString(),
+              textAlign: TextAlign.center,
               style: const TextStyle(
                   color: Color.fromARGB(255, 36, 36, 36), fontSize: 16),
             ),

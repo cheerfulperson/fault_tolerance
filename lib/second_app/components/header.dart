@@ -22,6 +22,8 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
           child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               AppHeaderButton(
                 text: 'Главный экран',

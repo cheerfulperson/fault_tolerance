@@ -40,7 +40,7 @@ class _SecondAppDataFieldsTwoPageState
   void initState() {
     super.initState();
     final provider = Provider.of<SecondAppProvider>(context, listen: false);
-    lFactorPoints = int.parse(provider.lFactorPoints);
+    lFactorPoints = provider.lFactorPoints;
   }
 
   // Нужно создать функцию расчета формулы (3)

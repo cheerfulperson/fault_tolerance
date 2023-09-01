@@ -82,6 +82,8 @@ class _DataTableFOsState extends State<DataTableFOs> {
                 Provider.of<FirstAppProvider>(context, listen: false).addAction(
                     action: EClientActions.updateFoNumber,
                     data: {'index': data.index, 'number': data.number});
+                Provider.of<FirstAppProvider>(context, listen: false)
+                    .setChanged();
                 data.number = e ?? '';
               }),
         )
@@ -236,6 +238,8 @@ class ElemParams extends StatelessWidget {
                     'paramId': data.paramId,
                     'paramValue': data.value
                   });
+              Provider.of<FirstAppProvider>(context, listen: false)
+                  .setChanged();
               data.value = double.parse(value.replaceAll(',', '.')).toString();
             } catch (e) {
               data.value = '0';

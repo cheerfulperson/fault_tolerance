@@ -309,6 +309,11 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
     notifyListeners();
   }
 
+  void setChanged() {
+    _isSmthChanged = true;
+    notifyListeners();
+  }
+
   void setSortedFos(bool isSortedFos) {
     _isSortedFos = isSortedFos;
     _isSmthChanged = true;

@@ -50,9 +50,9 @@ class _SecondAppDataFieldsThreePageState
 //         Provider.of<SecondAppProvider>(context, listen: false).validationSetVolume;
 
     final provider = Provider.of<SecondAppProvider>(context, listen: false);
-    lFactorPoints = int.parse(provider.lFactorPoints);
-    trainingSetVolume = int.parse(provider.trainingSetVolume);
-    validationSetVolume = int.parse(provider.validationSetVolume);
+    lFactorPoints = provider.lFactorPoints;
+    trainingSetVolume = provider.trainingSetVolume;
+    validationSetVolume = provider.validationSetVolume;
 
 
     // Создание таблицы с заданными размерами
