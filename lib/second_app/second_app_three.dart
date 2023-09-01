@@ -152,7 +152,7 @@ class _SecondAppDataFieldsThreePageState
                   Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: Text(
-                      'Таблица 1 - Зависимость параметра P выборки N от наработки t',
+                      'Таблица 3 - Зависимость параметра P выборки N от наработки t',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -199,7 +199,7 @@ class _SecondAppDataFieldsThreePageState
                                             ? 't${tableData[i][j]}'
                                             : (j == 0)
                                                 ? '${tableData[i][j]}'
-                                                : 'Заполняется пользователем как в табл.1',
+                                                : 'P$i F$j',
                                     style: TextStyle(
                                       fontWeight: (i == 0 || j == 0)
                                           ? FontWeight.bold
@@ -257,7 +257,7 @@ class _SecondAppDataFieldsThreePageState
                         ],
                       ),
                       for (int i = 1;
-                          i <= trainingSetVolume + validationSetVolume;
+                          i <= trainingSetVolume + validationSetVolume - 1;
                           i++)
                         TableRow(
                           children: [

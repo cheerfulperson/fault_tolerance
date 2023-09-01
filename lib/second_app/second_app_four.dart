@@ -111,7 +111,7 @@ class _SecondAppDataFieldsFourPageState
                   Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: Text(
-                      'Таблица 4 - Значения Pпрi и Pистi, соответсвующее заданной наработке t для эмножества m',
+                      'Таблица 5 - Значения Pпрi и Pистi, соответсвующее заданной наработке t для эмножества m',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -131,7 +131,7 @@ class _SecondAppDataFieldsFourPageState
                               height: 30,
                               alignment: Alignment.center,
                               child: Text(
-                                'Значение t, час',
+                                '№ экземпляра множества m',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),

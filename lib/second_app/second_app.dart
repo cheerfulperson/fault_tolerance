@@ -484,7 +484,7 @@ class _SecondAppDataFieldsOnePageState
                                                   TextInputType.number,
                                               decoration: InputDecoration(
                                                 border: OutlineInputBorder(),
-                                                hintText: 'Ik ($i)',
+                                                hintText: 'F ($i)',
                                               ),
                                             ),
                                           ),
@@ -559,7 +559,7 @@ class _SecondAppDataFieldsOnePageState
                                                 decoration: InputDecoration(
                                                   border: OutlineInputBorder(),
                                                   hintText:
-                                                      'P$rowIndex (Ik$columnIndex)',
+                                                      'P$rowIndex (F$columnIndex)',
                                                 ),
                                               ),
                                             ),

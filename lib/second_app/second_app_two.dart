@@ -126,7 +126,7 @@ class _SecondAppDataFieldsTwoPageState
                                 child: Align(
                                   alignment: Alignment.center,
                                   child: Text(
-                                    'Среднее значение $selectedParameter экземпляров множества n',
+                                    'Среднее значение параметра P экземпляров множества n',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 20,
@@ -164,7 +164,7 @@ class _SecondAppDataFieldsTwoPageState
                                   child: Align(
                                     alignment: Alignment.center,
                                     child: Text(
-                                      'Pср(Iк${rightColumnData[i]})',
+                                      'Pср(F${i + 1})',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(fontSize: 20),
                                     ),
