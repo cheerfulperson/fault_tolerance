@@ -253,6 +253,13 @@ class _SecondAppDataFieldsOnePageState
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
+                                '** Общий объём выборки N включает обучающую выборку размером n и \nконтрольную выборку размеров m',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              SizedBox(
+                                height: 16,
+                              ),
+                              Text(
                                 'Объём обучающей выборки n:',
                                 style: TextStyle(fontSize: 20),
                               ),
@@ -344,6 +351,7 @@ class _SecondAppDataFieldsOnePageState
                           const SizedBox(
                             height: 16,
                           ),
+
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -388,6 +396,7 @@ class _SecondAppDataFieldsOnePageState
                               ),
                             ],
                           ),
+
                           const SizedBox(
                             height: 16,
                           ),
@@ -417,7 +426,13 @@ class _SecondAppDataFieldsOnePageState
                             ],
                           ),
 // Начало
-
+                          Text(
+                            '**Первый(е) $trainingSet строк(и) таблицы есть элемент(ы) выборки n, остальные строки - элементы выборки m',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          SizedBox(
+                            height: 4,
+                          ),
                           Container(
                             child: Table(
                               defaultVerticalAlignment:
@@ -712,7 +727,8 @@ class _SecondAppDataFieldsOnePageState
                                         decoration: InputDecoration(
                                           border:
                                               OutlineInputBorder(gapPadding: 2),
-                                          hintText: '0.25 * ln(0.12 * x^2 + 0.34)',
+                                          hintText:
+                                              '0.25 * ln(0.12 * x^2 + 0.34)',
                                           hintStyle: TextStyle(fontSize: 20),
                                           labelStyle: TextStyle(fontSize: 20),
                                         ),
