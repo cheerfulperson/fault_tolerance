@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
               ElevatedCard(
                 description:
                     "МЕТОДИКА ИНДИВИДУАЛЬНОГО ПРОГНОЗИРОВАНИЯ НАДЁЖНОСТИ БИПОЛЯРНЫХ ТРАНЗИСТОРОВ ПО ПОСТЕПЕННЫМ ОТКАЗАМ",
-                imagePath: "assets/images/second-app.png",
+                imagePath: "assets/images/forecast.jpg",
                 toPath: secondAppRoute,
                 buttonColor: Color.fromARGB(255, 0, 0, 0),
               )
@@ -89,6 +89,7 @@ class _ElevatedCardState extends State<ElevatedCard> {
                   image: AssetImage(widget.imagePath),
                   width: 520,
                   height: 320,
+                  fit: BoxFit.cover,
                 ),
                 Text(
                   widget.description,

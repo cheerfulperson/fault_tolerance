@@ -52,6 +52,9 @@ class _SecondAppDataFieldsTwoPageState
     int result = 2 * n;
     String resultText = 'Результат: $result';
     double screenHeight = MediaQuery.of(context).size.height;
+    final provider = context.watch<SecondAppProvider>();
+    List<double> tableData = provider.getAverage();
+    FactorString factorString = provider.getFactorNames();
 
     return Scaffold(
       appBar: AppHeaderBar(nextPage: ''),
@@ -72,7 +75,7 @@ class _SecondAppDataFieldsTwoPageState
                   ),
                   children: [
                     Text(
-                      'Таблица 2 - Зависимость параметра P от тока коллектора Ik',
+                      'Таблица 2 - Зависимость параметра P от ${factorString.fullName.toLowerCase()}',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -95,12 +98,19 @@ class _SecondAppDataFieldsTwoPageState
                                 height: 60,
                                 child: Align(
                                   alignment: Alignment.center,
-                                  child: Text(
-                                    'Значение Ik, A',
+                                  child: SelectableText.rich(
+                                    TextSpan(children: [
+                                      TextSpan(text: 'Значение '),
+                                      TextSpan(
+                                          text: factorString.symbol.fullName),
+                                      TextSpan(
+                                          text: factorString.symbol.shortName,
+                                          style: TextStyle(fontSize: 14)),
+                                    ]),
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
+                                      fontSize: 18,
                                     ),
                                   ),
                                 ),
@@ -115,7 +125,7 @@ class _SecondAppDataFieldsTwoPageState
                                     'Среднее значение параметра P экземпляров множества n',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -124,7 +134,7 @@ class _SecondAppDataFieldsTwoPageState
                             ),
                           ],
                         ),
-                        for (int i = 0; i < lFactorPoints; i++)
+                        for (int i = 0; i < tableData.length; i++)
                           TableRow(
                             children: [
                               TableCell(
@@ -134,10 +144,22 @@ class _SecondAppDataFieldsTwoPageState
                                   height: 60,
                                   child: Align(
                                     alignment: Alignment.center,
-                                    child: Text(
-                                      'Iк(${i + 1})',
+                                    child: SelectableText.rich(
+                                      TextSpan(children: [
+                                        TextSpan(
+                                            text: factorString.symbol.fullName),
+                                        TextSpan(
+                                            text: factorString.symbol.shortName,
+                                            style: TextStyle(fontSize: 12)),
+                                        TextSpan(
+                                            text: '${i + 1}',
+                                            style: TextStyle(fontSize: 12))
+                                      ]),
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 20),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -150,9 +172,9 @@ class _SecondAppDataFieldsTwoPageState
                                   child: Align(
                                     alignment: Alignment.center,
                                     child: Text(
-                                      'Pср(Iк${rightColumnData[i]})',
+                                      tableData[i].toStringAsFixed(3),
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 20),
+                                      style: TextStyle(fontSize: 16),
                                     ),
                                   ),
                                 ),
@@ -173,8 +195,7 @@ class _SecondAppDataFieldsTwoPageState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-
-                          '№ экземпляра из m, для которого отобразить формулу вида Pi = f1 (Ik):', // Replace with the desired text
+                          'Математическая модель зависимости среднего значения параметра P от ${factorString.fullName.toLowerCase()}:', // Replace with the desired text
                           style: TextStyle(fontSize: 20),
                         ),
                         SizedBox(height: 4),
@@ -184,26 +205,17 @@ class _SecondAppDataFieldsTwoPageState
                             style: TextStyle(fontSize: 20, height: 1),
                             decoration: InputDecoration(
                               border: OutlineInputBorder(gapPadding: 2),
-                              hintText: '10',
+                              hintText: '0.23 * (cos(x) + 0.24)',
                               hintStyle: TextStyle(fontSize: 20),
                               labelStyle: TextStyle(fontSize: 2),
                             ),
+                            initialValue: provider.secondFormula,
                             onChanged: (value) {
-                              setState(() {
-                                lFactorPointsShow = int.tryParse(value) ?? 0;
-                              });
+                              provider.setSecondFormula(value);
                             },
                           ),
                         ),
                       ],
-                    ),
-
-                    // ... (other parts of the code)
-
-                    SizedBox(height: 16),
-                    Text(
-                      'Результат: $lFactorPointsShow',
-                      style: TextStyle(fontSize: 20),
                     ),
                   ],
                 ),
@@ -217,7 +229,6 @@ class _SecondAppDataFieldsTwoPageState
 }
 
 void main() {
-
   runApp(
     ChangeNotifierProvider(
       create: (context) => SecondAppProvider(),

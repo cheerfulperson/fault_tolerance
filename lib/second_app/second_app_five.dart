@@ -1,5 +1,7 @@
+import 'package:Method/providers/second_app_providers.dart';
+import 'package:Method/utils/debounce.dart';
 import 'package:flutter/material.dart';
-import '../routes.dart';
+import 'package:provider/provider.dart';
 import 'components/header.dart';
 import 'components/nav_bar.dart';
 
@@ -16,13 +18,14 @@ class SecondAppDataFieldsFivePage extends StatefulWidget {
 
 class _SecondAppDataFieldsFivePageState
     extends State<SecondAppDataFieldsFivePage> {
-
-  int t = 0;
+  double? t = 0;
   String resultText = '';
   final _formKey = GlobalKey<FormState>();
+  final _valueDebouncer = Debouncer(milliseconds: 500);
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<SecondAppProvider>();
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
@@ -63,13 +66,15 @@ class _SecondAppDataFieldsFivePageState
                                   style: TextStyle(fontSize: 20, height: 1),
                                   decoration: InputDecoration(
                                     border: OutlineInputBorder(gapPadding: 2),
-                                    hintText: '10',
+                                    hintText: '15',
                                     hintStyle: TextStyle(fontSize: 20),
                                     labelStyle: TextStyle(fontSize: 2),
                                   ),
                                   onChanged: (value) {
-                                    setState(() {
-                                      t = int.tryParse(value) ?? 0;
+                                    _valueDebouncer.run(() {
+                                      provider.setWorkTime(double.tryParse(
+                                              value.replaceAll(',', '.')) ??
+                                          0);
                                     });
                                   },
                                 ),
@@ -80,12 +85,16 @@ class _SecondAppDataFieldsFivePageState
                       ),
                     ),
                     SizedBox(height: 16),
+                    SelectableText.rich(TextSpan(
+                        text:
+                            '** Если в таблице появилось значение null, то какая-то формула введена неверно.')),
+                    SizedBox(height: 8),
                     Text(
                       //
                       // расчитываем по формуле (5), какому Ik эквивалентна эта наработка
                       //по формуле 2 рассчитываем интересующий параметр P
                       //Затем выводится полученное значение интересующего параметра P.
-                      'Результат: $t',
+                      'Результат: ${provider.appResults}',
                       style: TextStyle(fontSize: 20),
                     ),
                   ],

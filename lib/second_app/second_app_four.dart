@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:function_tree/function_tree.dart';
 
 import 'package:provider/provider.dart';
 import 'components/header.dart';
@@ -7,7 +8,6 @@ import 'components/nav_bar.dart';
 import '../providers/second_app_providers.dart';
 
 void _navigateToNextPage(BuildContext context) {
-
   Navigator.pushNamed(
     context,
     secondAppDatafieldsFivePage,
@@ -27,7 +27,6 @@ class SecondAppDataFieldsFourPage extends StatefulWidget {
 
 class _SecondAppDataFieldsFourPageState
     extends State<SecondAppDataFieldsFourPage> {
-
   late List<List<int>> tableData;
   int n = 0;
   int runningTime = 0;
@@ -47,36 +46,16 @@ class _SecondAppDataFieldsFourPageState
     lFactorPoints = provider.lFactorPoints;
     trainingSetVolume = provider.trainingSetVolume;
     validationSetVolume = provider.validationSetVolume;
-
-    // Создание таблицы с заданными размерами
-    tableData = List.generate(
-      trainingSetVolume + validationSetVolume + 1,
-      (_) => List<int>.filled(lFactorPoints + 1, 0),
-    );
-
-    // Заполнение текстом столбца k
-    for (int i = 0; i <= lFactorPoints; i++) {
-      tableData[0][i] = i == 0 ? 0 : i;
-    }
-
-    // Заполнение текстом строки s
-    for (int j = 0; j <= trainingSetVolume + validationSetVolume; j++) {
-      tableData[j][0] = j == 0 ? 0 : j;
-    }
-
-    // Заполнение значений второго столбца "Pпр i"
-    for (int i = 1; i <= trainingSetVolume + validationSetVolume; i++) {
-      tableData[i][1] = i;
-    }
-
-    // Заполнение текстом третьего столбца "Pист i"
-    for (int i = 1; i <= trainingSetVolume + validationSetVolume; i++) {
-      tableData[i][2] = i;
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<SecondAppProvider>();
+    List<double> averageTime = provider.getTimeAverage();
+    List<Forecast> forecastData = provider.getForecast();
+    double average = provider.getDepsAverage(forecastData);
+
+    int index = 0;
     return Scaffold(
       appBar: AppHeaderBar(nextPage: ''),
       body: Center(
@@ -86,6 +65,9 @@ class _SecondAppDataFieldsFourPageState
               children: [
                 SecondAppNavBar(),
               ],
+            ),
+            const SizedBox(
+              height: 16,
             ),
             SizedBox(
               width: 1020,
@@ -97,6 +79,65 @@ class _SecondAppDataFieldsFourPageState
                   horizontal: 8.0,
                 ),
                 children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Выбранное значение наработки t:',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      const SizedBox(height: 4),
+                      ToggleButtons(
+                        isSelected: List.generate(averageTime.length,
+                            (index) => index == provider.selectedTime),
+                        borderWidth: 2,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        onPressed: (int index) {
+                          setState(() {
+                            provider.setSelectedTime(index);
+                          });
+                        },
+                        children: averageTime.map((e) {
+                          index++;
+                          return Text(
+                            ' t${index} = ${e.toStringAsFixed(3)} ',
+                            style: TextStyle(fontSize: 20),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Функция пересчета:', // Replace with the desired text
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      SizedBox(height: 4),
+                      SizedBox(
+                        width: 720,
+                        child: TextFormField(
+                          style: TextStyle(fontSize: 20, height: 1),
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(gapPadding: 2),
+                            hintText: '0.3 * x^6',
+                            hintStyle: TextStyle(fontSize: 20),
+                            labelStyle: TextStyle(fontSize: 2),
+                          ),
+                          initialValue: provider.fourthFormula,
+                          onChanged: (value) {
+                            setState(() {
+                              provider
+                                  .setFourthFormula(value.replaceAll(',', '.'));
+                            });
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 16),
                   Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: Text(
@@ -107,7 +148,13 @@ class _SecondAppDataFieldsFourPageState
                       ),
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 8),
+                  SelectableText.rich(TextSpan(
+                      text:
+                          '** Если в таблице появилось значение null, то какая-то формула введена неверно.')),
+                  const SizedBox(
+                    height: 4,
+                  ),
                   Table(
                     border: TableBorder.all(),
                     children: [
@@ -151,7 +198,7 @@ class _SecondAppDataFieldsFourPageState
                           ),
                         ],
                       ),
-                      for (int i = 1; i <= 0 + validationSetVolume; i++)
+                      for (int i = 0; i < forecastData.length; i++)
                         TableRow(
                           children: [
                             TableCell(
@@ -159,7 +206,7 @@ class _SecondAppDataFieldsFourPageState
                                 height: 30,
                                 alignment: Alignment.center,
                                 child: Text(
-                                  '$i',
+                                  '${i + 1}',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -171,7 +218,8 @@ class _SecondAppDataFieldsFourPageState
                                 height: 30,
                                 alignment: Alignment.center,
                                 child: Text(
-                                  'Pпр $i',
+                                  forecastData[i].Ppr?.toStringAsFixed(4) ??
+                                      'null',
                                 ),
                               ),
                             ),
@@ -180,7 +228,8 @@ class _SecondAppDataFieldsFourPageState
                                 height: 30,
                                 alignment: Alignment.center,
                                 child: Text(
-                                  'Pист $i',
+                                  forecastData[i].Pis?.toStringAsFixed(4) ??
+                                      'null',
                                 ),
                               ),
                             ),
@@ -189,39 +238,19 @@ class _SecondAppDataFieldsFourPageState
                     ],
                   ),
                   SizedBox(height: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '№ экземпляра множества m, для которого отобразить среднюю ошибку прогнозирования:', // Replace with the desired text
-                        style: TextStyle(fontSize: 20),
+                  Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: SelectableText.rich(
+                      TextSpan(children: [
+                        TextSpan(text: '△'),
+                        TextSpan(text: 'ср', style: TextStyle(fontSize: 14)),
+                        TextSpan(text: ' t = ${average}'),
+                      ]),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(height: 4),
-                      SizedBox(
-                        width: 720,
-                        child: TextFormField(
-                          style: TextStyle(fontSize: 20, height: 1),
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(gapPadding: 2),
-                            hintText: '10',
-                            hintStyle: TextStyle(fontSize: 20),
-                            labelStyle: TextStyle(fontSize: 2),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              testValue = int.tryParse(value) ?? 0;
-                            });
-                          },
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        // Здесь должен отображаться результат работы функции по расчту формулы (6),
-                        // testValue выводится для примера
-                        'Результат: $testValue',
-                        style: TextStyle(fontSize: 20),
-                      )
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -232,6 +261,7 @@ class _SecondAppDataFieldsFourPageState
     );
   }
 }
+
 void main() {
   runApp(MaterialApp(
     title: 'Second App',

@@ -742,7 +742,6 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
   Future<void> importData() async {
     try {
       Map<String, dynamic>? data = await _store.getDataFromFile();
-      print(data);
       if (data == null) {
         return;
       }
@@ -760,7 +759,6 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
             number: e['number'],
             shortNameDescription: e['shortNameDescription']);
         param.id = e['id'];
-        print(param);
         _deviceParams.add(param);
       });
       _deviceFOs = deviceFOs.map((e) {

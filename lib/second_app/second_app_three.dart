@@ -6,7 +6,6 @@ import 'components/nav_bar.dart';
 import 'package:provider/provider.dart';
 import '../providers/second_app_providers.dart';
 
-
 void _navigateToFourPage(BuildContext context) {
   Navigator.pushNamed(
     context,
@@ -27,7 +26,7 @@ class SecondAppDataFieldsThreePage extends StatefulWidget {
 
 class _SecondAppDataFieldsThreePageState
     extends State<SecondAppDataFieldsThreePage> {
-  late List<List<int>> tableData;
+  late List<List<double?>> tableData;
   late List<int> rightColumnData;
   int n = 0;
 
@@ -35,7 +34,6 @@ class _SecondAppDataFieldsThreePageState
   int trainingSetVolume = 0;
   int validationSetVolume = 0;
   int lFactorPoints = 0;
-
 
   @override
   void initState() {
@@ -53,44 +51,6 @@ class _SecondAppDataFieldsThreePageState
     lFactorPoints = provider.lFactorPoints;
     trainingSetVolume = provider.trainingSetVolume;
     validationSetVolume = provider.validationSetVolume;
-
-
-    // Создание таблицы с заданными размерами
-    tableData = List.generate(
-      trainingSetVolume + validationSetVolume + 1,
-      (_) => List<int>.filled(lFactorPoints + 1, 0),
-    );
-
-    // Заполнение текстом столбца k
-    for (int i = 0; i <= lFactorPoints; i++) {
-      tableData[0][i] = i == 0 ? 0 : i;
-    }
-
-    // Заполнение текстом строки s
-    for (int j = 0; j <= trainingSetVolume + validationSetVolume; j++) {
-      tableData[j][0] = j == 0 ? 0 : j;
-    }
-
-    // Заполнение числами в ячейках
-    for (int i = 1; i <= validationSetVolume; i++) {
-      for (int j = 1; j <= lFactorPoints; j++) {
-        tableData[i][j] = int.parse('${j}${i}');
-      }
-    }
-
-    for (int i = validationSetVolume + 1;
-        i <= trainingSetVolume + validationSetVolume;
-        i++) {
-      for (int j = 1; j <= lFactorPoints; j++) {
-        tableData[i][j] = int.parse('${j}${i - validationSetVolume}');
-      }
-    }
-
-    // Заполнение правого столбца числами
-    rightColumnData = List.generate(
-      trainingSetVolume + validationSetVolume,
-      (index) => index + 1,
-    );
   }
 
   double calculateAverage(int columnIndex) {
@@ -101,7 +61,6 @@ class _SecondAppDataFieldsThreePageState
     for (int i = validationSetVolume + 1;
         i <= trainingSetVolume + validationSetVolume;
         i++) {
-
       // sum += tableData[i][columnIndex];
 
       count++;
@@ -112,20 +71,22 @@ class _SecondAppDataFieldsThreePageState
     return average;
   }
 
-
 // Нужно написать по расчету формулы (4) методы
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<SecondAppProvider>();
     int result = 2 * n;
     String resultText = 'Результат: $result';
     int resultFour = 2;
+    // Создание таблицы с заданными размерами
+    tableData = provider.timeTableData;
+    List<double> average = provider.getTimeAverage();
 
     return Scaffold(
       appBar: AppHeaderBar(nextPage: ''),
       body: Center(
         child: Column(
-
           children: <Widget>[
             Column(
               children: [
@@ -133,7 +94,7 @@ class _SecondAppDataFieldsThreePageState
               ],
             ),
             SizedBox(
-              width: 1020,
+              width: 1220,
               height: MediaQuery.of(context).size.height - 160,
               child: ListView(
                 shrinkWrap: true,
@@ -146,7 +107,6 @@ class _SecondAppDataFieldsThreePageState
                     padding: EdgeInsets.only(top: 16),
                     child: Text(
                       'Таблица 3 - Зависимость параметра P i-го экземпляра объединенной выборки от наработки  t',
-
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -155,53 +115,89 @@ class _SecondAppDataFieldsThreePageState
                   ),
                   SizedBox(height: 4),
 
-
                   // Данные берутся из App 1
                   Table(
                     border: TableBorder.all(),
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                     children: [
                       TableRow(
                         children: [
-                          for (int j = 0; j < lFactorPoints + 1; j++)
+                          TableCell(
+                            child: Container(
+                              height: 64,
+                              alignment: Alignment.center,
+                              child: Text(
+                                '№ экземпляра объединенной выборки',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                          for (int j = 0; j < tableData[0].length; j++)
                             TableCell(
                               child: Container(
-                                height: 30,
+                                height: 64,
                                 alignment: Alignment.center,
-                                child: Text(
-                                  (j == 0)
-                                      ? '№ экземпляра объединенной выборки'
-                                      : 'Параметр P для заданной наработки t, ч',
+                                child: SelectableText.rich(
+                                  TextSpan(children: [
+                                    TextSpan(
+                                        text:
+                                            'Параметр P для заданной наработки t'),
+                                    TextSpan(
+                                        text: (j + 1).toString(),
+                                        style: TextStyle(fontSize: 10)),
+                                    TextSpan(text: ', ч'),
+                                  ]),
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
+                                    fontSize: 14,
                                   ),
                                 ),
                               ),
                             ),
                         ],
                       ),
-                      for (int i = 0;
-                          i < trainingSetVolume + validationSetVolume + 1;
-                          i++)
+                      for (int i = 0; i < tableData.length; i++)
                         TableRow(
                           children: [
-                            for (int j = 0; j < lFactorPoints + 1; j++)
+                            TableCell(
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: SelectableText.rich(TextSpan(
+                                  children: [
+                                    TextSpan(
+                                        text: (i + 1).toString(),
+                                        style: TextStyle(fontSize: 14)),
+                                  ],
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                )),
+                              ),
+                            ),
+                            for (int j = 0; j < tableData[0].length; j++)
                               TableCell(
                                 child: Container(
-                                  height: 30,
                                   alignment: Alignment.center,
-                                  child: Text(
-                                    (i == 0 && j == 0)
-                                        ? ''
-                                        : (i == 0)
-                                            ? 't${tableData[i][j]}'
-                                            : (j == 0)
-                                                ? '${tableData[i][j]}'
-                                                : 'Значение из App 1',
-
-                                    style: TextStyle(
-                                      fontWeight: (i == 0 || j == 0)
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
+                                  padding: EdgeInsets.all(8),
+                                  child: TextFormField(
+                                    onChanged: (value) {
+                                      setState(() {
+                                        tableData[i][j] = double.tryParse(
+                                            value.replaceAll(',', '.'));
+                                      });
+                                    },
+                                    initialValue: tableData[i].isNotEmpty
+                                        ? (tableData[i][j] ?? '').toString()
+                                        : '',
+                                    keyboardType: TextInputType.number,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      hintText: '0.${i + 1}',
                                     ),
                                   ),
                                 ),
@@ -213,9 +209,7 @@ class _SecondAppDataFieldsThreePageState
                   Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: Text(
-
                       'Таблица 4 - Зависимость среднего значения P экземпляров множества n от наработки t',
-
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -224,7 +218,6 @@ class _SecondAppDataFieldsThreePageState
                   ),
                   SizedBox(height: 4),
                   Table(
-
                     // второй столбец рассчитываем по формуле (2), а третий столбец - методом линейной интерполяции таблицы 3.
 
                     border: TableBorder.all(),
@@ -257,9 +250,7 @@ class _SecondAppDataFieldsThreePageState
                           ),
                         ],
                       ),
-                      for (int i = 1;
-                          i <= trainingSetVolume + validationSetVolume;
-                          i++)
+                      for (int i = 0; i < average.length; i++)
                         TableRow(
                           children: [
                             TableCell(
@@ -267,7 +258,7 @@ class _SecondAppDataFieldsThreePageState
                                 height: 30,
                                 alignment: Alignment.center,
                                 child: Text(
-                                  't$i',
+                                  't${i + 1}',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -279,7 +270,8 @@ class _SecondAppDataFieldsThreePageState
                                 height: 30,
                                 alignment: Alignment.center,
                                 child: Text(
-                                  'P (t$i)',
+                                  (average[i] ?? 0).toStringAsFixed(3),
+                                  style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                               ),
                             ),
@@ -288,40 +280,6 @@ class _SecondAppDataFieldsThreePageState
                     ],
                   ),
                   SizedBox(height: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '№ экземпляра из m, для которого отобразить формулу вида P = f2 (t)',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      SizedBox(height: 4),
-                      SizedBox(
-                        width: 720,
-                        child: TextFormField(
-                          style: TextStyle(fontSize: 20, height: 1),
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(gapPadding: 2),
-                            hintText: '10',
-                            hintStyle: TextStyle(fontSize: 20),
-                            labelStyle: TextStyle(fontSize: 2),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              n = int.tryParse(value) ?? 0;
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    // Здесь должен отображаться результат работы функции по расчту формулы (4),
-                    // resultText выводится для примера
-                    '$resultText',
-                    style: TextStyle(fontSize: 20, height: 1),
-                  ),
                 ],
               ),
             ),

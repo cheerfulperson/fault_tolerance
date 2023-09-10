@@ -11,7 +11,7 @@ class AppStorage {
   String? get fileName => _fileName;
 
   Future<void> saveToFile(
-      {required bool isNeedNewPath, required Map<String, dynamic> data}) async {
+      {required bool isNeedNewPath, required Map<String, dynamic> data, String? suffix}) async {
     String? filePath = _fileName;
     if (isNeedNewPath || filePath == null || filePath.isEmpty) {
       filePath = await FilePicker.platform.saveFile(

@@ -1,6 +1,9 @@
+import 'package:Method/providers/first_app_provider.dart';
+import 'package:Method/providers/second_app_providers.dart';
 import 'package:Method/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class AppHeaderBar extends AppBar {
   AppHeaderBar({super.key, required this.nextPage, this.onClickNext});
@@ -22,8 +25,8 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
           child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               AppHeaderButton(
                 text: 'Главный экран',
@@ -42,10 +45,8 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
                 text: 'Сохранить',
                 assetName: 'assets/icons/file-earmark.svg',
                 onClick: () {
-                  bool canPop = Navigator.canPop(context);
-                  if (canPop) {
-                    Navigator.pop(context);
-                  }
+                  Provider.of<SecondAppProvider>(context, listen: false)
+                      .saveToFile();
                 },
               ),
               const SizedBox(
@@ -55,10 +56,8 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
                 text: 'Сохранить как',
                 assetName: 'assets/icons/download.svg',
                 onClick: () {
-                  bool canPop = Navigator.canPop(context);
-                  if (canPop) {
-                    Navigator.pop(context);
-                  }
+                  Provider.of<SecondAppProvider>(context, listen: false)
+                      .saveToFile(isNeedNewPath: true);
                 },
               ),
               const SizedBox(
@@ -68,10 +67,12 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
                 text: 'Открыть сохранение',
                 assetName: 'assets/icons/folder2-open.svg',
                 onClick: () {
-                  bool canPop = Navigator.canPop(context);
-                  if (canPop) {
-                    Navigator.pop(context);
-                  }
+                  Provider.of<SecondAppProvider>(context, listen: false)
+                      .importData()
+                      .then((value) => Navigator.pushNamed(
+                          context,
+                          ModalRoute.of(context)?.settings.name ??
+                              secondAppRoute));
                 },
               ),
               const SizedBox(
@@ -81,10 +82,14 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
                 text: 'Отменить последнее действие',
                 assetName: 'assets/icons/arrow-90deg-left.svg',
                 onClick: () {
-                  bool canPop = Navigator.canPop(context);
-                  if (canPop) {
-                    Navigator.pop(context);
-                  }
+                  Provider.of<SecondAppProvider>(context, listen: false)
+                      .undoLast();
+                  try {
+                    Navigator.pushNamed(
+                        context,
+                        ModalRoute.of(context)?.settings.name ??
+                            secondAppRoute);
+                  } catch (e) {}
                 },
               ),
             ],

@@ -44,6 +44,7 @@ dependencies:
   uuid: ^3.0.7
   lazy_memo: ^0.1.7
   file_picker: ^5.3.1
+  function_tree: ^0.8.13
 
 dev_dependencies:
   flutter_test:
