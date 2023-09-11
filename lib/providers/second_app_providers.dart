@@ -207,6 +207,7 @@ class SecondAppProvider with ChangeNotifier {
 
   void setFourthFormula(String value) {
     _fourthFormula = value;
+    _appResults = calculateByF5(_workTime);
     pushToHistory();
     notifyListeners();
   }

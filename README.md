@@ -1,4 +1,4 @@
-# borovic
+# Method
 
 A new Flutter project.
 

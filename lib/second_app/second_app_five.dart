@@ -70,6 +70,7 @@ class _SecondAppDataFieldsFivePageState
                                     hintStyle: TextStyle(fontSize: 20),
                                     labelStyle: TextStyle(fontSize: 2),
                                   ),
+                                  initialValue: provider.workTime.toString(),
                                   onChanged: (value) {
                                     _valueDebouncer.run(() {
                                       provider.setWorkTime(double.tryParse(
@@ -94,7 +95,7 @@ class _SecondAppDataFieldsFivePageState
                       // расчитываем по формуле (5), какому Ik эквивалентна эта наработка
                       //по формуле 2 рассчитываем интересующий параметр P
                       //Затем выводится полученное значение интересующего параметра P.
-                      'Результат: ${provider.appResults}',
+                      'Результат: ${(provider.appResults)}',
                       style: TextStyle(fontSize: 20),
                     ),
                   ],

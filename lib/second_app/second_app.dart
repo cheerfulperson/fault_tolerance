@@ -675,168 +675,168 @@ class _SecondAppDataFieldsOnePageState
                                   fontSize: 20,
                                 ),
                               ),
-                               SizedBox(height: 8),
-                  SelectableText.rich(TextSpan(
-                      text:
-                          '** поддерживаемые функции и операторы для формул: ${supportedFunctions.join(' , ')}')),
+                              SizedBox(height: 8),
+                              SelectableText.rich(TextSpan(
+                                  text:
+                                      '** поддерживаемые функции и операторы для формул: ${supportedFunctions.join(' , ')}')),
                               SizedBox(
                                 height: 4,
                               ),
-                            ],
-                          ),
-// Начало
-
-                          Container(
-                            child: Table(
-                                defaultVerticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                columnWidths: const <int, TableColumnWidth>{
-                                  0: FixedColumnWidth(180),
-                                  1: FlexColumnWidth(),
-                                },
-                                children: [
-                                  TableRow(
+                              Container(
+                                child: Table(
+                                    defaultVerticalAlignment:
+                                        TableCellVerticalAlignment.middle,
+                                    columnWidths: const <int, TableColumnWidth>{
+                                      0: FixedColumnWidth(180),
+                                      1: FlexColumnWidth(),
+                                    },
                                     children: [
-                                      Container(
-                                        height: 72,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            border: Border(
-                                                left: BorderSide(width: 1),
-                                                bottom: BorderSide(width: 1),
-                                                top: BorderSide(width: 1),
-                                                right: BorderSide(width: 1))),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: SizedBox(
-                                            child: Text(
-                                              '№ экземпляра объединенной выборки',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        height: 72,
-                                        decoration: BoxDecoration(
-                                            border: Border(
-                                                top: BorderSide(width: 1),
-                                                bottom: BorderSide(width: 1),
-                                                right: BorderSide(width: 1))),
-                                        child: Expanded(
-                                            child: Container(
-                                          height: 70,
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                              border: Border(
-                                                  right: BorderSide(width: 1))),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: SelectableText.rich(
-                                              TextSpan(children: [
-                                                TextSpan(
-                                                    text:
-                                                        'Формула заввисимости P от ${factorString.shortName.toLowerCase()} '),
-                                                TextSpan(
-                                                    text: factorString
-                                                        .symbol.fullName),
-                                                TextSpan(
-                                                    text: factorString
-                                                        .symbol.shortName,
-                                                    style: TextStyle(
-                                                        fontSize: 10)),
-                                                TextSpan(
-                                                    text: 'i',
-                                                    style:
-                                                        TextStyle(fontSize: 8))
-                                              ]),
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                          ),
-                                        )),
-                                      ),
-                                    ],
-                                  ),
-                                  for (int index = 0;
-                                      index < listFormulaParams.length;
-                                      index++)
-                                    TableRow(
-                                      children: [
-                                        Container(
-                                          height: 72,
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                              border: Border(
-                                                  left: BorderSide(width: 1),
-                                                  bottom: BorderSide(width: 1),
-                                                  right: BorderSide(width: 1))),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: SizedBox(
-                                              child: Text(
-                                                (index + 1).toString(),
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          height: 72,
-                                          decoration: BoxDecoration(
-                                              border: Border(
-                                                  bottom: BorderSide(width: 1),
-                                                  right: BorderSide(width: 1))),
-                                          child: Expanded(
+                                      TableRow(
+                                        children: [
+                                          TableCell(
                                               child: Container(
-                                            height: 70,
+                                            height: 72,
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
                                                 border: Border(
+                                                    left: BorderSide(width: 1),
+                                                    bottom:
+                                                        BorderSide(width: 1),
+                                                    top: BorderSide(width: 1),
                                                     right:
                                                         BorderSide(width: 1))),
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.all(8.0),
-                                              child: TextFormField(
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    listFormulaParams[index] =
-                                                        value;
-                                                  });
-                                                },
-                                                initialValue: deviceParams
-                                                        .isNotEmpty
-                                                    ? listFormulaParams[index]
-                                                            ?.toString() ??
-                                                        ''
-                                                    : '',
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                decoration: InputDecoration(
-                                                  border: OutlineInputBorder(),
-                                                  hintText:
-                                                      '0.25 * ln(2 * x^2 + 0.23)',
+                                              child: SizedBox(
+                                                child: Text(
+                                                  '№ экземпляра объединенной выборки',
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                  ),
                                                 ),
                                               ),
                                             ),
                                           )),
-                                        ),
-                                      ],
-                                    )
-                                ]),
-                          )
+                                          TableCell(
+                                            child: Container(
+                                              height: 72,
+                                              decoration: BoxDecoration(
+                                                  border: Border(
+                                                      top: BorderSide(width: 1),
+                                                      bottom:
+                                                          BorderSide(width: 1),
+                                                      right: BorderSide(
+                                                          width: 1))),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: SelectableText.rich(
+                                                  TextSpan(children: [
+                                                    TextSpan(
+                                                        text:
+                                                            'Формула заввисимости P от ${factorString.shortName.toLowerCase()} '),
+                                                    TextSpan(
+                                                        text: factorString
+                                                            .symbol.fullName),
+                                                    TextSpan(
+                                                        text: factorString
+                                                            .symbol.shortName,
+                                                        style: TextStyle(
+                                                            fontSize: 10)),
+                                                    TextSpan(
+                                                        text: 'i',
+                                                        style: TextStyle(
+                                                            fontSize: 8))
+                                                  ]),
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      for (int index = 0;
+                                          index < listFormulaParams.length;
+                                          index++)
+                                        TableRow(
+                                          children: [
+                                            TableCell(
+                                                child: Container(
+                                              height: 72,
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                  border: Border(
+                                                      left:
+                                                          BorderSide(width: 1),
+                                                      bottom:
+                                                          BorderSide(width: 1),
+                                                      right: BorderSide(
+                                                          width: 1))),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: SizedBox(
+                                                  child: Text(
+                                                    (index + 1).toString(),
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            )),
+                                            TableCell(
+                                                child: Container(
+                                              height: 72,
+                                              decoration: BoxDecoration(
+                                                  border: Border(
+                                                      bottom:
+                                                          BorderSide(width: 1),
+                                                      right: BorderSide(
+                                                          width: 1))),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: TextFormField(
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      listFormulaParams[index] =
+                                                          value;
+                                                    });
+                                                  },
+                                                  initialValue: deviceParams
+                                                          .isNotEmpty
+                                                      ? listFormulaParams[index]
+                                                              ?.toString() ??
+                                                          ''
+                                                      : '',
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                  decoration: InputDecoration(
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    hintText:
+                                                        '0.25 * ln(2 * x^2 + 0.23)',
+                                                  ),
+                                                ),
+                                              ),
+                                            )),
+                                          ],
+                                        )
+                                    ]),
+                              )
+                            ],
+                          ),
                         ],
                       ),
                     ),
