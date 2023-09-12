@@ -56,8 +56,13 @@ class _SecondAppDataFieldsFivePageState
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Введите время наработки t:',
+                                'Время наработки t, ч:',
                                 style: TextStyle(fontSize: 20),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                '** Пожалуйста, введите значение',
+                                style: TextStyle(fontSize: 14),
                               ),
                               SizedBox(height: 4),
                               SizedBox(
@@ -86,18 +91,17 @@ class _SecondAppDataFieldsFivePageState
                       ),
                     ),
                     SizedBox(height: 16),
-                    SelectableText.rich(TextSpan(
-                        text:
-                            '** Если в таблице появилось значение null, то какая-то формула введена неверно.')),
-                    SizedBox(height: 8),
                     Text(
                       //
                       // расчитываем по формуле (5), какому Ik эквивалентна эта наработка
                       //по формуле 2 рассчитываем интересующий параметр P
                       //Затем выводится полученное значение интересующего параметра P.
-                      'Результат: ${(provider.appResults)}',
+                      'Значение имитационного фактора БУКВА: ${(provider.appResults)}',
                       style: TextStyle(fontSize: 20),
                     ),
+                    SelectableText.rich(TextSpan(
+                        text:
+                            '** Если результатом является значение null, то какая-то формула в программе введена неверно')),
                   ],
                 ),
               ),

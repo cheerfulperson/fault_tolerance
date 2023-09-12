@@ -21,7 +21,7 @@ class SecondAppNavBar extends StatelessWidget {
                 child: Row(
                   children: [
                     NavBarButton(
-                      text: 'Ввод \nданных',
+                      text: 'Исходные \nданные',
                       // text: '1',
                       assetName: 'assets/icons/file-earmark-bar-graph.svg',
                       onClick: () {
@@ -35,7 +35,7 @@ class SecondAppNavBar extends StatelessWidget {
                     ),
                     NavBarButton(
                       text:
-                          'Зависимость параметра P\nот имитационного фактора',
+                          'Зависимость значения Pср\nот имитационного фактора F',
                       // text: '2',
                       assetName: 'assets/icons/file-earmark-spreadsheet.svg',
                       onClick: () {
@@ -49,7 +49,7 @@ class SecondAppNavBar extends StatelessWidget {
                     ),
                     NavBarButton(
                       text:
-                          'Ускоренные испытания на \nдлительную наработку ',
+                          'Испытания на длительную наработку,\n влияние наработки t на значение Pср',
                       // text: '3',
                       assetName: 'assets/icons/file-earmark-spreadsheet.svg',
 
@@ -64,8 +64,7 @@ class SecondAppNavBar extends StatelessWidget {
                       width: 8,
                     ),
                     NavBarButton(
-                      text:
-                          'Зависимость параметра P\nот наработки t',
+                      text: 'Функция перерасчета, \nопределение ее качества',
                       // text: '4',
                       assetName: 'assets/icons/file-earmark-spreadsheet.svg',
 
@@ -159,7 +158,7 @@ class NavBarButton extends StatelessWidget {
             ),
             Text(
               text,
-                     textAlign: TextAlign.center,
+              textAlign: TextAlign.center,
               style: const TextStyle(
                   color: Color.fromARGB(255, 36, 36, 36),
                   fontSize: 14,
