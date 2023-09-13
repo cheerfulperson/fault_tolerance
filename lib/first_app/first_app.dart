@@ -39,25 +39,24 @@ class _FirstAppState extends State<FirstApp> {
     super.initState();
     _node = FocusNode(debugLabel: 'Focus');
 
-      final String text =
-          Provider.of<FirstAppProvider>(context, listen: false).deviceName;
-      final String count = Provider.of<FirstAppProvider>(context, listen: false)
-          .deviceCount
-          .toStringAsFixed(0);
-      _nameController.value = _nameController.value.copyWith(
-        text: text,
-        selection:
-            TextSelection(baseOffset: text.length, extentOffset: text.length),
-        composing: TextRange.empty,
-      );
-      _countController.value = _countController.value.copyWith(
-        text: count,
-        selection:
-            TextSelection(baseOffset: count.length, extentOffset: count.length),
-        composing: TextRange.empty,
-      );
-      deviceName = '';
-
+    final String text =
+        Provider.of<FirstAppProvider>(context, listen: false).deviceName;
+    final String count = Provider.of<FirstAppProvider>(context, listen: false)
+        .deviceCount
+        .toStringAsFixed(0);
+    _nameController.value = _nameController.value.copyWith(
+      text: text,
+      selection:
+          TextSelection(baseOffset: text.length, extentOffset: text.length),
+      composing: TextRange.empty,
+    );
+    _countController.value = _countController.value.copyWith(
+      text: count,
+      selection:
+          TextSelection(baseOffset: count.length, extentOffset: count.length),
+      composing: TextRange.empty,
+    );
+    deviceName = '';
   }
 
   @override
@@ -288,7 +287,7 @@ class _FirstAppState extends State<FirstApp> {
                                   child: SizedBox(
                                       width: 720,
                                       child: Text(
-                                          'В случае, если информативные параметры ППП $deviceName интересующего типа известны изначально, то рекомендуемое их число k выбирать от 2-х до 4-х.',
+                                          '** В случае, если информативные параметры ППП $deviceName интересующего типа известны изначально, то рекомендуемое их число k выбирать от 2-х до 4-х.',
                                           textAlign: TextAlign.left,
                                           style: TextStyle(
                                             fontSize: 14,
