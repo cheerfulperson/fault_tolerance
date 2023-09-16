@@ -83,8 +83,13 @@ class _SecondAppDataFieldsFourPageState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Выбранное значение наработки t:',
+                        'Значение времени наработки t:',
                         style: TextStyle(fontSize: 20),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '** Пожалуйста, выберите необходимое значение',
+                        style: TextStyle(fontSize: 14),
                       ),
                       const SizedBox(height: 4),
                       ToggleButtons(
@@ -108,14 +113,19 @@ class _SecondAppDataFieldsFourPageState
                     ],
                   ),
                   SizedBox(height: 16),
+                  Text(
+                    'Функция для расчета имитационных значений ФАКТОРА F в зависимости от задаваемой наработки:',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    '** Пожалуйста, ведите математическую модель зависимости',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  SizedBox(height: 4),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Функция пересчета:', // Replace with the desired text
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      SizedBox(height: 4),
                       SizedBox(
                         width: 720,
                         child: TextFormField(
@@ -139,19 +149,21 @@ class _SecondAppDataFieldsFourPageState
                   ),
                   SizedBox(height: 16),
                   Padding(
-                    padding: EdgeInsets.only(top: 16),
+                    padding: EdgeInsets.only(top: 2),
                     child: Text(
-                      'Таблица 5 - Зависимость параметра P i-го экземпляра объединенной выборки от наработки t',
+                      'Таблица 6 - Значения Pпр i и Pист i, соответствующие заданной наработке t для экземпляров контрольной выборки',
                       style: TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        // fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(
+                    height: 4,
+                  ),
                   SelectableText.rich(TextSpan(
                       text:
-                          '** Если в таблице появилось значение null, то какая-то формула введена неверно.')),
+                          '** Если в таблице появилось значение null, то какая-то формула в программе введена неверно')),
                   const SizedBox(
                     height: 4,
                   ),
@@ -165,7 +177,7 @@ class _SecondAppDataFieldsFourPageState
                               height: 30,
                               alignment: Alignment.center,
                               child: Text(
-                                'Значение t, час',
+                                '№ экземпляра контрольной выборки',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -177,7 +189,7 @@ class _SecondAppDataFieldsFourPageState
                               height: 30,
                               alignment: Alignment.center,
                               child: Text(
-                                'Pпр i',
+                                'Прогнозное значение параметра Pпр i',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -189,7 +201,7 @@ class _SecondAppDataFieldsFourPageState
                               height: 30,
                               alignment: Alignment.center,
                               child: Text(
-                                'Pист i',
+                                'Истинное значение параметра Pист i',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -239,7 +251,19 @@ class _SecondAppDataFieldsFourPageState
                   ),
                   SizedBox(height: 16),
                   Padding(
-                    padding: EdgeInsets.only(top: 16),
+                    padding: EdgeInsets.only(top: 2),
+                    child: Text(
+                      'Средняя ошибка прогнозирования: ',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        // fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  // SizedBox(height: 16),
+                  Padding(
+                    padding: EdgeInsets.only(top: 8),
                     child: SelectableText.rich(
                       TextSpan(children: [
                         TextSpan(text: '△'),

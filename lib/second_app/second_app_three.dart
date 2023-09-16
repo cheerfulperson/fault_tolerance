@@ -103,15 +103,25 @@ class _SecondAppDataFieldsThreePageState
                   horizontal: 8.0,
                 ),
                 children: <Widget>[
+                  // Здесь нужно добавить поле, в которое пользователь будет вводить количество заданных наработок t
+                  // Т.е. Количество столбцев Таблицы 4 не совпадает со значением переменной l, а напрямую зависит
+                  // от значения, которое пользователь введет в поле с названием
+                  // "Количество точек наработки". Примечание под названием поля: Пожалуйста, введите
+                  // число от 1 до 10
                   Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: Text(
-                      'Таблица 3 - Зависимость параметра P i-го экземпляра объединенной выборки от наработки  t',
+                      'Таблица 4 - Зависимость параметра P i-го экземпляра объединенной выборки от наработки t',
                       style: TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        // fontWeight: FontWeight.bold,
                       ),
                     ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    '** Пожалуйста, заполните таблицу',
+                    style: TextStyle(fontSize: 14),
                   ),
                   SizedBox(height: 4),
 
@@ -209,13 +219,14 @@ class _SecondAppDataFieldsThreePageState
                   Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: Text(
-                      'Таблица 4 - Зависимость среднего значения P экземпляров множества n от наработки t',
+                      'Таблица 5 - Зависимость среднего значения P экземпляров обучающей выборки от наработки t',
                       style: TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        // fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
+
                   SizedBox(height: 4),
                   Table(
                     // второй столбец рассчитываем по формуле (2), а третий столбец - методом линейной интерполяции таблицы 3.
@@ -241,7 +252,7 @@ class _SecondAppDataFieldsThreePageState
                               height: 30,
                               alignment: Alignment.center,
                               child: Text(
-                                'Среднее значение параметра P экземпляров множества n',
+                                'Среднее значение параметра P экземпляров обучающей выборки',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),

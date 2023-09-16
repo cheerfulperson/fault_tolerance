@@ -156,6 +156,52 @@ class _SecondAppDataFieldsOnePageState
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              Text(
+                                'Название прибора, который будет участвовать в эксперименте:',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              SizedBox(
+                                width: 720,
+                                child: TextFormField(
+                                  focusNode: btNameFocusNode,
+                                  initialValue: btName,
+                                  keyboardType: TextInputType.text,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      btName = value;
+                                    });
+                                    Provider.of<SecondAppProvider>(context,
+                                            listen: false)
+                                        .setDeviceName(value);
+                                  },
+                                  style: TextStyle(fontSize: 20, height: 1),
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(gapPadding: 2),
+                                    hintText: 'КТ872А',
+                                    hintStyle: TextStyle(fontSize: 20),
+                                    labelStyle: TextStyle(fontSize: 20),
+                                  ),
+                                  onFieldSubmitted: (value) {
+                                    FocusScope.of(context)
+                                        .requestFocus(trainingSetFocusNode);
+                                    validationSetFocusNode.dispose();
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               Text(
                                 'Имитационный фактор F:',
                                 style: TextStyle(fontSize: 20),
@@ -206,55 +252,35 @@ class _SecondAppDataFieldsOnePageState
                           const SizedBox(
                             height: 16,
                           ),
+
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Название прибора, который будет участвовать в эксперименте:',
-                                style: TextStyle(fontSize: 20),
+                              RichText(
+                                text: TextSpan(
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.black),
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text: 'Объём обучающей выборки ',
+                                    ),
+                                    TextSpan(
+                                      text: 'n',
+                                      style: TextStyle(
+                                          fontStyle: FontStyle.italic),
+                                    ),
+                                    TextSpan(
+                                      text: ':',
+                                    ),
+                                  ],
+                                ),
                               ),
                               const SizedBox(
                                 height: 4,
                               ),
-                              SizedBox(
-                                width: 720,
-                                child: TextFormField(
-                                  focusNode: btNameFocusNode,
-                                  initialValue: btName,
-                                  keyboardType: TextInputType.text,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      btName = value;
-                                    });
-                                    Provider.of<SecondAppProvider>(context,
-                                            listen: false)
-                                        .setDeviceName(value);
-                                  },
-                                  style: TextStyle(fontSize: 20, height: 1),
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(gapPadding: 2),
-                                    hintText: 'КТ872А',
-                                    hintStyle: TextStyle(fontSize: 20),
-                                    labelStyle: TextStyle(fontSize: 20),
-                                  ),
-                                  onFieldSubmitted: (value) {
-                                    FocusScope.of(context)
-                                        .requestFocus(trainingSetFocusNode);
-                                    validationSetFocusNode.dispose();
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
                               Text(
-                                'Объём обучающей выборки n:',
-                                style: TextStyle(fontSize: 20),
+                                '** Пожалуйста, введите число от 1 до 1000',
+                                style: TextStyle(fontSize: 14),
                               ),
                               const SizedBox(height: 4),
                               SizedBox(
@@ -298,9 +324,33 @@ class _SecondAppDataFieldsOnePageState
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              RichText(
+                                text: TextSpan(
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors
+                                          .black), // Установите цвет всего текста на черный
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text: 'Объём контрольной выборки ',
+                                    ),
+                                    TextSpan(
+                                      text: 'm',
+                                      style: TextStyle(
+                                          fontStyle: FontStyle.italic),
+                                    ),
+                                    TextSpan(
+                                      text: ':',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
                               Text(
-                                'Объём контрольной выборки m:',
-                                style: TextStyle(fontSize: 20),
+                                '** Пожалуйста, введите число от 1 до 1000',
+                                style: TextStyle(fontSize: 14),
                               ),
                               const SizedBox(
                                 height: 4,
@@ -343,9 +393,34 @@ class _SecondAppDataFieldsOnePageState
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              RichText(
+                                text: TextSpan(
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors
+                                          .black), // Установите цвет всего текста на черный
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text:
+                                          'Количество точек имитационного фактора ',
+                                    ),
+                                    TextSpan(
+                                      text: 'l',
+                                      style: TextStyle(
+                                          fontStyle: FontStyle.italic),
+                                    ),
+                                    TextSpan(
+                                      text: ':',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
                               Text(
-                                'Количество точек имитационного фактора l:',
-                                style: TextStyle(fontSize: 20),
+                                '** Пожалуйста, введите число от 1 до 7',
+                                style: TextStyle(fontSize: 14),
                               ),
                               const SizedBox(height: 4),
                               SizedBox(
@@ -379,6 +454,7 @@ class _SecondAppDataFieldsOnePageState
                           const SizedBox(
                             height: 16,
                           ),
+
                           Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,7 +463,7 @@ class _SecondAppDataFieldsOnePageState
                                 TextSpan(children: [
                                   TextSpan(
                                       text:
-                                          'Таблица 1 - Зависимость параметра P i-го экземпляра объединенной выборки от ${factorString.fullName.toLowerCase()} '),
+                                          'Таблица 1 - Зависимость параметра P i-го экземпляра объединенной выборки от фактора ${factorString.fullName.toLowerCase()} '),
                                   TextSpan(text: factorString.symbol.fullName),
                                   TextSpan(
                                       text: factorString.symbol.shortName,
@@ -395,7 +471,7 @@ class _SecondAppDataFieldsOnePageState
                                 ]),
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
-                                  fontWeight: FontWeight.bold,
+                                  // fontWeight: FontWeight.bold,
                                   fontSize: 20,
                                 ),
                               ),
@@ -403,6 +479,13 @@ class _SecondAppDataFieldsOnePageState
                                 height: 4,
                               ),
                             ],
+                          ),
+                          Text(
+                            '** Пожалуйста, заполните таблицу',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          SizedBox(
+                            height: 4,
                           ),
 // Начало
 
@@ -468,7 +551,7 @@ class _SecondAppDataFieldsOnePageState
                                                     TextSpan(children: [
                                                       TextSpan(
                                                           text:
-                                                              'Параметр P при значении ${factorString.shortName.toLowerCase()} '),
+                                                              'Параметр P при значении фактора ${factorString.shortName.toLowerCase()} '),
                                                       TextSpan(
                                                           text: factorString
                                                               .symbol.fullName),
@@ -663,7 +746,7 @@ class _SecondAppDataFieldsOnePageState
                                 TextSpan(children: [
                                   TextSpan(
                                       text:
-                                          'Таблица 2 - Формульная зависимость параметра P i-го экземпляра объединенной выборки от ${factorString.fullName.toLowerCase()} '),
+                                          'Таблица 2 - Полученная  зависимость параметра P i-го экземпляра объединенной выборки от фактора ${factorString.fullName.toLowerCase()} '),
                                   TextSpan(text: factorString.symbol.fullName),
                                   TextSpan(
                                       text: factorString.symbol.shortName,
@@ -671,14 +754,21 @@ class _SecondAppDataFieldsOnePageState
                                 ]),
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
-                                  fontWeight: FontWeight.bold,
+                                  // fontWeight: FontWeight.bold,
                                   fontSize: 20,
                                 ),
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Text(
+                                '** Пожалуйста, заполните таблицу',
+                                style: TextStyle(fontSize: 14),
                               ),
                               SizedBox(height: 8),
                               SelectableText.rich(TextSpan(
                                   text:
-                                      '** поддерживаемые функции и операторы для формул: ${supportedFunctions.join(' , ')}')),
+                                      '** Поддерживаемые функции и операторы для формул: ${supportedFunctions.join(' , ')}')),
                               SizedBox(
                                 height: 4,
                               ),
@@ -737,7 +827,7 @@ class _SecondAppDataFieldsOnePageState
                                                   TextSpan(children: [
                                                     TextSpan(
                                                         text:
-                                                            'Формула заввисимости P от ${factorString.shortName.toLowerCase()} '),
+                                                            'Формула зависимости P от ${factorString.shortName.toLowerCase()} '),
                                                     TextSpan(
                                                         text: factorString
                                                             .symbol.fullName),

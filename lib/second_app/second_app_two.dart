@@ -75,10 +75,10 @@ class _SecondAppDataFieldsTwoPageState
                   ),
                   children: [
                     Text(
-                      'Таблица 2 - Зависимость параметра P от ${factorString.fullName.toLowerCase()}',
+                      'Таблица 3 - Зависимость среднего значения параметра P экземпляров обучающей выборки от имитационного фактора ${factorString.fullName.toLowerCase()}',
                       style: TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        // fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(height: 4),
@@ -122,7 +122,7 @@ class _SecondAppDataFieldsTwoPageState
                                 child: Align(
                                   alignment: Alignment.center,
                                   child: Text(
-                                    'Среднее значение параметра P экземпляров множества n',
+                                    'Среднее значение параметра P экземпляров обучающей выборки',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 18,
@@ -195,8 +195,13 @@ class _SecondAppDataFieldsTwoPageState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Математическая модель зависимости среднего значения параметра P от ${factorString.fullName.toLowerCase()}:', // Replace with the desired text
+                          'Математическая модель зависимости среднего значения параметра P экземпляров обучающей выборки от фактора ${factorString.fullName.toLowerCase()}:', // Replace with the desired text
                           style: TextStyle(fontSize: 20),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          '** Пожалуйста, ведите математическую модель зависимости',
+                          style: TextStyle(fontSize: 14),
                         ),
                         SizedBox(height: 4),
                         SizedBox(
