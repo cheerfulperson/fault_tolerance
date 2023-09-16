@@ -355,6 +355,7 @@ class _DisplayCentersTableData extends State<DisplayCentersTableData> {
           columnWidths: const <int, TableColumnWidth>{
             0: FixedColumnWidth(240),
             1: FlexColumnWidth(),
+            2: FixedColumnWidth(180),
           },
           children: [
             TableRow(children: [
@@ -434,6 +435,19 @@ class _DisplayCentersTableData extends State<DisplayCentersTableData> {
                   ),
                 ]),
               ),
+              Container(
+                height: 64,
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    border: Border(
+                        right: BorderSide(width: 1),
+                        top: BorderSide(width: 1),
+                        bottom: BorderSide(width: 1))),
+                child: Text('Знак условия',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.black, fontSize: 18)),
+              ),
             ]),
             ...context
                 .watch<FirstAppProvider>()
@@ -458,6 +472,58 @@ class _DisplayCentersTableData extends State<DisplayCentersTableData> {
                                   right: BorderSide(width: 1),
                                   bottom: BorderSide(width: 1))),
                           child: Condition(param: e)),
+                      Container(
+                          height: 32,
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              border: Border(
+                                  right: BorderSide(width: 1),
+                                  bottom: BorderSide(width: 1))),
+                          child: DropdownButtonFormField<String>(
+                              value: e.isBigger ? '1' : '0',
+                              isExpanded: true,
+                              style: TextStyle(fontSize: 20, height: 1),
+                              icon: Icon(Icons.arrow_drop_down),
+                              alignment: Alignment.center,
+                              decoration: const InputDecoration(
+                                  contentPadding: EdgeInsets.only(
+                                      bottom: 12, left: 8, right: 8),
+                                  hoverColor:
+                                      Color.fromARGB(255, 255, 255, 255),
+                                  border: InputBorder.none,
+                                  fillColor: Color.fromRGBO(238, 238, 238, 1),
+                                  focusColor: Colors.white,
+                                  filled: true,
+                                  hintStyle: TextStyle(color: Colors.black26),
+                                  labelStyle: TextStyle(fontSize: 20)),
+                              items: [
+                                DropdownMenuItem(
+                                  child: Text('>',
+                                      style: TextStyle(color: Colors.black)),
+                                  alignment: Alignment.center,
+                                  value: '1',
+                                ),
+                                DropdownMenuItem(
+                                  child: Text('<',
+                                      style: TextStyle(color: Colors.black)),
+                                  alignment: Alignment.center,
+                                  value: '0',
+                                )
+                              ],
+                              onChanged: (data) {
+                                Provider.of<FirstAppProvider>(
+                                        context,
+                                        listen: false)
+                                    .updateDeviceParam(
+                                        id: e.id,
+                                        name: e.name,
+                                        shortName: e.shortName,
+                                        shortNameDescription:
+                                            e.shortNameDescription,
+                                        unit: e.unit,
+                                        isBigger: data == '1');
+                              })),
                     ]))
                 .toList()
           ],
@@ -478,11 +544,8 @@ class Condition extends StatelessWidget {
   Widget build(BuildContext context) {
     CenteredValue centeredValue =
         context.watch<FirstAppProvider>().getCenteredValues(param.id);
-    bool isK1Bigger = false;
-    try {
-      isK1Bigger =
-          double.parse(centeredValue.k1) > double.parse(centeredValue.k0);
-    } catch (e) {}
+    bool isK1Bigger = param.isBigger;
+
     return Row(children: [
       Expanded(
           child: Container(

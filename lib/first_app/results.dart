@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'components/header.dart';
 import 'components/nav_bar.dart';
 
+enum ResultType { training, finalResult }
+
 class FirstAppResults extends StatefulWidget {
   const FirstAppResults({super.key, required this.title});
   final String title;
@@ -15,6 +17,8 @@ class FirstAppResults extends StatefulWidget {
 
 class _FirstAppResultsState extends State<FirstAppResults> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  ResultType currentResult = ResultType.training;
+
   void submitForm(Function cb) {
     if (_formKey.currentState!.validate()) {
       cb();
@@ -24,7 +28,13 @@ class _FirstAppResultsState extends State<FirstAppResults> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-    Quality quality = context.watch<FirstAppProvider>().getQuality();
+    late Quality quality;
+
+    if (currentResult == ResultType.finalResult) {
+      quality = context.watch<FirstAppProvider>().getFinalQuality();
+    } else {
+      quality = context.watch<FirstAppProvider>().getQuality();
+    }
 
     return Scaffold(
       appBar: AppHeaderBar(nextPage: ''),
@@ -47,12 +57,45 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                         horizontal: 8.0,
                       ),
                       children: [
+                        Text(
+                          'Сделать расчет для выборки:',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        const SizedBox(height: 4),
+                        ToggleButtons(
+                          isSelected: [
+                            currentResult == ResultType.training,
+                            currentResult == ResultType.finalResult,
+                          ],
+                          borderWidth: 2,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          onPressed: (int index) {
+                            setState(() {
+                              if (index == 0) {
+                                currentResult = ResultType.training;
+                              } else {
+                                currentResult = ResultType.finalResult;
+                              }
+                            });
+                          },
+                          children: [
+                            Text(
+                              ' Обучающая выборка ',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            Text(
+                              ' Контрольная выборка ',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
                         SelectableText.rich(
                           TextSpan(
                               children: [
                                 TextSpan(
                                     text:
-                                        'Количество правильно распознанных по прогнозу экземпляров в классе K'),
+                                        'Количество правильно распознанных по прогнозу экземпляров в классе K:'),
                                 TextSpan(
                                     text: '1', style: TextStyle(fontSize: 12)),
                               ],
@@ -65,7 +108,7 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                         SelectableText.rich(
                           TextSpan(
                               children: [
-                                TextSpan(text: ' - n'),
+                                TextSpan(text: '   n'),
                                 TextSpan(
                                     text: '1→1',
                                     style: TextStyle(fontSize: 12)),
@@ -82,7 +125,7 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                               children: [
                                 TextSpan(
                                     text:
-                                        'Количество правильно распознанных по прогнозу экземпляров в классе K'),
+                                        'Количество правильно распознанных по прогнозу экземпляров в классе K:'),
                                 TextSpan(
                                     text: '0', style: TextStyle(fontSize: 12)),
                               ],
@@ -95,7 +138,7 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                         SelectableText.rich(
                           TextSpan(
                               children: [
-                                TextSpan(text: ' - n'),
+                                TextSpan(text: '   n'),
                                 TextSpan(
                                     text: '0→0',
                                     style: TextStyle(fontSize: 12)),
@@ -116,7 +159,7 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                                 TextSpan(
                                     text: 'прав',
                                     style: TextStyle(fontSize: 12)),
-                                TextSpan(text: ' для всей обучающей выборки'),
+                                TextSpan(text: ' для всей обучающей выборки:'),
                               ],
                               style:
                                   TextStyle(color: Colors.black, fontSize: 20)),
@@ -127,7 +170,7 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                         SelectableText.rich(
                           TextSpan(
                               children: [
-                                TextSpan(text: ' - P'),
+                                TextSpan(text: '   P'),
                                 TextSpan(
                                     text: 'прав',
                                     style: TextStyle(fontSize: 12)),
@@ -149,7 +192,7 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                                         'Вероятность принятия по прогнозу ошибочных решений P'),
                                 TextSpan(
                                     text: 'ош', style: TextStyle(fontSize: 12)),
-                                TextSpan(text: ' для всей обучающей выборки'),
+                                TextSpan(text: ' для всей обучающей выборки:'),
                               ],
                               style:
                                   TextStyle(color: Colors.black, fontSize: 20)),
@@ -160,7 +203,7 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                         SelectableText.rich(
                           TextSpan(
                               children: [
-                                TextSpan(text: ' - P'),
+                                TextSpan(text: '   P'),
                                 TextSpan(
                                     text: 'ош', style: TextStyle(fontSize: 12)),
                                 TextSpan(
@@ -178,7 +221,7 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                               children: [
                                 TextSpan(
                                     text:
-                                        'Вероятность правильного прогноза экземпляров класса K'),
+                                        'Вероятность правильного прогноза экземпляров класса K:'),
                                 TextSpan(
                                     text: '1', style: TextStyle(fontSize: 12)),
                               ],
@@ -191,7 +234,7 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                         SelectableText.rich(
                           TextSpan(
                               children: [
-                                TextSpan(text: ' - P'),
+                                TextSpan(text: '   P'),
                                 TextSpan(
                                     text: 'прав',
                                     style: TextStyle(fontSize: 12)),
@@ -214,7 +257,7 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                               children: [
                                 TextSpan(
                                     text:
-                                        'Вероятность правильного прогноза экземпляров класса K'),
+                                        'Вероятность правильного прогноза экземпляров класса K:'),
                                 TextSpan(
                                     text: '0', style: TextStyle(fontSize: 12)),
                               ],
@@ -227,7 +270,7 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                         SelectableText.rich(
                           TextSpan(
                               children: [
-                                TextSpan(text: ' - P'),
+                                TextSpan(text: '   P'),
                                 TextSpan(
                                     text: 'прав',
                                     style: TextStyle(fontSize: 12)),
@@ -248,7 +291,7 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                         SelectableText.rich(
                           TextSpan(
                               children: [
-                                TextSpan(text: 'Риск потребителя P'),
+                                TextSpan(text: 'Риск потребителя P:'),
                                 TextSpan(
                                     text: 'потреб',
                                     style: TextStyle(fontSize: 12)),
@@ -262,7 +305,7 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                         SelectableText.rich(
                           TextSpan(
                               children: [
-                                TextSpan(text: ' - P'),
+                                TextSpan(text: '   P'),
                                 TextSpan(
                                     text: 'потреб',
                                     style: TextStyle(fontSize: 12)),
@@ -279,7 +322,7 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                         SelectableText.rich(
                           TextSpan(
                               children: [
-                                TextSpan(text: 'Риск изготовителя P'),
+                                TextSpan(text: 'Риск изготовителя P:'),
                                 TextSpan(
                                     text: 'изгот',
                                     style: TextStyle(fontSize: 12)),
@@ -293,7 +336,7 @@ class _FirstAppResultsState extends State<FirstAppResults> {
                         SelectableText.rich(
                           TextSpan(
                               children: [
-                                TextSpan(text: ' - P'),
+                                TextSpan(text: '   P'),
                                 TextSpan(
                                     text: 'изгот',
                                     style: TextStyle(fontSize: 12)),

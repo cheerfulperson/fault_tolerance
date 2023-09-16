@@ -33,9 +33,11 @@ class _FRResultsPageState extends State<FRResultsPage> {
 
   @override
   Widget build(BuildContext context) {
+    FirstAppProvider provider = context.watch<FirstAppProvider>();
     double screenHeight = MediaQuery.of(context).size.height;
-    List<FO> deviceFOs = context.watch<FirstAppProvider>().deviceFOs;
-    bool isSorted = context.watch<FirstAppProvider>().isSortedFos;
+    List<FO> deviceFOs = provider.deviceFOs;
+    List<FO> finalDeviceFOs = provider.finalDeviceFOs;
+    bool isSorted = provider.isSortedFos;
 
     return Scaffold(
       appBar: AppHeaderBar(nextPage: ''),
@@ -141,7 +143,7 @@ class _FRResultsPageState extends State<FRResultsPage> {
                           height: 4,
                         ),
                         Text(
-                          'Таблица 2 – Фрагмент результатов ОЭ',
+                          'Таблица 2.1 – Фрагмент результатов ОЭ',
                           style: TextStyle(fontSize: 20),
                         ),
                         const SizedBox(
@@ -150,7 +152,23 @@ class _FRResultsPageState extends State<FRResultsPage> {
                         DisplayTableData(
                           deviceFOs: deviceFOs,
                           isSortedFos: isSorted,
-                        )
+                        ),
+                        if (finalDeviceFOs.length > 0) ...[
+                          const SizedBox(
+                            height: 24,
+                          ),
+                          Text(
+                            'Таблица 2.2 – Фрагмент результатов ОЭ для контрольной выборки',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          DisplayTableData(
+                            deviceFOs: finalDeviceFOs,
+                            isSortedFos: isSorted,
+                          )
+                        ]
                       ],
                     ))),
           ],

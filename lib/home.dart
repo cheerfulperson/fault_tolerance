@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
               ElevatedCard(
                   description:
                       "ПРОГНОЗИРОВАНИЯ НАДЁЖНОСТИ ПОЛУПРОВОДНИКОВЫХ ПРИБОРОВ ПО ЗНАЧЕНИЯМ ИХ ИНФОРМАТИВНЫХ ПАРАМЕТРОВ В НАЧАЛЬНЫЙ МОМЕНТ ВРЕМЕНИ",
-                  imagePath: "assets/images/first-app.png",
+                  imagePath: "assets/images/03-24.jpg",
                   buttonColor: Color.fromARGB(255, 0, 0, 0),
                   toPath: firstAppRoute),
               const SizedBox(
@@ -81,7 +81,7 @@ class _ElevatedCardState extends State<ElevatedCard> {
           padding: const EdgeInsets.all(20.0),
           child: SizedBox(
             width: 540,
-            height: 480,
+            height: 500,
             child: Center(
                 child: Column(
               children: [
@@ -91,6 +91,7 @@ class _ElevatedCardState extends State<ElevatedCard> {
                   height: 320,
                   fit: BoxFit.cover,
                 ),
+                SizedBox(height: 8),
                 Text(
                   widget.description,
                   textAlign: TextAlign.center,

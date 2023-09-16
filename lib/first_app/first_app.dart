@@ -23,6 +23,7 @@ class FirstApp extends StatefulWidget {
 class _FirstAppState extends State<FirstApp> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _countController = TextEditingController();
+  final TextEditingController _finalCountController = TextEditingController();
 
   late FocusNode _node;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -39,25 +40,35 @@ class _FirstAppState extends State<FirstApp> {
     super.initState();
     _node = FocusNode(debugLabel: 'Focus');
 
-      final String text =
-          Provider.of<FirstAppProvider>(context, listen: false).deviceName;
-      final String count = Provider.of<FirstAppProvider>(context, listen: false)
-          .deviceCount
-          .toStringAsFixed(0);
-      _nameController.value = _nameController.value.copyWith(
-        text: text,
-        selection:
-            TextSelection(baseOffset: text.length, extentOffset: text.length),
-        composing: TextRange.empty,
-      );
-      _countController.value = _countController.value.copyWith(
-        text: count,
-        selection:
-            TextSelection(baseOffset: count.length, extentOffset: count.length),
-        composing: TextRange.empty,
-      );
-      deviceName = '';
-
+    final String text =
+        Provider.of<FirstAppProvider>(context, listen: false).deviceName;
+    final String count = Provider.of<FirstAppProvider>(context, listen: false)
+        .deviceCount
+        .toStringAsFixed(0);
+    final String finalDeviceCount =
+        Provider.of<FirstAppProvider>(context, listen: false)
+            .finalDeviceCount
+            .toStringAsFixed(0);
+    _nameController.value = _nameController.value.copyWith(
+      text: text,
+      selection:
+          TextSelection(baseOffset: text.length, extentOffset: text.length),
+      composing: TextRange.empty,
+    );
+    _countController.value = _countController.value.copyWith(
+      text: count,
+      selection:
+          TextSelection(baseOffset: count.length, extentOffset: count.length),
+      composing: TextRange.empty,
+    );
+    _finalCountController.value = _finalCountController.value.copyWith(
+      text: finalDeviceCount,
+      selection: TextSelection(
+          baseOffset: finalDeviceCount.length,
+          extentOffset: finalDeviceCount.length),
+      composing: TextRange.empty,
+    );
+    deviceName = '';
   }
 
   @override
@@ -71,6 +82,7 @@ class _FirstAppState extends State<FirstApp> {
     double screenHeight = MediaQuery.of(context).size.height;
     final _nameDebouncer = Debouncer(milliseconds: 1000);
     final _countDebouncer = Debouncer(milliseconds: 1200);
+    final _finalCountDebouncer = Debouncer(milliseconds: 1000);
 
     return Scaffold(
       appBar: AppHeaderBar(nextPage: ''),
@@ -271,6 +283,77 @@ class _FirstAppState extends State<FirstApp> {
                                 const SizedBox(
                                   height: 16,
                                 ),
+                                Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Объём контрольной выборки был определён в количестве (экземпляров):',
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
+                                      const Text(
+                                        '** Пожалуйста введите число от 5 до 1000',
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
+                                      SizedBox(
+                                          width: 720,
+                                          child: TextFormField(
+                                            controller: _finalCountController,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly,
+                                              NumericalRangeFormatter(
+                                                  max: 1000, min: 0)
+                                            ],
+                                            keyboardType: TextInputType.number,
+                                            onChanged: (value) {
+                                              _finalCountDebouncer.run(() {
+                                                try {
+                                                  int newValue = value != ''
+                                                      ? int.parse(value)
+                                                      : 10;
+                                                  context
+                                                      .read<FirstAppProvider>()
+                                                      .setFinalDevicesCount(
+                                                          newValue);
+                                                } catch (e) {
+                                                  _formKey.currentState!
+                                                      .validate();
+                                                }
+                                              });
+                                            },
+                                            onTapOutside: (event) {
+                                              _node.requestFocus();
+                                            },
+                                            style: const TextStyle(
+                                              fontSize: 20,
+                                              height: 1,
+                                            ),
+                                            decoration: const InputDecoration(
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 0),
+                                                hoverColor: Color(0xFF455A64),
+                                                border: OutlineInputBorder(
+                                                    gapPadding: 2),
+                                                hintText: '100',
+                                                hintStyle: TextStyle(
+                                                    color: Colors.black26),
+                                                labelStyle:
+                                                    TextStyle(fontSize: 20)),
+                                          )),
+                                    ]),
+                                const SizedBox(
+                                  height: 16,
+                                ),
                                 const Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
@@ -288,7 +371,7 @@ class _FirstAppState extends State<FirstApp> {
                                   child: SizedBox(
                                       width: 720,
                                       child: Text(
-                                          'В случае, если информативные параметры ППП $deviceName интересующего типа известны изначально, то рекомендуемое их число k выбирать от 2-х до 4-х.',
+                                          'В случае, если информативные параметры ППП $deviceName интересующего типа известны изначально, то рекомендуемое их число k выбирать от 2-х до 4-х. Если нет, то наиболее подходящие. Параметров может быть от 1 до 7 штук.',
                                           textAlign: TextAlign.left,
                                           style: TextStyle(
                                             fontSize: 14,
@@ -614,7 +697,7 @@ class _DialogAddParamState extends State<DialogAddParam> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const Text(
-                                      'Обозначение величины:',
+                                      'Обозначение параметра:',
                                       style: TextStyle(fontSize: 16),
                                     ),
                                     const SizedBox(
@@ -669,7 +752,7 @@ class _DialogAddParamState extends State<DialogAddParam> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const Text(
-                                      'Описание обозначения величины:',
+                                      'Индекс параметра:',
                                       style: TextStyle(fontSize: 16),
                                     ),
                                     const SizedBox(

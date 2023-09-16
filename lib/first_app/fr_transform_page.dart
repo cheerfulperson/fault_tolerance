@@ -43,11 +43,11 @@ class _FRTransformPageState extends State<FRTransformPage> {
                         horizontal: 8.0,
                       ),
                       children: [
-                                                const SizedBox(
+                        const SizedBox(
                           height: 12,
                         ),
                         Text(
-                          'Таблица 5 – Результаты преобразования информативных параметров в кодовые сигналы для фрагмента результатов ОЭ, показанного в таблице 2',
+                          'Таблица 5 – Результаты преобразования информативных параметров в кодовые сигналы для фрагмента результатов ОЭ, показанного в таблице 2.1',
                           style: TextStyle(fontSize: 20),
                         ),
                         const SizedBox(
@@ -412,36 +412,16 @@ class ElemParams extends StatelessWidget {
 
   List<DeviceParamValue> paramsValue;
   List<CenteredValue> centeredValues;
-  String getParam({String value = '0', required CenteredValue data}) {
-    try {
-      double k1 = double.parse(data.k1);
-      double k0 = double.parse(data.k0);
-      double parsedValue = double.parse(value);
-      bool isK1Biggger = k0 < k1;
-      if (isK1Biggger) {
-        if (parsedValue > k1) {
-          return '1';
-        }
-        if (parsedValue < k0) {
-          return '0';
-        }
-        return 'R';
-      }
-      if (parsedValue > k0) {
-        return '1';
-      }
-      if (parsedValue < k1) {
-        return '0';
-      }
-      return 'R';
-    } catch (e) {
-      return 'R';
-    }
-  }
 
   int index = 0;
   @override
   Widget build(BuildContext context) {
+    String getParam({String value = '0', required CenteredValue data}) {
+      return context
+          .watch<FirstAppProvider>()
+          .getParam(value: value, data: data);
+    }
+
     return Row(
         children: paramsValue.map((data) {
       index += 1;
