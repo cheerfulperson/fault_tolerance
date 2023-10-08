@@ -54,6 +54,7 @@ class _SecondAppDataFieldsFourPageState
     List<double> averageTime = provider.getTimeAverage();
     List<Forecast> forecastData = provider.getForecast();
     double average = provider.getDepsAverage(forecastData);
+    FactorString factorString = provider.getFactorNames();
 
     int index = 0;
     return Scaffold(
@@ -106,17 +107,28 @@ class _SecondAppDataFieldsFourPageState
                           index++;
                           return Text(
                             ' t${index} = ${e.toStringAsFixed(3)} ',
-                            style: TextStyle(fontSize: 20),
+                            style: TextStyle(fontSize: 16),
                           );
                         }).toList(),
                       ),
                     ],
                   ),
                   SizedBox(height: 16),
-                  Text(
-                    'Функция для расчета имитационных значений ФАКТОРА F в зависимости от задаваемой наработки:',
-                    style: TextStyle(fontSize: 20),
+                  SelectableText.rich(
+                    TextSpan(children: [
+                      TextSpan(
+                          text: 'Функция для расчета имитационных значений '),
+                      TextSpan(text: factorString.symbol.fullName),
+                      TextSpan(
+                          text: factorString.symbol.shortName,
+                          style: TextStyle(fontSize: 10)),
+                      TextSpan(text: ' в зависимости от задаваемой наработки:'),
+                    ]),
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
                   ),
+
                   SizedBox(height: 4),
                   Text(
                     '** Пожалуйста, ведите математическую модель зависимости',

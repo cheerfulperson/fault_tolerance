@@ -27,16 +27,21 @@ class SymbolString {
 
 class FactorString {
   FactorString(
-      {required this.fullName, required this.shortName, required this.symbol});
+      {required this.fullName,
+      required this.shortName,
+      required this.symbol,
+      required this.measurement});
 
   String fullName;
   String shortName;
   SymbolString symbol;
+  String measurement;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['fullName'] = this.fullName;
     data['shortName'] = this.shortName;
+    data['measurement'] = this.measurement;
     data['symbol'] = this.symbol.toJson();
 
     return data;
@@ -58,6 +63,7 @@ class SecondAppProvider with ChangeNotifier {
   int _trainingSetVolume = 2;
   int _validationSetVolume = 5;
   int _lFactorPoints = 2;
+  int _timePoints = 2;
   int _selectedTime = 0;
   FactorType _factorType = FactorType.CollectorCurrent;
   String _deviceName = '';
@@ -73,6 +79,7 @@ class SecondAppProvider with ChangeNotifier {
   String _secondFormula = '';
   String _thirdFormula = '';
   String _fourthFormula = '';
+  String _measurement = 'А';
   double _workTime = 0;
   double? _appResults = 0;
   List<Map<String, dynamic>> _history = List.empty(growable: true);
@@ -90,8 +97,10 @@ class SecondAppProvider with ChangeNotifier {
   int get trainingSetVolume => _trainingSetVolume;
   int get validationSetVolume => _validationSetVolume;
   int get selectedTime => _selectedTime;
+  int get timePoints => _timePoints;
   double get workTime => _workTime;
   double? get appResults => _appResults;
+  String get measurement => _measurement;
 
   final AppStorage _store = AppStorage();
 
@@ -101,19 +110,35 @@ class SecondAppProvider with ChangeNotifier {
       _timeTableData.removeRange(value, _trainingSetVolume);
       _listFormulaParams.removeRange(value, _trainingSetVolume);
     } else {
-      List<List<double?>> data = List.generate(
-        value - _trainingSetVolume,
-        (_) => List<double?>.filled(_lFactorPoints, null),
-      );
-      List<String?> strData = List.generate(
-        value - _trainingSetVolume,
-        (_) => '',
-      );
+      List<List<double?>> data = List.generate(value - _trainingSetVolume,
+          (_) => List<double?>.filled(_lFactorPoints, null, growable: true),
+          growable: true);
+      List<String?> strData =
+          List.generate(value - _trainingSetVolume, (_) => '', growable: true);
       _listFormulaParams.insertAll(_trainingSetVolume, strData);
       _tableData.insertAll(_trainingSetVolume, data);
       _timeTableData.insertAll(_trainingSetVolume, data);
     }
     _trainingSetVolume = value;
+    pushToHistory();
+    notifyListeners();
+  }
+
+  void setTimePoints(int value) {
+    _timeTableData = _timeTableData.map((e) {
+      if (_timePoints >= value && _timePoints == e.length) {
+        e.removeRange(value, _timePoints);
+      } else {
+        List<double?> data = List.generate(
+          value - _timePoints,
+          (_) => null,
+          growable: true,
+        );
+        e.addAll(data);
+      }
+      return e;
+    }).toList(growable: true);
+    _timePoints = value;
     pushToHistory();
     notifyListeners();
   }
@@ -127,14 +152,11 @@ class SecondAppProvider with ChangeNotifier {
       _listFormulaParams.removeRange(value + _trainingSetVolume,
           _validationSetVolume + _trainingSetVolume);
     } else {
-      List<List<double?>> data = List.generate(
-        value - _validationSetVolume,
-        (_) => List<double?>.filled(_lFactorPoints, null),
-      );
-      List<String?> strData = List.generate(
-        value - _trainingSetVolume,
-        (_) => '',
-      );
+      List<List<double?>> data = List.generate(value - _validationSetVolume,
+          (_) => List<double?>.filled(_lFactorPoints, null, growable: true),
+          growable: true);
+      List<String?> strData =
+          List.generate(value - _trainingSetVolume, (_) => '', growable: true);
       _listFormulaParams.insertAll(_trainingSetVolume, strData);
       _tableData.addAll(data);
       _timeTableData.addAll(data);
@@ -146,7 +168,7 @@ class SecondAppProvider with ChangeNotifier {
 
   void setLFactorPoints(int value) {
     _tableData = _tableData.map((e) {
-      if (_lFactorPoints >= value) {
+      if (_lFactorPoints >= value && _lFactorPoints == e.length) {
         e.removeRange(value, _lFactorPoints);
       } else {
         List<double?> data = List.generate(
@@ -157,20 +179,8 @@ class SecondAppProvider with ChangeNotifier {
         e.addAll(data);
       }
       return e;
-    }).toList();
-    _timeTableData = _timeTableData.map((e) {
-      if (_lFactorPoints >= value) {
-        e.removeRange(value, _lFactorPoints);
-      } else {
-        List<double?> data = List.generate(
-          value - _lFactorPoints,
-          (_) => null,
-          growable: true,
-        );
-        e.addAll(data);
-      }
-      return e;
-    }).toList();
+    }).toList(growable: true);
+
     if (_lFactorPoints >= value) {
       _tableParams.removeRange(value, _lFactorPoints);
     } else {
@@ -205,6 +215,11 @@ class SecondAppProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void setMeasurement(String value) {
+    _measurement = value;
+    notifyListeners();
+  }
+
   void setFourthFormula(String value) {
     _fourthFormula = value;
     _appResults = calculateByF5(_workTime);
@@ -214,6 +229,15 @@ class SecondAppProvider with ChangeNotifier {
 
   void setFactorType(FactorType value) {
     _factorType = value;
+    if (value == FactorType.CollectorCurrent) {
+      _measurement = 'А';
+    }
+    if (value == FactorType.Temperature) {
+      _measurement = 'К';
+    }
+    if (value == FactorType.CollectorEmitterVoltage) {
+      _measurement = 'В';
+    }
     pushToHistory();
     notifyListeners();
   }
@@ -234,6 +258,8 @@ class SecondAppProvider with ChangeNotifier {
   void pushToHistory() {
     Map<String, dynamic> data = new Map<String, dynamic>();
     data['deviceName'] = _deviceName;
+    data['measurement'] = _measurement;
+    data['timePoints'] = _timePoints;
     data['factorType'] = _factorType.index;
     data['fourthFormula'] = _fourthFormula;
     data['lFactorPoints'] = _lFactorPoints;
@@ -267,6 +293,7 @@ class SecondAppProvider with ChangeNotifier {
         FactorType.Temperature,
         FactorType.CollectorEmitterVoltage,
       ][data['factorType']];
+      _timePoints = data['timePoints'];
       _fourthFormula = data['fourthFormula'];
       _lFactorPoints = data['lFactorPoints'];
       List<String?> listFormulaParams =
@@ -319,6 +346,7 @@ class SecondAppProvider with ChangeNotifier {
     Map<String, dynamic> data = new Map<String, dynamic>();
     data['deviceName'] = _deviceName;
     data['factorType'] = _factorType.index;
+    data['measurement'] = _measurement;
     data['fourthFormula'] = _fourthFormula;
     data['lFactorPoints'] = _lFactorPoints;
     data['listFormulaParams'] = _listFormulaParams;
@@ -331,7 +359,7 @@ class SecondAppProvider with ChangeNotifier {
     data['trainingSetVolume'] = _trainingSetVolume;
     data['validationSetVolume'] = _validationSetVolume;
     data['workTime'] = _workTime;
-
+    data['timePoints'] = _timePoints;
     await _store.saveToFile(
         data: data, isNeedNewPath: isNeedNewPath, suffix: 'mif');
     notifyListeners();
@@ -345,6 +373,8 @@ class SecondAppProvider with ChangeNotifier {
       }
 
       _deviceName = data['deviceName'];
+      _measurement = data['measurement'];
+      _timePoints = data['timePoints'];
       _factorType = [
         FactorType.CollectorCurrent,
         FactorType.Temperature,
@@ -455,8 +485,8 @@ class SecondAppProvider with ChangeNotifier {
 
   List<double> getTimeAverage() {
     List<double> averages =
-        List<double>.filled(_lFactorPoints, 0, growable: true);
-    for (int index = 0; index < lFactorPoints; index++) {
+        List<double>.filled(_timePoints, 0, growable: true);
+    for (int index = 0; index < _timePoints; index++) {
       double average = 0;
       for (int jndex = 0;
           jndex < _trainingSetVolume + _validationSetVolume;
@@ -502,6 +532,43 @@ class SecondAppProvider with ChangeNotifier {
         break;
     }
     return FactorString(
-        fullName: fullName, shortName: shortName, symbol: symbol);
+        fullName: fullName,
+        shortName: shortName,
+        symbol: symbol,
+        measurement: _measurement);
   }
+}
+
+List<String> getMeasurement(FactorType type) {
+  if (type == FactorType.Temperature) {
+    return ["", "кК", "MК", "ГК", "ТК", "ПК", "К", "мК", "мкК", "нК", "пК"];
+  }
+  if (type == FactorType.CollectorEmitterVoltage) {
+    return [
+      "",
+      "кВ",
+      "MВ",
+      "ГВ",
+      "ТВ",
+      "ПВ",
+      "В",
+      "мВ",
+      "мкВ",
+      "нВ",
+      "пВ",
+    ];
+  }
+  return [
+    "",
+    "кА",
+    "MА",
+    "ГА",
+    "ТА",
+    "ПА",
+    "А",
+    "мА",
+    "мкА",
+    "нА",
+    "пА",
+  ];
 }

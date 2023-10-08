@@ -566,7 +566,7 @@ class Condition extends StatelessWidget {
                     style: TextStyle(fontSize: 18),
                   ),
                   Text(
-                    centeredValue.k1,
+                    isK1Bigger ? centeredValue.k1 : centeredValue.k0,
                     style: TextStyle(fontSize: 18),
                   )
                 ],
@@ -636,7 +636,7 @@ class Condition extends StatelessWidget {
                     style: TextStyle(fontSize: 18),
                   ),
                   Text(
-                    centeredValue.k0,
+                    isK1Bigger ? centeredValue.k0 : centeredValue.k1,
                     style: TextStyle(fontSize: 18),
                   )
                 ],

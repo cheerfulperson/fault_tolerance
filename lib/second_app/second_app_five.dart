@@ -27,6 +27,7 @@ class _SecondAppDataFieldsFivePageState
   Widget build(BuildContext context) {
     final provider = context.watch<SecondAppProvider>();
     final screenHeight = MediaQuery.of(context).size.height;
+    FactorString factorString = provider.getFactorNames();
 
     return Scaffold(
       appBar: AppHeaderBar(nextPage: ''),
@@ -91,17 +92,26 @@ class _SecondAppDataFieldsFivePageState
                       ),
                     ),
                     SizedBox(height: 16),
-                    Text(
-                      //
-                      // расчитываем по формуле (5), какому Ik эквивалентна эта наработка
-                      //по формуле 2 рассчитываем интересующий параметр P
-                      //Затем выводится полученное значение интересующего параметра P.
-                      'Значение имитационного фактора БУКВА: ${(provider.appResults)}',
-                      style: TextStyle(fontSize: 20),
+                    SelectableText.rich(
+                      TextSpan(children: [
+                        TextSpan(
+                            text:
+                                'Значение имитационного фактора ${factorString.shortName.toLowerCase()} '),
+                        TextSpan(text: factorString.symbol.fullName),
+                        TextSpan(
+                            text: factorString.symbol.shortName,
+                            style: TextStyle(fontSize: 10)),
+                        TextSpan(text: ': ${(provider.appResults)}'),
+                        TextSpan(text: ' ${(factorString.measurement)}'),
+                      ]),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
                     ),
                     SelectableText.rich(TextSpan(
                         text:
-                            '** Если результатом является значение null, то какая-то формула в программе введена неверно')),
+                            '** Если результатом является значение null или не совпадает с ожидаемым значением, то какая-то формула в программе введена неверно')),
                   ],
                 ),
               ),

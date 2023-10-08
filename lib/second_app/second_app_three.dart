@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../first_app/first_app.dart';
 import 'components/header.dart';
 import '../routes.dart';
 
@@ -29,28 +31,34 @@ class _SecondAppDataFieldsThreePageState
   late List<List<double?>> tableData;
   late List<int> rightColumnData;
   int n = 0;
+  final TextEditingController _timePointsController = TextEditingController();
 
   int runningTime = 0;
   int trainingSetVolume = 0;
   int validationSetVolume = 0;
-  int lFactorPoints = 0;
+  int timePoints = 0;
 
   @override
   void initState() {
     super.initState();
-    // Размеры таблицы
-
-//     lFactorPoints =
-//         Provider.of<SecondAppProvider>(context, listen: false).lFactorPoints;
-// trainingSetVolume =
-//         Provider.of<SecondAppProvider>(context, listen: false).trainingSetVolume;
-// validationSetVolume =
-//         Provider.of<SecondAppProvider>(context, listen: false).validationSetVolume;
-
     final provider = Provider.of<SecondAppProvider>(context, listen: false);
-    lFactorPoints = provider.lFactorPoints;
+    timePoints = provider.timePoints;
     trainingSetVolume = provider.trainingSetVolume;
     validationSetVolume = provider.validationSetVolume;
+    _timePointsController.value = _timePointsController.value.copyWith(
+      text: timePoints.toString(),
+      selection: TextSelection(
+          baseOffset: timePoints.toString().length,
+          extentOffset: timePoints.toString().length),
+      composing: TextRange.empty,
+    );
+  }
+
+  @override
+  void dispose() {
+    _timePointsController.dispose();
+
+    super.dispose();
   }
 
   double calculateAverage(int columnIndex) {
@@ -76,10 +84,7 @@ class _SecondAppDataFieldsThreePageState
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<SecondAppProvider>();
-    int result = 2 * n;
-    String resultText = 'Результат: $result';
-    int resultFour = 2;
-    // Создание таблицы с заданными размерами
+
     tableData = provider.timeTableData;
     List<double> average = provider.getTimeAverage();
 
@@ -108,6 +113,58 @@ class _SecondAppDataFieldsThreePageState
                   // от значения, которое пользователь введет в поле с названием
                   // "Количество точек наработки". Примечание под названием поля: Пожалуйста, введите
                   // число от 1 до 10
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: Colors
+                                  .black), // Установите цвет всего текста на черный
+                          children: <TextSpan>[
+                            TextSpan(
+                              text: 'Количество точек наработки ',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                      Text(
+                        '** Пожалуйста, введите число от 1 до 10',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      const SizedBox(height: 4),
+                      SizedBox(
+                        width: 720,
+                        child: TextFormField(
+                          controller: _timePointsController,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            NumericalRangeFormatter(max: 10, min: 1)
+                          ],
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) {
+                            if (value != '' && value != null && value != '0') {
+                              provider.setTimePoints(
+                                  int.tryParse(value.replaceAll(',', '.')) ??
+                                      2);
+                            }
+                          },
+                          style: TextStyle(fontSize: 20, height: 1),
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(gapPadding: 2),
+                            hintText: '5',
+                            hintStyle: TextStyle(fontSize: 20),
+                            labelStyle: TextStyle(fontSize: 2),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
                   Padding(
                     padding: EdgeInsets.only(top: 16),
                     child: Text(

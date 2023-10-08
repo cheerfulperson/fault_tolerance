@@ -33,6 +33,19 @@ class SecondAppNavBar extends StatelessWidget {
                     SizedBox(
                       width: 8,
                     ),
+                      NavBarButton(
+                      text: 'Зависимость параметра P\n от фактора F',
+                      // text: '1',
+                      assetName: 'assets/icons/slash-square.svg',
+                      onClick: () {
+                        Navigator.pushNamed(context, secondAppDatafieldsSemi);
+                      },
+                      active: ModalRoute.of(context)?.settings.name ==
+                          secondAppDatafieldsSemi,
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
                     NavBarButton(
                       text:
                           'Зависимость значения Pср\nот имитационного фактора F',

@@ -250,6 +250,57 @@ class _SecondAppDataFieldsOnePageState
                             ],
                           ),
                           const SizedBox(
+                            height: 8,
+                          ),
+                          Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Единица измерений:',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                                SizedBox(
+                                    width: 340,
+                                    child: DropdownButtonFormField(
+                                      value: provider.measurement,
+                                      items: getMeasurement(provider.factorType)
+                                          .map<DropdownMenuItem<String>>(
+                                              (String value) =>
+                                                  DropdownMenuItem<String>(
+                                                    child: Text(value,
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.black)),
+                                                    value: value,
+                                                    alignment: Alignment.center,
+                                                  ))
+                                          .toList(growable: true),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (value != null) {
+                                            provider.setMeasurement(value);
+                                          }
+                                        });
+                                      },
+                                      style: TextStyle(fontSize: 20, height: 1),
+                                      icon: Icon(Icons.arrow_drop_down),
+                                      decoration: const InputDecoration(
+                                          contentPadding: EdgeInsets.symmetric(
+                                              horizontal: 12, vertical: 0),
+                                          hoverColor: Color(0xFF455A64),
+                                          border:
+                                              OutlineInputBorder(gapPadding: 2),
+                                          hintText: 'В',
+                                          hintStyle:
+                                              TextStyle(color: Colors.black26),
+                                          labelStyle: TextStyle(fontSize: 20)),
+                                    ))
+                              ]),
+                          const SizedBox(
                             height: 16,
                           ),
 
@@ -563,7 +614,10 @@ class _SecondAppDataFieldsOnePageState
                                                       TextSpan(
                                                           text: '$i',
                                                           style: TextStyle(
-                                                              fontSize: 8))
+                                                              fontSize: 8)),
+                                                      TextSpan(
+                                                          text:
+                                                              ', ${provider.measurement}'),
                                                     ]),
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
@@ -641,8 +695,36 @@ class _SecondAppDataFieldsOnePageState
                                     ),
                                   ],
                                 ),
+                                TableRow(children: [
+                                  Container(
+                                      height: 32,
+                                      decoration: BoxDecoration(
+                                          border: Border(
+                                              left: BorderSide(width: 1),
+                                              bottom: BorderSide(width: 1)))),
+                                  Container(
+                                    height: 32,
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            right: BorderSide(width: 1),
+                                            bottom: BorderSide(width: 1))),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'Обучающая выборка n',
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500),
+                                          )
+                                        ]),
+                                  )
+                                ]),
                                 for (int rowIndex = 0;
-                                    rowIndex < tableData.length;
+                                    rowIndex < trainingSet;
                                     rowIndex++)
                                   TableRow(
                                     children: [
@@ -658,7 +740,128 @@ class _SecondAppDataFieldsOnePageState
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 8.0),
                                           child: Text(
-                                            '${rowIndex + 1} ${rowIndex >= provider.trainingSetVolume ? '(m)' : '(n)'}',
+                                            '${rowIndex + 1}',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        child: Row(
+                                          children: [
+                                            for (int columnIndex = 0;
+                                                columnIndex <
+                                                    tableData[0].length;
+                                                columnIndex++)
+                                              Expanded(
+                                                  child: Container(
+                                                height: 64,
+                                                decoration: BoxDecoration(
+                                                    border: Border(
+                                                        bottom: BorderSide(
+                                                            width: 1),
+                                                        right: BorderSide(
+                                                            width: 1))),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: SizedBox(
+                                                    width: 72,
+                                                    child: TextFormField(
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          tableData[rowIndex][
+                                                                  columnIndex] =
+                                                              double.tryParse(
+                                                                  value
+                                                                      .replaceAll(
+                                                                          ',',
+                                                                          '.'));
+                                                        });
+                                                      },
+                                                      initialValue: tableData
+                                                                  .isNotEmpty &&
+                                                              rowIndex <
+                                                                  tableData
+                                                                      .length &&
+                                                              columnIndex <
+                                                                  tableData[
+                                                                          rowIndex]
+                                                                      .length
+                                                          ? (tableData[rowIndex]
+                                                                      [
+                                                                      columnIndex] ??
+                                                                  '')
+                                                              .toString()
+                                                          : '',
+                                                      keyboardType:
+                                                          TextInputType.number,
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                      ),
+                                                      decoration:
+                                                          InputDecoration(
+                                                        border:
+                                                            OutlineInputBorder(),
+                                                        hintText: '0',
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ))
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                TableRow(children: [
+                                  Container(
+                                      height: 32,
+                                      decoration: BoxDecoration(
+                                          border: Border(
+                                              left: BorderSide(width: 1),
+                                              bottom: BorderSide(width: 1)))),
+                                  Container(
+                                    height: 32,
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            right: BorderSide(width: 1),
+                                            bottom: BorderSide(width: 1))),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'Контрольная выборка m',
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500),
+                                          )
+                                        ]),
+                                  )
+                                ]),
+                                for (int rowIndex = 0;
+                                    rowIndex < validationSet;
+                                    rowIndex++)
+                                  TableRow(
+                                    children: [
+                                      Container(
+                                        height: 64,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                            border: Border(
+                                                left: BorderSide(width: 1),
+                                                bottom: BorderSide(width: 1),
+                                                right: BorderSide(width: 1))),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: Text(
+                                            '${rowIndex + trainingSet + 1}',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                               fontSize: 16,
@@ -738,195 +941,6 @@ class _SecondAppDataFieldsOnePageState
                             ),
                           ),
                           const SizedBox(height: 16),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SelectableText.rich(
-                                TextSpan(children: [
-                                  TextSpan(
-                                      text:
-                                          'Таблица 2 - Полученная  зависимость параметра P i-го экземпляра объединенной выборки от фактора ${factorString.fullName.toLowerCase()} '),
-                                  TextSpan(text: factorString.symbol.fullName),
-                                  TextSpan(
-                                      text: factorString.symbol.shortName,
-                                      style: TextStyle(fontSize: 14)),
-                                ]),
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  // fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              Text(
-                                '** Пожалуйста, заполните таблицу',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                              SizedBox(height: 8),
-                              SelectableText.rich(TextSpan(
-                                  text:
-                                      '** Поддерживаемые функции и операторы для формул: ${supportedFunctions.join(' , ')}')),
-                              SizedBox(
-                                height: 4,
-                              ),
-                              Container(
-                                child: Table(
-                                    defaultVerticalAlignment:
-                                        TableCellVerticalAlignment.middle,
-                                    columnWidths: const <int, TableColumnWidth>{
-                                      0: FixedColumnWidth(180),
-                                      1: FlexColumnWidth(),
-                                    },
-                                    children: [
-                                      TableRow(
-                                        children: [
-                                          TableCell(
-                                              child: Container(
-                                            height: 72,
-                                            alignment: Alignment.center,
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    left: BorderSide(width: 1),
-                                                    bottom:
-                                                        BorderSide(width: 1),
-                                                    top: BorderSide(width: 1),
-                                                    right:
-                                                        BorderSide(width: 1))),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: SizedBox(
-                                                child: Text(
-                                                  '№ экземпляра объединенной выборки',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          )),
-                                          TableCell(
-                                            child: Container(
-                                              height: 72,
-                                              decoration: BoxDecoration(
-                                                  border: Border(
-                                                      top: BorderSide(width: 1),
-                                                      bottom:
-                                                          BorderSide(width: 1),
-                                                      right: BorderSide(
-                                                          width: 1))),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: SelectableText.rich(
-                                                  TextSpan(children: [
-                                                    TextSpan(
-                                                        text:
-                                                            'Формула зависимости P от ${factorString.shortName.toLowerCase()} '),
-                                                    TextSpan(
-                                                        text: factorString
-                                                            .symbol.fullName),
-                                                    TextSpan(
-                                                        text: factorString
-                                                            .symbol.shortName,
-                                                        style: TextStyle(
-                                                            fontSize: 10)),
-                                                    TextSpan(
-                                                        text: 'i',
-                                                        style: TextStyle(
-                                                            fontSize: 8))
-                                                  ]),
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      for (int index = 0;
-                                          index < listFormulaParams.length;
-                                          index++)
-                                        TableRow(
-                                          children: [
-                                            TableCell(
-                                                child: Container(
-                                              height: 72,
-                                              alignment: Alignment.center,
-                                              decoration: BoxDecoration(
-                                                  border: Border(
-                                                      left:
-                                                          BorderSide(width: 1),
-                                                      bottom:
-                                                          BorderSide(width: 1),
-                                                      right: BorderSide(
-                                                          width: 1))),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: SizedBox(
-                                                  child: Text(
-                                                    (index + 1).toString(),
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            )),
-                                            TableCell(
-                                                child: Container(
-                                              height: 72,
-                                              decoration: BoxDecoration(
-                                                  border: Border(
-                                                      bottom:
-                                                          BorderSide(width: 1),
-                                                      right: BorderSide(
-                                                          width: 1))),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: TextFormField(
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      listFormulaParams[index] =
-                                                          value;
-                                                    });
-                                                  },
-                                                  initialValue: deviceParams
-                                                          .isNotEmpty
-                                                      ? listFormulaParams[index]
-                                                              ?.toString() ??
-                                                          ''
-                                                      : '',
-                                                  keyboardType:
-                                                      TextInputType.number,
-                                                  decoration: InputDecoration(
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                    hintText:
-                                                        '0.25 * ln(2 * x^2 + 0.23)',
-                                                  ),
-                                                ),
-                                              ),
-                                            )),
-                                          ],
-                                        )
-                                    ]),
-                              )
-                            ],
-                          ),
                         ],
                       ),
                     ),

@@ -54,6 +54,7 @@ class _SecondAppDataFieldsTwoPageState
     double screenHeight = MediaQuery.of(context).size.height;
     final provider = context.watch<SecondAppProvider>();
     List<double> tableData = provider.getAverage();
+    List<double?> currentList = provider.tableParams;
     FactorString factorString = provider.getFactorNames();
 
     return Scaffold(
@@ -74,12 +75,21 @@ class _SecondAppDataFieldsTwoPageState
                     horizontal: 8.0,
                   ),
                   children: [
-                    Text(
-                      'Таблица 3 - Зависимость среднего значения параметра P экземпляров обучающей выборки от имитационного фактора ${factorString.fullName.toLowerCase()}',
-                      style: TextStyle(
-                        fontSize: 20,
-                        // fontWeight: FontWeight.bold,
-                      ),
+                    SelectableText.rich(
+                      TextSpan(
+                          children: [
+                            TextSpan(
+                                text:
+                                    'Таблица 3 - Зависимость среднего значения параметра P экземпляров обучающей выборки от имитационного фактора ${factorString.fullName.toLowerCase()} '),
+                            TextSpan(text: factorString.symbol.fullName),
+                            TextSpan(
+                                text: factorString.symbol.shortName,
+                                style: TextStyle(fontSize: 14)),
+                          ],
+                          style: TextStyle(
+                            fontSize: 20,
+                            // fontWeight: FontWeight.bold,
+                          )),
                     ),
                     SizedBox(height: 4),
                     Table(
@@ -97,23 +107,56 @@ class _SecondAppDataFieldsTwoPageState
                               child: Container(
                                 height: 60,
                                 child: Align(
-                                  alignment: Alignment.center,
-                                  child: SelectableText.rich(
-                                    TextSpan(children: [
-                                      TextSpan(text: 'Значение '),
-                                      TextSpan(
-                                          text: factorString.symbol.fullName),
-                                      TextSpan(
-                                          text: factorString.symbol.shortName,
-                                          style: TextStyle(fontSize: 14)),
-                                    ]),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
+                                    alignment: Alignment.center,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: SelectableText.rich(
+                                            TextSpan(children: [
+                                              TextSpan(
+                                                  text:
+                                                      '№ имитационного фатора'),
+                                            ]),
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                            child: Container(
+                                          height: 60,
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                              border: Border(
+                                                  left: BorderSide(
+                                                      color: Colors.black,
+                                                      width: 1))),
+                                          child: SelectableText.rich(
+                                            TextSpan(children: [
+                                              TextSpan(text: 'Значение '),
+                                              TextSpan(
+                                                  text: factorString
+                                                      .symbol.fullName),
+                                              TextSpan(
+                                                  text: factorString
+                                                      .symbol.shortName,
+                                                  style:
+                                                      TextStyle(fontSize: 14)),
+                                              TextSpan(
+                                                  text:
+                                                      ', ${provider.measurement}'),
+                                            ]),
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        ))
+                                      ],
+                                    )),
                               ),
                             ),
                             TableCell(
@@ -144,23 +187,41 @@ class _SecondAppDataFieldsTwoPageState
                                   height: 60,
                                   child: Align(
                                     alignment: Alignment.center,
-                                    child: SelectableText.rich(
-                                      TextSpan(children: [
-                                        TextSpan(
-                                            text: factorString.symbol.fullName),
-                                        TextSpan(
-                                            text: factorString.symbol.shortName,
-                                            style: TextStyle(fontSize: 12)),
-                                        TextSpan(
-                                            text: '${i + 1}',
-                                            style: TextStyle(fontSize: 12))
-                                      ]),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
+                                    child: Row(children: [
+                                      Expanded(
+                                          child: SelectableText.rich(
+                                        TextSpan(children: [
+                                          TextSpan(text: '${i + 1}')
+                                        ]),
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      )),
+                                      Expanded(
+                                          child: Container(
+                                        height: 60,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                            border: Border(
+                                                left: BorderSide(
+                                                    color: Colors.black,
+                                                    width: 1))),
+                                        child: SelectableText.rich(
+                                          TextSpan(children: [
+                                            TextSpan(
+                                                text: (currentList[i] ?? 0)
+                                                    .toString()),
+                                          ]),
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ))
+                                    ]),
                                   ),
                                 ),
                               ),

@@ -493,6 +493,9 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
     bool isBigger = false,
     bool isAddAction = true,
   }) {
+    if (_deviceParams.length >= 10) {
+      return;
+    }
     if (_deviceParams.length == 0 && _deviceFOs.length == 0) {
       generateDeviceFOs(isEmpty: true);
     }
@@ -756,7 +759,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
       double parsedValue = double.parse(value);
       bool isK1Bigger = param.isBigger;
 
-      if (isK1Bigger) {
+      if (isK1Bigger == true) {
         if (parsedValue > k1) {
           return '1';
         }
@@ -765,11 +768,11 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
         }
         return 'R';
       }
-      if (parsedValue > k0) {
-        return '1';
-      }
-      if (parsedValue < k1) {
+      if (parsedValue > k1) {
         return '0';
+      }
+      if (parsedValue < k0) {
+        return '1';
       }
       return 'R';
     } catch (e) {

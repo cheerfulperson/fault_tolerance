@@ -25,9 +25,10 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
   Widget build(BuildContext context) {
     return Container(
         decoration: const BoxDecoration(
+            color: Color.fromRGBO(215, 215, 215, 1),
             border: Border(
                 bottom: BorderSide(
-                    width: 1.0, color: Color.fromRGBO(195, 195, 195, 1)))),
+                    width: 1.0, color: Color.fromRGBO(134, 134, 134, 1)))),
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
           child: Row(
@@ -61,6 +62,20 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
                   if (isChanged) {
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
+                },
+              ),
+              const SizedBox(
+                width: 12,
+              ),
+              AppHeaderButton(
+                text: '',
+                width: 16,
+                assetName: 'assets/icons/info-circle.svg',
+                onClick: () {
+                  bool canPop = Navigator.canPop(context);
+                  if (canPop) {
+                    Navigator.pushNamed(context, firstAppInfoPage);
                   }
                 },
               ),
@@ -177,7 +192,7 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
                   ),
                   RichText(
                     text: TextSpan(children: [
-                      TextSpan(text: 'Cгруппировать отдельно по классам K'),
+                      TextSpan(text: 'Cгруппировать отдельно\nпо классам K'),
                       TextSpan(text: '1', style: TextStyle(fontSize: 8)),
                       TextSpan(text: ' и K'),
                       TextSpan(text: '0', style: TextStyle(fontSize: 8)),
@@ -197,9 +212,11 @@ class AppHeaderButton extends StatelessWidget {
       this.bgColor,
       required this.text,
       this.onClick,
+      this.width = 120,
       required this.assetName});
   final String text;
   Color? bgColor;
+  double width;
   final String assetName;
   void Function()? onClick;
 
@@ -208,7 +225,7 @@ class AppHeaderButton extends StatelessWidget {
     return TextButton(
       style: TextButton.styleFrom(
           backgroundColor: bgColor ?? const Color.fromARGB(255, 255, 255, 255),
-          minimumSize: const Size(120.0, 36.0),
+          minimumSize: Size(width, 36),
           side: BorderSide(width: 1.0, color: Color.fromARGB(255, 0, 0, 0))),
       onPressed: onClick,
       child: Row(
@@ -219,14 +236,16 @@ class AppHeaderButton extends StatelessWidget {
                 colorFilter: ColorFilter.mode(
                     Color.fromARGB(255, 0, 0, 0), BlendMode.srcIn),
                 semanticsLabel: 'A red up arrow'),
-            const SizedBox(
-              width: 12,
-            ),
-            Text(
-              text,
-              style: const TextStyle(
-                  color: Color.fromARGB(255, 36, 36, 36), fontSize: 16),
-            )
+            if (text != '') ...[
+              const SizedBox(
+                width: 12,
+              ),
+              Text(
+                text,
+                style: const TextStyle(
+                    color: Color.fromARGB(255, 36, 36, 36), fontSize: 16),
+              )
+            ]
           ]),
     );
   }

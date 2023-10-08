@@ -366,12 +366,20 @@ class _FirstAppState extends State<FirstApp> {
                                 const SizedBox(
                                   height: 4,
                                 ),
+                                const Text(
+                                  '!!! Если в ходе выполнения работы вы увидете значение NaN, то каких-то данных не хватает или они введены неверно',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.red),
+                                ),
+                                const SizedBox(
+                                  height: 4,
+                                ),
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child: SizedBox(
                                       width: 720,
                                       child: Text(
-                                          'В случае, если информативные параметры ППП $deviceName интересующего типа известны изначально, то рекомендуемое их число k выбирать от 2-х до 4-х. Если нет, то наиболее подходящие. Параметров может быть от 1 до 7 штук.',
+                                          'В случае, если информативные параметры ППП $deviceName интересующего типа известны изначально, то рекомендуемое их число k выбирать от 2-х до 4-х. Если нет, то выбрать наиболее подходящие. Колличество параметров может быть от 1 до 10.',
                                           textAlign: TextAlign.left,
                                           style: TextStyle(
                                             fontSize: 14,
@@ -384,16 +392,22 @@ class _FirstAppState extends State<FirstApp> {
                                 const SizedBox(
                                   height: 8,
                                 ),
-                                ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.black,
-                                    ),
-                                    onPressed: () => showDialog<String>(
-                                          context: context,
-                                          builder: (BuildContext context) =>
-                                              DialogAddParam(),
-                                        ),
-                                    child: const Text('Добавить параметр +'))
+                                if (context
+                                        .watch<FirstAppProvider>()
+                                        .deviceParams
+                                        .length <
+                                    10)
+                                  ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.black,
+                                      ),
+                                      onPressed: () => showDialog<String>(
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                DialogAddParam(),
+                                          ),
+                                      child: Text(
+                                          'Добавить ${context.watch<FirstAppProvider>().deviceParams.length >= 1 ? 'еще один' : ''} параметр +'))
                               ],
                             )),
                       ]),
@@ -866,6 +880,27 @@ class _DialogAddParamState extends State<DialogAddParam> {
                                                 .text,
                                         unit: _paramUnit);
                               } else {
+                                if (context
+                                        .read<FirstAppProvider>()
+                                        .deviceParams
+                                        .length >=
+                                    10) {
+                                  final snackBar = SnackBar(
+                                    backgroundColor:
+                                        Color.fromARGB(255, 255, 0, 0),
+                                    content: const Text(
+                                        'Параметров не может быть более 10!'),
+                                    action: SnackBarAction(
+                                      label: 'Хорошо',
+                                      textColor: Colors.white,
+                                      onPressed: () {},
+                                    ),
+                                  );
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                  Navigator.pop(context, 'OK');
+                                  return;
+                                }
                                 context.read<FirstAppProvider>().addDeviceParam(
                                     name: _nameController.text,
                                     shortName: _shortName,

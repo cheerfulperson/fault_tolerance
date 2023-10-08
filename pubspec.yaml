@@ -45,6 +45,7 @@ dependencies:
   lazy_memo: ^0.1.7
   file_picker: ^5.3.1
   function_tree: ^0.8.13
+  syncfusion_flutter_pdfviewer: ^20.4.54
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +71,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/files/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
