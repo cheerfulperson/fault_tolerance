@@ -192,6 +192,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
   int _finalDeviceCount = 0;
   bool _isSortedFos = false;
   bool _isSmthChanged = false;
+  bool _isCheckCentered = false;
 
   @override
   int get deviceCount => _deviceCount;
@@ -354,6 +355,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
 
   void setChanged() {
     _isSmthChanged = true;
+    _isCheckCentered = false;
     notifyListeners();
   }
 
@@ -364,7 +366,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
   }
 
   void setDevicesCount(int count) {
-    if (count > 1000 || count < 5) {
+    if (count > 1000 || count < 4) {
       return;
     }
     _isSmthChanged = true;
@@ -376,7 +378,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
   }
 
   void setFinalDevicesCount(int count) {
-    if (count > 1000 || count < 5) {
+    if (count > 1000 || count < 4) {
       return;
     }
     _isSmthChanged = true;
@@ -520,15 +522,36 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
     if (isAddAction) {
       addAction(action: EClientActions.addDeviceParam, data: {'id': param.id});
     }
+    _isCheckCentered = false;
     notifyListeners();
+  }
+
+  void checkCenteredValues() {
+    if (_isCheckCentered) {
+      return;
+    }
+    _deviceParams.forEach((element) {
+      CenteredValue center = this.getCenteredValues(element.id);
+      double? k0 = double.tryParse(center.k0);
+      double? k1 = double.tryParse(center.k1);
+
+      if (k1 != null && k0 != null) {
+        if (k1 > k0) {
+          element.isBigger = true;
+        } else {
+          element.isBigger = false;
+        }
+      }
+    });
+    _isCheckCentered = true;
   }
 
   void updateDeviceParam({
     required String id,
-    required String name,
-    required String shortName,
-    required String shortNameDescription,
-    required String unit,
+    String? name,
+    String? shortName,
+    String? shortNameDescription,
+    String? unit,
     bool? isBigger,
     bool isAddAction = true,
   }) {
@@ -556,6 +579,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
         el.isBigger = isBigger != null ? isBigger : el.isBigger;
       }
     });
+
     notifyListeners();
   }
 
@@ -688,6 +712,7 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
       {required List<FO> fos, ParamClass paramClass = ParamClass.first}) {
     List<String> filtersValues = [];
     int index = 0;
+    int jndex = -1;
     return fos
         .where((element) => paramClass == ParamClass.first
             ? element.number == '1'
@@ -704,16 +729,17 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
         paramIndex++;
         return param;
       }).toList();
+      filtersValues.add(params.map((e) => e.value).join(''));
       index++;
       return FO(index: e.index, params: params, number: e.params[2].value);
     }).where((element) {
       double number = double.tryParse(element.number) ?? -1;
-      String isHere = filtersValues.firstWhere(
-        (elem) => elem == element.params.map((e) => '${e.value}'),
-        orElse: () => '',
+      int elemIndex = filtersValues.indexWhere(
+        (elem) => elem == element.params.map((e) => '${e.value}').join(''),
       );
-      return isHere == '' &&
-          (paramClass == ParamClass.first ? number >= 0 : number <= 0);
+      jndex++;
+      return jndex == elemIndex &&
+          (paramClass == ParamClass.first ? number >= 0 : number < 0);
     }).toList();
   }
 
@@ -768,10 +794,11 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
         }
         return 'R';
       }
-      if (parsedValue > k1) {
+
+      if (parsedValue < k1) {
         return '0';
       }
-      if (parsedValue < k0) {
+      if (parsedValue > k0) {
         return '1';
       }
       return 'R';
@@ -850,6 +877,8 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
     List<double> private_nt0 = [...nt0];
     List<double> private_ntR = [...ntR];
     int jdex = 0;
+    double def = (1 - pow(0.05, 1 / deviceCount)).toDouble();
+
     private_nK1t1.forEach((element) {
       double del1 = private_nt1[jdex] == 0 ? 1 : private_nt1[jdex];
       double del0 = private_nt0[jdex] == 0 ? 1 : private_nt0[jdex];
@@ -863,6 +892,33 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
       private_nt1[jdex] = private_nt1[jdex] / this.deviceCount;
       private_nt0[jdex] = private_nt0[jdex] / this.deviceCount;
       private_ntR[jdex] = private_ntR[jdex] / this.deviceCount;
+      if (private_nK1t1[jdex] == 0) {
+        private_nK1t1[jdex] = def;
+      }
+      if (private_nK1t0[jdex] == 0) {
+        private_nK1t0[jdex] = def;
+      }
+      if (private_nK1tR[jdex] == 0) {
+        private_nK1tR[jdex] = def;
+      }
+      if (private_nK0t1[jdex] == 0) {
+        private_nK0t1[jdex] = def;
+      }
+      if (private_nK0t0[jdex] == 0) {
+        private_nK0t0[jdex] = def;
+      }
+      if (private_nK0tR[jdex] == 0) {
+        private_nK0tR[jdex] = def;
+      }
+      if (private_nt1[jdex] == 0) {
+        private_nt1[jdex] = def;
+      }
+      if (private_nt0[jdex] == 0) {
+        private_nt0[jdex] = def;
+      }
+      if (private_ntR[jdex] == 0) {
+        private_ntR[jdex] = def;
+      }
       jdex++;
     });
     PrivateInfo privateInfo = PrivateInfo(
@@ -1079,9 +1135,11 @@ class FirstAppProvider with ChangeNotifier implements FirstAppState {
         //no
       }
     });
+    double k1Results = (value / k1.length);
+        double k0Results = (valueK0 / k0.length);
     return CenteredValue(
-        k1: (value / k1.length).toStringAsFixed(4),
-        k0: (valueK0 / k0.length).toStringAsFixed(4),
+        k1: k1Results.toStringAsFixed(k1Results >= 1 ? 1 : 3),
+        k0: k0Results.toStringAsFixed(k0Results >= 1 ? 1 : 3),
         paramId: paramId);
   }
 

@@ -161,7 +161,7 @@ class _DataTableFOsState extends State<DataTableFOs> {
               child: RichText(
                   text: TextSpan(children: [
                 TextSpan(text: 'Экземпляры класса K'),
-                TextSpan(text: '0', style: TextStyle(fontSize: 12))
+                TextSpan(text: '2', style: TextStyle(fontSize: 12))
               ], style: TextStyle(color: Colors.black, fontSize: 18))),
             ),
             Container(

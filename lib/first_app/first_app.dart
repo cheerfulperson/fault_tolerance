@@ -145,8 +145,8 @@ class _FirstAppState extends State<FirstApp> {
                   child: ListView(
                       shrinkWrap: true,
                       padding: const EdgeInsets.symmetric(
-                        vertical: 8,
-                        horizontal: 8.0,
+                        vertical: 2,
+                        horizontal: 2.0,
                       ),
                       children: [
                         Form(
@@ -154,6 +154,30 @@ class _FirstAppState extends State<FirstApp> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SelectableText(
+                                        'Решение задачи ИП по информативным параметрам условно можно разбить на два этапа:',
+                                        style: TextStyle(fontSize: 16),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                      const SelectableText(
+                                        '    - получение модели прогнозирования с использованием обучающей выборки;',
+                                        style: TextStyle(fontSize: 16),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                      const SelectableText(
+                                        '    - применение модели прогнозирования для разделения на классы с точки зрения работоспособности тех экземпляров, которые не принимали участия в ОЭ, т.е. не являлись представителями обучающей выборки.',
+                                        style: TextStyle(fontSize: 16),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ]),
+                                const SizedBox(
+                                  height: 16,
+                                ),
                                 Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment:
@@ -225,7 +249,7 @@ class _FirstAppState extends State<FirstApp> {
                                         height: 4,
                                       ),
                                       const Text(
-                                        '** Пожалуйста введите число от 5 до 1000',
+                                        '** Пожалуйста введите число от 4 до 1000',
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       const SizedBox(
@@ -239,7 +263,7 @@ class _FirstAppState extends State<FirstApp> {
                                               FilteringTextInputFormatter
                                                   .digitsOnly,
                                               NumericalRangeFormatter(
-                                                  max: 1000, min: 0)
+                                                  max: 1000, min: 4)
                                             ],
                                             keyboardType: TextInputType.number,
                                             onChanged: (value) {
@@ -296,7 +320,7 @@ class _FirstAppState extends State<FirstApp> {
                                         height: 4,
                                       ),
                                       const Text(
-                                        '** Пожалуйста введите число от 5 до 1000',
+                                        '** Пожалуйста введите число от 4 до 1000',
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       const SizedBox(
@@ -310,7 +334,7 @@ class _FirstAppState extends State<FirstApp> {
                                               FilteringTextInputFormatter
                                                   .digitsOnly,
                                               NumericalRangeFormatter(
-                                                  max: 1000, min: 0)
+                                                  max: 1000, min: 4)
                                             ],
                                             keyboardType: TextInputType.number,
                                             onChanged: (value) {
@@ -628,7 +652,7 @@ class _DialogAddParamState extends State<DialogAddParam> {
         TextEditingController(text: widget.param?.shortNameDescription ?? '');
     setState(() {
       _shortName = widget.param?.shortName ?? allSymbols[8];
-      _paramUnit = widget.param?.unit ?? unitsOfMeasurement[8];
+      _paramUnit = widget.param?.unit ?? unitsOfMeasurement[1];
     });
   }
 
@@ -728,7 +752,15 @@ class _DialogAddParamState extends State<DialogAddParam> {
                                                         child: Text(value,
                                                             style: TextStyle(
                                                                 color: Colors
-                                                                    .black)),
+                                                                    .black,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                fontFamily:
+                                                                    'Consolas',
+                                                                fontStyle:
+                                                                    FontStyle
+                                                                        .italic)),
                                                         value: value,
                                                         alignment:
                                                             Alignment.center,
@@ -821,7 +853,10 @@ class _DialogAddParamState extends State<DialogAddParam> {
                                   .map<DropdownMenuItem<String>>(
                                       (String value) =>
                                           DropdownMenuItem<String>(
-                                            child: Text(value,
+                                            child: Text(
+                                                value.isEmpty
+                                                    ? 'Безразмерная величина'
+                                                    : value,
                                                 style: TextStyle(
                                                     color: Colors.black)),
                                             value: value,

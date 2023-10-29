@@ -18,6 +18,7 @@ class _FirstAppCenteredValuesState extends State<FirstAppCenteredValues> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
+    context.watch<FirstAppProvider>().checkCenteredValues();
 
     return Scaffold(
       appBar: AppHeaderBar(nextPage: ''),
@@ -115,7 +116,8 @@ class _DisplayTableDataState extends State<DisplayTableData> {
           //no
         }
       });
-      return (value / k1.length).toStringAsFixed(4);
+      double result = (value / k1.length);
+      return result.toStringAsFixed(result >= 1 ? 1 : 3);
     }).toList();
   }
 
@@ -139,7 +141,8 @@ class _DisplayTableDataState extends State<DisplayTableData> {
           //no
         }
       });
-      return (value / k0.length).toStringAsFixed(4);
+      double result = (value / k0.length);
+      return result.toStringAsFixed(result >= 1 ? 1 : 3);
     }).toList();
   }
 
@@ -403,7 +406,7 @@ class _DisplayCentersTableData extends State<DisplayCentersTableData> {
                         decoration: BoxDecoration(
                             border: Border(right: BorderSide(width: 1))),
                         child: Text(
-                          'τ = 1',
+                          'τ = 0',
                           style: TextStyle(fontSize: 18),
                         ),
                       )),
@@ -427,7 +430,7 @@ class _DisplayCentersTableData extends State<DisplayCentersTableData> {
                         constraints: BoxConstraints(maxWidth: 240),
                         alignment: Alignment.center,
                         child: Text(
-                          'τ = 0',
+                          'τ = 1',
                           style: TextStyle(fontSize: 18),
                         ),
                       ))
@@ -562,11 +565,11 @@ class Condition extends StatelessWidget {
                 children: [
                   DisplayParam(param: param, withoutUnit: true),
                   Text(
-                    isK1Bigger ? ' > ' : ' < ',
+                    !isK1Bigger ? ' > ' : ' < ',
                     style: TextStyle(fontSize: 18),
                   ),
                   Text(
-                    isK1Bigger ? centeredValue.k1 : centeredValue.k0,
+                    centeredValue.k0,
                     style: TextStyle(fontSize: 18),
                   )
                 ],
@@ -581,45 +584,25 @@ class Condition extends StatelessWidget {
                   BoxDecoration(border: Border(right: BorderSide(width: 1))),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: isK1Bigger
-                    ? [
-                        Text(
-                          centeredValue.k0,
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        Text(
-                          ' ≤ ',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        DisplayParam(param: param, withoutUnit: true),
-                        Text(
-                          ' ≤ ',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        Text(
-                          centeredValue.k1,
-                          style: TextStyle(fontSize: 18),
-                        )
-                      ]
-                    : [
-                        Text(
-                          centeredValue.k1,
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        Text(
-                          ' ≤ ',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        DisplayParam(param: param, withoutUnit: true),
-                        Text(
-                          ' ≤ ',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        Text(
-                          centeredValue.k0,
-                          style: TextStyle(fontSize: 18),
-                        )
-                      ],
+                children: [
+                  Text(
+                    isK1Bigger ? centeredValue.k0 : centeredValue.k1,
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  Text(
+                    ' ≤ ',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  DisplayParam(param: param, withoutUnit: true),
+                  Text(
+                    ' ≤ ',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  Text(
+                    isK1Bigger ? centeredValue.k1 : centeredValue.k0,
+                    style: TextStyle(fontSize: 18),
+                  )
+                ],
               ))),
       Expanded(
           child: Container(
@@ -632,11 +615,11 @@ class Condition extends StatelessWidget {
                 children: [
                   DisplayParam(param: param, withoutUnit: true),
                   Text(
-                    !isK1Bigger ? ' > ' : ' < ',
+                    isK1Bigger ? ' > ' : ' < ',
                     style: TextStyle(fontSize: 18),
                   ),
                   Text(
-                    isK1Bigger ? centeredValue.k0 : centeredValue.k1,
+                    centeredValue.k1,
                     style: TextStyle(fontSize: 18),
                   )
                 ],

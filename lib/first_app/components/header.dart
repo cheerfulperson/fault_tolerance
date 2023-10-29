@@ -25,7 +25,7 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
   Widget build(BuildContext context) {
     return Container(
         decoration: const BoxDecoration(
-            color: Color.fromRGBO(215, 215, 215, 1),
+            color: Color.fromRGBO(224, 224, 224, 1),
             border: Border(
                 bottom: BorderSide(
                     width: 1.0, color: Color.fromRGBO(134, 134, 134, 1)))),
@@ -195,7 +195,7 @@ class _AppHeaderBarState extends State<AppHeaderBar> {
                       TextSpan(text: 'Cгруппировать отдельно\nпо классам K'),
                       TextSpan(text: '1', style: TextStyle(fontSize: 8)),
                       TextSpan(text: ' и K'),
-                      TextSpan(text: '0', style: TextStyle(fontSize: 8)),
+                      TextSpan(text: '2', style: TextStyle(fontSize: 8)),
                     ], style: TextStyle(color: Colors.black, fontSize: 12)),
                   )
                 ],

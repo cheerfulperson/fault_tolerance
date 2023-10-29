@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:Method/first_app/app_info.dart';
+import 'package:Method/first_app/logic_tables_page.dart';
+import 'package:Method/first_app/probabilit_assessment_page.dart';
 import 'package:Method/first_app/results.dart';
 import 'package:window_size/window_size.dart';
 import 'package:provider/provider.dart';
@@ -66,8 +68,9 @@ class MyApp extends StatelessWidget {
             const FirstAppCenteredValues(title: ''),
         firstAppTransformationRoute: (context) =>
             const FRTransformPage(title: ''),
-        firstAppCenteredValuesRoute: (context) =>
-            const FirstAppCenteredValues(title: ''),
+        firstAppProbabilityAssessmentPage: (context) =>
+            const ProbabilityAssessmentPage(title: ''),
+        firstAppLogicTablesPage: (context) => const LogicTablesPage(title: ''),
         firstAppPrivateInformationPage: (context) =>
             const PrivateInformationPage(title: ''),
         firstAppResultsPage: (context) => const FirstAppResults(title: ''),

@@ -141,7 +141,7 @@ class _ElevatedCardState extends State<ElevatedCard> {
                               Navigator.pushNamed(context, secondAppTheoryPage);
                             }
                           },
-                          child: const Text('Теоретические сведения')),
+                          child: const Text('Текст методики')),
                     )
                   ],
                   // crossAxisAlignment: CrossAxisAlignment.center,

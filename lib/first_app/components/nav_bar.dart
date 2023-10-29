@@ -26,7 +26,8 @@ class FirstAppNavBar extends StatelessWidget {
                 child: Row(
                   children: [
                     NavBarButton(
-                      text: 'Исходные данные',
+                      text: 'Исходные',
+                      secondLineText: 'данные',
                       assetName: 'assets/icons/file-earmark-bar-graph.svg',
                       onClick: () {
                         Navigator.pushNamed(context, firstAppRoute);
@@ -38,7 +39,8 @@ class FirstAppNavBar extends StatelessWidget {
                       width: 8,
                     ),
                     NavBarButton(
-                      text: 'Фрагмент результатов ОЭ',
+                      text: 'Фрагмент',
+                      secondLineText: 'результатов ОЭ',
                       assetName: 'assets/icons/file-earmark-spreadsheet.svg',
                       onClick: () {
                         Navigator.pushNamed(context, firstAppSecondRoute);
@@ -51,7 +53,8 @@ class FirstAppNavBar extends StatelessWidget {
                       width: 8,
                     ),
                     NavBarButton(
-                      text: 'Определение центров',
+                      text: 'Определение',
+                      secondLineText: 'центров',
                       assetName: 'assets/icons/chevron-bar-contract.svg',
                       onClick: () {
                         Navigator.pushNamed(
@@ -65,7 +68,8 @@ class FirstAppNavBar extends StatelessWidget {
                       width: 8,
                     ),
                     NavBarButton(
-                      text: 'Преобразование в код',
+                      text: 'Преобразование',
+                      secondLineText: 'в код',
                       assetName: 'assets/icons/code-slash.svg',
                       onClick: () {
                         Navigator.pushNamed(
@@ -79,7 +83,23 @@ class FirstAppNavBar extends StatelessWidget {
                       width: 8,
                     ),
                     NavBarButton(
-                      text: 'Частная информация',
+                      text: 'Оценка',
+                      secondLineText: 'вероятности',
+                      assetName: 'assets/icons/pass.svg',
+                      onClick: () {
+                        Navigator.pushNamed(
+                            context, firstAppProbabilityAssessmentPage);
+                      },
+                      disabled: isAllDisabled,
+                      active: ModalRoute.of(context)?.settings.name ==
+                          firstAppProbabilityAssessmentPage,
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    NavBarButton(
+                      text: 'Частная',
+                      secondLineText: 'информация',
                       assetName: 'assets/icons/file-earmark-medical.svg',
                       onClick: () {
                         Navigator.pushNamed(
@@ -93,7 +113,22 @@ class FirstAppNavBar extends StatelessWidget {
                       width: 8,
                     ),
                     NavBarButton(
-                      text: 'Проверка качества',
+                      text: 'Модель',
+                      secondLineText: 'прогнозирования',
+                      assetName: 'assets/icons/percent.svg',
+                      onClick: () {
+                        Navigator.pushNamed(context, firstAppLogicTablesPage);
+                      },
+                      disabled: isAllDisabled,
+                      active: ModalRoute.of(context)?.settings.name ==
+                          firstAppLogicTablesPage,
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    NavBarButton(
+                      text: 'Проверка',
+                      secondLineText: 'качества',
                       assetName: 'assets/icons/box-seam.svg',
                       onClick: () {
                         Navigator.pushNamed(context, firstAppResultsPage);
@@ -109,15 +144,18 @@ class FirstAppNavBar extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class NavBarButton extends StatelessWidget {
   NavBarButton(
       {super.key,
       required this.text,
       this.onClick,
       this.disabled = false,
+      this.secondLineText,
       required this.assetName,
       required this.active});
   final String text;
+  String? secondLineText;
   final String assetName;
   final bool active;
   final bool disabled;
@@ -132,8 +170,8 @@ class NavBarButton extends StatelessWidget {
             : active
                 ? Color.fromARGB(255, 230, 230, 230)
                 : const Color.fromARGB(255, 255, 255, 255),
-        minimumSize: const Size(120.0, 48.0),
-        maximumSize: const Size(1000.0, 48.0),
+        minimumSize: const Size(120.0, 54.0),
+        maximumSize: const Size(1000.0, 54.0),
       ),
       onPressed: () {
         if (!disabled) {
@@ -166,13 +204,23 @@ class NavBarButton extends StatelessWidget {
                     Color.fromARGB(255, 0, 0, 0), BlendMode.srcIn),
                 semanticsLabel: 'A red up arrow'),
             const SizedBox(
-              width: 4,
+              height: 2,
             ),
             Text(
               text,
               style: const TextStyle(
-                  color: Color.fromARGB(255, 36, 36, 36), fontSize: 14),
-            )
+                  color: Color.fromARGB(255, 36, 36, 36),
+                  fontSize: 14,
+                  height: 0.9),
+            ),
+            if (secondLineText != null)
+              Text(
+                secondLineText ?? '',
+                style: const TextStyle(
+                    color: Color.fromARGB(255, 36, 36, 36),
+                    fontSize: 14,
+                    height: 0.9),
+              ),
           ]),
     );
   }
